@@ -23,7 +23,6 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
-import org.springframework.jdbc.support.JdbcUtils;
 
 import com.wjs.util.dao.PageDataList;
 
@@ -99,12 +98,24 @@ public class PagePlugin implements Interceptor {
             resultSet = preparedStatement.executeQuery();  
             resultSet.next();  
   
-            return (Integer) JdbcUtils.getResultSetValue(resultSet, 1, Integer.class);  
+            return resultSet.getInt(1);  
         } catch (SQLException e) {  
             e.printStackTrace();  
         }finally {  
-            JdbcUtils.closeResultSet(resultSet);  
-            JdbcUtils.closeStatement(preparedStatement);  
+        	if(resultSet != null){
+        		try {
+					resultSet.close();
+				} catch (SQLException e) {
+					// ignore
+				}
+        	}
+            if(preparedStatement != null){
+            	try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+					// ignore
+				}
+            }
         }  
         return 0;  
 	}

@@ -18,7 +18,7 @@
 		<property name="fileEncoding" value="utf-8" />
 		<property name="locations">
 			<list>
-				<value>classpath*:service.properties</value>
+				<value>classpath*:test-service.properties</value>
 			</list>
 		</property>
 	</bean>

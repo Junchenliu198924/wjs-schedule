@@ -37,7 +37,7 @@ public enum Pages {
 				return item;
 		}
 		
-		return Pages.ERROR;
+		return null;
 	}	
 
 }

@@ -4,7 +4,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wjs.schedule.ServiceUnitBaseTest;
-import com.wjs.schedule.dao.access.TestDemoMapper;
+import com.wjs.schedule.dao.exec.TestDemoMapper;
+import com.wjs.schedule.domain.exec.TestDemo;
 
 public class DaoInitTest extends ServiceUnitBaseTest{
 
@@ -13,7 +14,10 @@ public class DaoInitTest extends ServiceUnitBaseTest{
 	
 	@Test
 	public void test(){
-
+		mapper.insertSelective(new TestDemo(){
+			private static final long serialVersionUID = 1L;
+			{setUri("/url");}
+		});
 		System.out.println(mapper.selectByPrimaryKey(1L));
 	}
 }

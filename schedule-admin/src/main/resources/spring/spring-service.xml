@@ -17,6 +17,7 @@
 
 
 	<context:component-scan base-package="com.wjs.schedule.service" />
+	<context:component-scan base-package="com.wjs.schedule.component" />
 
 	<bean id="quartzScheduler" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
