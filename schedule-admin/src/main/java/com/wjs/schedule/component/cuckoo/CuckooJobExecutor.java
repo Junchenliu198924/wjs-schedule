@@ -201,8 +201,8 @@ public class CuckooJobExecutor {
 		String remark = "";
 		String execJobStatus = JobExecStatus.RUNNING.getValue();
 		// 初始化执行日志
-		String execClientIp = null;
-		Integer execClientPort = null;
+		String cuckooClientIp = null;
+		String cuckooClientTag = null;
 		cuckooJobExecLogs.setCheckTimes(0);
 		Object cronExp = data.get(CuckooJobConstant.QUARTZ_CRON_EXP);
 		cuckooJobExecLogs.setCronExpression(cronExp == null ? null : String.valueOf(cronExp));
@@ -230,7 +230,7 @@ public class CuckooJobExecutor {
 
 				cuckooJobExecLogs.setExecJobStatus(JobExecStatus.FAILED.getValue());
 				LOGGER.error("job is aready running,please stop first, jobInfo:{}", jobInfo);
-				throw new BaseException("job is aready running,please stop first");
+				throw new BaseException("job is aready running, jobInfo:{}", jobInfo);
 			}
 			// 校验任务依赖状态
 			cuckooJobDependencyService.checkDepedencyJobFinished(jobInfo, data);
@@ -257,7 +257,7 @@ public class CuckooJobExecutor {
 		
 		try {
 			// 查询远程执行器 -- 考虑负载均衡 
-			CuckooClientJobDetail remoteExecutor = cuckooServerService.getExecRemoteId(jobInfo.getId());
+			List<CuckooClientJobDetail>  remoteExecutors = cuckooServerService.getExecRemotesId(jobInfo.getId());
 			
 			// 调用日志执行单元(远程调用)
 			JobInfoBean jobBean = new JobInfoBean();
@@ -269,10 +269,16 @@ public class CuckooJobExecutor {
 			jobBean.setNeedTrigglerNext(data.getBooleanFromString(CuckooJobConstant.NEED_TRIGGLE_NEXT));
 			jobBean.setTxDate(txDate);
 			
-			if(null == remoteExecutor){
+			if(CollectionUtils.isEmpty(remoteExecutors)){
 				throw new BaseException("can not find remote executor");
 			}
-			cuckooServerService.execRemoteJob(remoteExecutor, jobBean);
+			CuckooClientJobDetail remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
+			if(null == remoteExecutor){
+				// 执行器断线等特殊情况
+				throw new BaseException("can not find remote executor");
+			}
+			cuckooClientIp = remoteExecutor.getIp();
+			cuckooClientTag = remoteExecutor.getCuckooClientTag();
 		} catch (Exception e) {
 			// 未知异常，报错处理
 			execJobStatus = JobExecStatus.FAILED.getValue();
@@ -284,8 +290,8 @@ public class CuckooJobExecutor {
 		cuckooJobDetailsMapper.updateByPrimaryKeySelective(jobInfo);
 				
 		// 插入执行日志
-		cuckooJobExecLogs.setExecClientIp(execClientIp);
-		cuckooJobExecLogs.setExecClientPort(execClientPort);
+		cuckooJobExecLogs.setCuckooClientIp(cuckooClientIp);
+		cuckooJobExecLogs.setCuckooClientTag(cuckooClientTag);
 		cuckooJobExecLogs.setRemark(remark);
 		cuckooJobExecLogs.setExecJobStatus(execJobStatus);
 		cuckooJobLogService.insertSelective(cuckooJobExecLogs);

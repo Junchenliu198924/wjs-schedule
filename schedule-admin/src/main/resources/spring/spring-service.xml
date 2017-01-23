@@ -37,5 +37,6 @@
     
 	<import resource="classpath*:spring/spring-dao.xml" />
 	<import resource="classpath*:spring/spring-schedule.xml" />
+	<import resource="classpath*:spring/spring-mina.xml" />
 
 </beans>

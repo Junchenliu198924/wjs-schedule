@@ -45,6 +45,11 @@ public class JobInfoBean implements Serializable{
 	 */
 	private Boolean needTrigglerNext = true;
 	
+	/**
+	 * 任务执行分片参数
+	 */
+	private String cuckooParallelJobArgs = "";
+	
 	
 	
 
@@ -103,6 +108,15 @@ public class JobInfoBean implements Serializable{
 
 	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
 		this.needTrigglerNext = needTrigglerNext;
+	}
+	
+
+	public String getCuckooParallelJobArgs() {
+		return cuckooParallelJobArgs;
+	}
+
+	public void setCuckooParallelJobArgs(String cuckooParallelJobArgs) {
+		this.cuckooParallelJobArgs = cuckooParallelJobArgs;
 	}
 
 	@Override

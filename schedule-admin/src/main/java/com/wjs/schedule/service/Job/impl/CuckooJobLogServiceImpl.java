@@ -1,6 +1,7 @@
 package com.wjs.schedule.service.Job.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,6 +9,7 @@ import com.wjs.schedule.dao.exec.CuckooJobExecLogsMapper;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 
+@Service("cuckooJobLogService")
 public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 
 	@Autowired

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wjs.schedule.dao.exec.CuckooClientJobDetailSubMapper" >
+  <resultMap id="RemoteResultMap" type="com.wjs.schedule.vo.net.ClientInfo" >
+
+    <result column="ip" property="remoteIp" jdbcType="VARCHAR" />
+    <result column="cuckoo_client_tag" property="remoteTag" jdbcType="VARCHAR" />
+  </resultMap>
+     
+  <select id="selectByPrimaryKey" resultMap="RemoteResultMap" parameterType="java.lang.Long" >
+    
+   	 	select s1.ip as ip, s1.cuckoo_client_tag as cuckoo_client_tag from cuckoo_client_job_detail s1
+		where s1.job_id = #{jobId,jdbcType=BIGINT}
+		and s1.cuckoo_client_status = 'DONE'
+		group by s1.ip, s1.cuckoo_client_tag
+		ORDER BY count(1) 
+		limit 1
+    
+  </select>
+  
+</mapper>
