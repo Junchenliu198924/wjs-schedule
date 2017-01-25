@@ -34,6 +34,7 @@ public class CuckooTaskAspect {
 	@Around("@annotation(task)")
 	public Object lockWait(ProceedingJoinPoint pjp, CuckooTask task) throws Throwable {
 
+		System.out.println("I am in task aspectj " +  task.value());
 
 		return pjp.proceed();
 

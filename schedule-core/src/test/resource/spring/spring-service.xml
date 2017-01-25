@@ -19,7 +19,10 @@
 
 	<context:component-scan base-package="com.wjs.schedule.service" />
 	<bean id="cuckooClient" lazy-init="false" class="com.wjs.schedule.executor.framerwork.CuckooClient">
-        <property name="configLocation" value="classpath:quartz.properties"/>
+		<property name="server" value="127.0.0.1:8888,127.0.0.2:8887,127.0.0.3:8886"/>
+		<!-- 服务器通过clientIp +tag 区分客户端，如果一台机器上面部署多个客户端的时候，需要设置clientTag，否则默认DEFAULT
+        <property name="clientTag" value="app1"/>
+         -->
 	</bean>
 	
 

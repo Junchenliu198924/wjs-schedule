@@ -13,7 +13,13 @@ public class CuckooTestTaskImpl implements CuckooTestTask {
 	@CuckooTask("testJob")
 	public void testJob(JobInfoBean jobInfo) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("CuckooTestTaskImpl testJob");
+	}
+
+	@Override
+	public void testJobTmp(JobInfoBean jobInfo) {
+		// TODO Auto-generated method stub
+		System.out.println("CuckooTestTaskImpl testJobTmp");
 	}
 
 }
