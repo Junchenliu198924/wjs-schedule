@@ -1,6 +1,5 @@
 package com.wjs.schedule.executor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ public class CuckooExecutor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooExecutor.class);
 	
-	public void exec(CuckooTaskBean task, JobInfoBean taskParam) {
+	public static void exec(CuckooTaskBean task, JobInfoBean taskParam) {
 
 		ApplicationContext applicationContext = CuckooClient.getApplicationContext();
 		Object obj = applicationContext.getBean(task.getBeanName());

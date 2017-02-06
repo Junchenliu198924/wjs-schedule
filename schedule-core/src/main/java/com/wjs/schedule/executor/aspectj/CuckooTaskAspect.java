@@ -34,9 +34,20 @@ public class CuckooTaskAspect {
 	@Around("@annotation(task)")
 	public Object lockWait(ProceedingJoinPoint pjp, CuckooTask task) throws Throwable {
 
-		System.out.println("I am in task aspectj " +  task.value());
+		
 
-		return pjp.proceed();
+		try {
+			
+			Object obj = pjp.proceed();
+			
+			// TODO 发送服务端，任务执行完成
+			
+			return obj;
+		} catch (Exception e) {
+			LOGGER.error("task exec error taskName:{}", task.value());
+			// TODO 发送服务端，任务执行失败
+			throw e;
+		}
 
 	}
 }

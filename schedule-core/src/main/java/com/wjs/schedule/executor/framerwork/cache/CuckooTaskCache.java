@@ -1,5 +1,6 @@
 package com.wjs.schedule.executor.framerwork.cache;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,5 +40,10 @@ public class CuckooTaskCache {
 	public static void remove(String taskName){
 		
 		cache.remove(taskName);
+	}
+	
+	public static Collection<CuckooTaskBean> getCache(){
+		
+		return cache.values();
 	}
 }
