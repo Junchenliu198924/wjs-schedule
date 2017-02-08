@@ -43,7 +43,6 @@ public class ConnectFilter extends IoFilterAdapter{
 	 */
 	@Override
 	public void onPostAdd(IoFilterChain parent, String name, NextFilter nextFilter) throws Exception {
-		System.err.println("onPostAdd");
 		super.onPostAdd(parent, name, nextFilter);
 	}
 
@@ -52,8 +51,6 @@ public class ConnectFilter extends IoFilterAdapter{
 	 */
 	@Override
 	public void onPostRemove(IoFilterChain parent, String name, NextFilter nextFilter) throws Exception {
-
-		System.err.println("onPostRemove");
 		super.onPostRemove(parent, name, nextFilter);
 	}
 
@@ -64,8 +61,6 @@ public class ConnectFilter extends IoFilterAdapter{
 	 */
 	@Override
 	public void sessionCreated(NextFilter nextFilter, IoSession session) throws Exception {
-
-		System.err.println("sessionCreated");
 		super.sessionCreated(nextFilter, session);
 	}
 
@@ -76,8 +71,6 @@ public class ConnectFilter extends IoFilterAdapter{
 	 */
 	@Override
 	public void sessionOpened(NextFilter nextFilter, IoSession session) throws Exception {
-
-		System.err.println("sessionOpened");
 		super.sessionOpened(nextFilter, session);
 	}
 

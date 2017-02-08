@@ -7,8 +7,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.stereotype.Service;
-
 /**
  * mysql的for update no wait 实现注解
  * PS: 使用是需要确保Spring将com.wjs.common.aspectj.LockForUpdateWaitAspect注入到了环境中
@@ -31,4 +29,6 @@ public @interface CuckooTask {
 	 * @date 2017年1月15日 下午5:00:22
 	 */
 	String value() default "";
+	
+	
 }

@@ -2,7 +2,7 @@ package com.wjs.schedule.bean;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.emuns.MessageType;
+import com.wjs.schedule.enums.MessageType;
 
 public class MessageInfo {
 	

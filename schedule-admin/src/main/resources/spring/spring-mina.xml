@@ -28,7 +28,7 @@
 	</bean>
 	
 	<!-- handler -->
-	<bean id="serverHandler" class="com.wjs.schedule.net.server.handle.TimeServerHandler" />
+	<bean id="serverHandler" class="com.wjs.schedule.net.server.handle.CuckooServerHandler" />
 	
 	
 	

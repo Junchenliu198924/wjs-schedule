@@ -20,14 +20,17 @@
 	<context:component-scan base-package="com.wjs.schedule.component" />
 	
 	
+		
+	
 	<bean id="propertyConfigurer" class="com.wjs.util.config.SpringPlaceHolderConfigAdapter">
 		<property name="fileEncoding" value="utf-8" />
 		<property name="locations">
 			<list>
-				<value>classpath*:service.properties</value>
+				<value>classpath*:test-service.properties</value>
 			</list>
 		</property>
 	</bean>
+
 	
 
 	<bean id="quartzScheduler" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -48,5 +51,6 @@
     
 	<import resource="classpath*:spring/spring-dao.xml" />
 	<import resource="classpath*:spring/spring-schedule.xml" />
+	<import resource="classpath*:spring/spring-mina.xml" />
 
 </beans>

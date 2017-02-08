@@ -25,7 +25,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.emuns.MessageType;
+import com.wjs.schedule.enums.MessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.executor.aspectj.CuckooTaskAspect;
@@ -44,7 +44,7 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 
 	private static ApplicationContext applicationContext; // Spring应用上下文环境
 	
-	private String clientTag = CuckooNetConstant.CLINET_TAG_DEFAULT;
+	private String clientTag;
 	
 	private String appName ;
 	

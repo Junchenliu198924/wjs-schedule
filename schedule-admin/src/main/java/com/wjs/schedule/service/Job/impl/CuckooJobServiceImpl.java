@@ -254,6 +254,16 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		cuckooJobExecutor.executeFlowJob(cuckooJobDetails, true, needTrigglerNext, startTime, endTime);
 	}
 
+	@Override
+	public void updateJobStatusById(Long jobId, JobExecStatus execStatus) {
+
+		CuckooJobDetails cuckooJobDetails = new CuckooJobDetails();
+		cuckooJobDetails.setId(jobId);
+		cuckooJobDetails.setExecJobStatus(execStatus.getValue());
+		cuckooJobDetailsMapper.updateByPrimaryKey(cuckooJobDetails);
+		
+	}
+
 
 
 }

@@ -1,6 +1,5 @@
 package com.wjs.schedule.executor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.Test;
@@ -21,8 +20,8 @@ public class StartCuckooClientTest extends ServiceUnitBaseTest {
 	public void start() {
 
 		try {
-			cuckooTestTask.testJob(new JobInfoBean());
-			cuckooTestTask.testJobTmp(new JobInfoBean());
+//			cuckooTestTask.testJob(new JobInfoBean());
+//			cuckooTestTask.testJobTmp(new JobInfoBean());
 
 			// 模拟客户端动态接收到消息
 			// beanName:cuckooTestTask2Impl,method:testJob,taskName=testJob2

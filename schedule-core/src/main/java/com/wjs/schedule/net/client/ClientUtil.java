@@ -10,7 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
-import com.wjs.schedule.emuns.MessageType;
+import com.wjs.schedule.enums.MessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.CuckooExecutor;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;

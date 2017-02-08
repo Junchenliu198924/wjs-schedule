@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.net.server.filter.RegistFilter;
-import com.wjs.schedule.net.server.handle.TimeServerHandler;
+import com.wjs.schedule.net.server.handle.CuckooServerHandler;
 
 @Component
 public class MinaTimeServer {
@@ -49,7 +49,7 @@ public class MinaTimeServer {
             "codec",
             new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING))));
         // 指定业务逻辑处理器
-        acceptor.setHandler(new TimeServerHandler());
+        acceptor.setHandler(new CuckooServerHandler());
         // 设置端口号
         acceptor.bind(new InetSocketAddress(port));
         // 启动监听线程

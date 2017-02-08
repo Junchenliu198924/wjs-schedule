@@ -14,16 +14,6 @@
 	
 	
 	
-	<bean id="propertyConfigurer" class="com.wjs.util.config.SpringPlaceHolderConfigAdapter">
-		<property name="fileEncoding" value="utf-8" />
-		<property name="locations">
-			<list>
-				<value>classpath*:test-service.properties</value>
-			</list>
-		</property>
-	</bean>
-	
-	
-	<import resource="classpath*:spring/spring-service.xml" />
-	
+	<import resource="classpath*:spring/spring-test-service.xml" />
+	<import resource="classpath*:spring/spring-mina.xml" />
 </beans>

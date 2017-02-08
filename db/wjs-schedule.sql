@@ -12,10 +12,10 @@ COMMENT='测试用'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
-CREATE TABLE cockoo_job_exec_logs
+CREATE TABLE cuckoo_job_exec_logs
 (
-	id                             bigint          DEFAULT 0          NOT NULL	COMMENT '标准ID',
-	job_id                         bigint          NOT NULL AUTO_INCREMENT	COMMENT '任务ID',
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	job_id                         bigint          DEFAULT 0          NOT NULL	COMMENT '任务ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
 	job_class_name                 varchar(128)    DEFAULT ''         NOT NULL	COMMENT '作业执行远程类名称',
@@ -30,7 +30,7 @@ CREATE TABLE cockoo_job_exec_logs
 	latest_check_time              decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '最近检查时间',
 	check_times                    int             DEFAULT 0          NOT NULL	COMMENT '断线已检查次数',
 	remark                         varchar(500)    DEFAULT ''         NOT NULL	COMMENT '备注',
-PRIMARY KEY(job_id)
+PRIMARY KEY(id)
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
@@ -38,7 +38,8 @@ COMMENT='任务执行流水表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
-CREATE TABLE cockoo_job_details
+
+CREATE TABLE cuckoo_job_details
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
@@ -58,6 +59,7 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='任务表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX uk_cuckoo_job_detail ON cuckoo_job_details(group_id ASC ,job_name ASC );
 
 
 CREATE TABLE cuckoo_job_dependency
@@ -100,15 +102,16 @@ COMMENT='下级任务触发表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
-
 CREATE TABLE cuckoo_client_job_detail
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
-	ip                             varchar(32)     DEFAULT ''         NOT NULL	COMMENT 'ip地址',
-	job_id                         bigint          DEFAULT 0          NOT NULL	COMMENT '任务ID',
+	cuckoo_client_ip               varchar(30)     DEFAULT ''         NOT NULL	COMMENT '执行器IP',
 	cuckoo_client_tag              varchar(128)    DEFAULT ''         NOT NULL	COMMENT '客户端标识',
 	cuckoo_client_status           varchar(10)     DEFAULT ''         NOT NULL	COMMENT '客户端状态',
+	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
+	bean_name                      varchar(256)    DEFAULT ''         NOT NULL	COMMENT '实现类名称',
+	method_name                    varchar(100)    DEFAULT ''         NOT NULL	COMMENT '方法名称',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -116,7 +119,5 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='客户端任务注册表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
-
-
-
+CREATE UNIQUE INDEX uk_client_job ON cuckoo_client_job_detail(job_class_application ASC ,cuckoo_client_tag ASC ,job_name ASC );
 

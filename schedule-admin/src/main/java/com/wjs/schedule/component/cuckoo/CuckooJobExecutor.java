@@ -19,6 +19,7 @@ import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogsCriteria;
 import com.wjs.schedule.enums.JobExecStatus;
+import com.wjs.schedule.enums.JobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobDependencyException;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
@@ -95,10 +96,16 @@ public class CuckooJobExecutor {
 		data.put(CuckooJobConstant.NEED_TRIGGLE_NEXT, needTrigglerNext);
 		data.put(CuckooJobConstant.FLOW_JOB_START_TIME, startTime);
 		data.put(CuckooJobConstant.FLOW_JOB_END_TIME, endTime);
-		executeJob(jobInfo, data);
+		
+		if(checkJobDependency(jobInfo, data)){
+
+			executeJob(jobInfo, data);
+		}
+		
 
 	}
 
+	
 	/**
 	 * 普通Cron任务执行器
 	 * 
@@ -133,8 +140,10 @@ public class CuckooJobExecutor {
 		data.put(CuckooJobConstant.NEED_TRIGGLE_NEXT, needTrigglerNext);
 		data.put(CuckooJobConstant.QUARTZ_CRON_EXP, cronExpression);
 
-		executeJob(jobInfo, data);
+		if(checkJobDependency(jobInfo, data)){
 
+			executeJob(jobInfo, data);
+		}
 	}
 
 	/**
@@ -172,7 +181,7 @@ public class CuckooJobExecutor {
 				crt.setLimit(1);
 				List<CuckooJobExecLogs> result = cuckooJobExecLogsMapper.selectByExample(crt);
 				if (CollectionUtils.isNotEmpty(result)) {
-					// 有可能配置节假日情况
+					// 有可能配置节假日情况，此处不做处理，暂通过业务进行控制
 					LOGGER.warn("缺少任务执行缺少上一天的数据：jobName:{},jobId:{},txdate:{}", jobInfo.getJobName(), jobInfo.getId(),
 							txdate);
 				}
@@ -185,7 +194,10 @@ public class CuckooJobExecutor {
 		data.put(CuckooJobConstant.QUARTZ_CRON_EXP, cronExpression);
 		data.put(CuckooJobConstant.DAILY_JOB_TXDATE, txdate);
 
-		executeJob(jobInfo, data);
+		if(checkJobDependency(jobInfo, data)){
+
+			executeJob(jobInfo, data);
+		}
 
 	}
 
@@ -232,14 +244,7 @@ public class CuckooJobExecutor {
 				LOGGER.error("job is aready running,please stop first, jobInfo:{}", jobInfo);
 				throw new BaseException("job is aready running, jobInfo:{}", jobInfo);
 			}
-			// 校验任务依赖状态
-			cuckooJobDependencyService.checkDepedencyJobFinished(jobInfo, data);
 
-		} catch (JobDependencyException e) {
-			// 如果是依赖任务的未完成话，不做报错处理。等待下次调度
-			execJobStatus = JobExecStatus.RUNNING.getValue();
-			remark = e.getMessage();
-			// throw new BaseException(e.getMessage());
 		} catch (BaseException e) {
 			// 业务异常，报错处理
 			execJobStatus = JobExecStatus.FAILED.getValue();
@@ -256,7 +261,7 @@ public class CuckooJobExecutor {
 
 		
 		try {
-			// 查询远程执行器 -- 考虑负载均衡 
+			// 查询远程执行器-- 考虑负载均衡 ,如果可执行客户端没有的话，放到数据库队列里面去。用于客户端重连等操作完成后操作
 			List<CuckooClientJobDetail>  remoteExecutors = cuckooServerService.getExecRemotesId(jobInfo.getId());
 			
 			// 调用日志执行单元(远程调用)
@@ -264,20 +269,26 @@ public class CuckooJobExecutor {
 			jobBean.setFlowCurrTime(flowCurrTime);
 			jobBean.setFlowLastTime(flowLastTime);
 			jobBean.setJobLogId(jobInfo.getId());
+			jobBean.setJobId(jobInfo.getId());
 			jobBean.setJobName(jobInfo.getJobName());
+			jobBean.setTriggerType(JobTriggerType.fromName(jobInfo.getTriggerType()));
 			jobBean.setForceJob(data.getBooleanFromString(CuckooJobConstant.FORCE_JOB));
 			jobBean.setNeedTrigglerNext(data.getBooleanFromString(CuckooJobConstant.NEED_TRIGGLE_NEXT));
 			jobBean.setTxDate(txDate);
 			
 			if(CollectionUtils.isEmpty(remoteExecutors)){
-				throw new BaseException("can not find remote executor");
+
+				// 执行器断线等特殊情况,放入待执行队列中 
+				addJobTodoCache(jobInfo, data);
+				LOGGER.warn("no executor fund, add job into todo queue,job:{},data:{}", jobInfo, data);
 			}
 			CuckooClientJobDetail remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
 			if(null == remoteExecutor){
-				// 执行器断线等特殊情况
-				throw new BaseException("can not find remote executor");
+				// 执行器断线等特殊情况,放入待执行队列中 
+				addJobTodoCache(jobInfo, data);
+				LOGGER.warn("no executor fund, add job into todo queue,job:{},data:{}", jobInfo, data);
 			}
-			cuckooClientIp = remoteExecutor.getIp();
+			cuckooClientIp = remoteExecutor.getCuckooClientIp();
 			cuckooClientTag = remoteExecutor.getCuckooClientTag();
 		} catch (Exception e) {
 			// 未知异常，报错处理
@@ -303,6 +314,58 @@ public class CuckooJobExecutor {
 		JobDataMap data = new JobDataMap();
 
 		System.out.println(data.getBooleanFromString(CuckooJobConstant.FLOW_JOB_END_TIME));
+	}
+
+
+	/**
+	 * 下级任务触发，调用任务执行功能
+	 * @param jobInfo
+	 */
+	public void executeNextJob(JobInfoBean jobInfoBean) {
+		
+		// TODO 根据jobInfoBean查询下一个任务
+		
+		CuckooJobDetails jobInfoNext = null; // TODO,from jobInfoBean
+		JobDataMap data = null ; // TODO, from jobInfoBean
+		// 获取job性质
+		if(checkJobDependency(jobInfoNext, data)){ 
+
+			executeJob(jobInfoNext, data);
+		}
+	
+		
+	}
+	
+	private boolean checkJobDependency(CuckooJobDetails jobInfo, JobDataMap data) {
+
+		// 校验任务依赖状态
+		try {
+			cuckooJobDependencyService.checkDepedencyJobFinished(jobInfo, data);
+			return true;
+		} catch (JobDependencyException e) {
+			// 依赖任务未完成，放入待执行队列里面，等待调度 
+			LOGGER.warn("Job dependencies not ready,jobInfo:{},data:{}", jobInfo, data);
+			addJobTodoCache(jobInfo, data);
+			return false;
+		}
+	}
+
+	
+	/**
+	 * 增加任务回调，放入任务执行队列中，用于：
+	 * 1.下级任务已经被触发，但是还有部分依赖上级任务还没有完成.
+	 * 2.由定时任务触发，但是又同时依赖上级任务的完成
+	 * @param jobInfo
+	 */
+	public void addJobTodoCache(JobInfoBean jobInfo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void addJobTodoCache(CuckooJobDetails jobInfo, JobDataMap data) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

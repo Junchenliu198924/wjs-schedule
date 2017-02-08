@@ -79,7 +79,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 				throw new BaseException("not a cron type cuckoojob in quartzExecutor ");
 			}
 		}else{
-			// simple 任务触发
+			// TODO simple 任务触发
 			
 		}
 		

@@ -7,7 +7,8 @@ package com.wjs.schedule.enums;
  */
 public enum JobExecStatus {
 
- 
+
+	STANDBY("STANDBY", "等待执行中"), 
 	RUNNING("RUNNING", "正在执行中"), 
 	FAILED("FAILED", "执行失败"),
 	SUCCED("SUCCED", "执行成功"),

@@ -1,9 +1,7 @@
 package com.wjs.schedule.service.Job;
 
-import java.util.List;
-
+import com.wjs.schedule.enums.JobExecStatus;
 import com.wjs.schedule.vo.job.JobInfo;
-import com.wjs.schedule.vo.job.JobNext;
 
 /**
  * 任务执行服务接口
@@ -65,6 +63,14 @@ public interface CuckooJobService {
 	 * @param triggleNext
 	 */
 	public void forceTriggleFlowJob(Long id,Boolean needTrigglerNext,Long startTime,Long endTime);
+
+
+	/**
+	 * 修改任务执行状态
+	 * @param jobId
+	 * @param succed
+	 */
+	public void updateJobStatusById(Long jobId, JobExecStatus succed);
 	 
 	
 }

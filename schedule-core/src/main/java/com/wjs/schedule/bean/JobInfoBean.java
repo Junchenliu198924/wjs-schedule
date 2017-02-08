@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.wjs.schedule.enums.JobTriggerType;
+
 public class JobInfoBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -12,6 +14,11 @@ public class JobInfoBean implements Serializable{
 	 * 任务执行流水ID，用于回改状态等
 	 */
 	private Long jobLogId;
+	
+	/**
+	 * 任务ID，冗余，便于操作
+	 */
+	private Long jobId;
 	
 	
 	/**
@@ -50,6 +57,10 @@ public class JobInfoBean implements Serializable{
 	 */
 	private String cuckooParallelJobArgs = "";
 	
+	/**
+	 * 任务触发类型
+	 */
+	private JobTriggerType triggerType;
 	
 	
 
@@ -59,6 +70,16 @@ public class JobInfoBean implements Serializable{
 
 	public void setJobLogId(Long jobLogId) {
 		this.jobLogId = jobLogId;
+	}
+	
+	
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
 	}
 
 	public String getJobName() {
@@ -117,6 +138,15 @@ public class JobInfoBean implements Serializable{
 
 	public void setCuckooParallelJobArgs(String cuckooParallelJobArgs) {
 		this.cuckooParallelJobArgs = cuckooParallelJobArgs;
+	}
+
+	
+	public JobTriggerType getTriggerType() {
+		return triggerType;
+	}
+
+	public void setTriggerType(JobTriggerType triggerType) {
+		this.triggerType = triggerType;
 	}
 
 	@Override

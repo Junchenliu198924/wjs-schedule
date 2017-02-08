@@ -1,4 +1,4 @@
-package com.wjs.schedule.emuns;
+package com.wjs.schedule.enums;
 
 public enum MessageType {
 	

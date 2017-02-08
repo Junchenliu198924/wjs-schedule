@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.emuns.MessageType;
+import com.wjs.schedule.enums.MessageType;
 import com.wjs.schedule.executor.framerwork.CuckooClient;
 import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
@@ -105,13 +105,12 @@ public class ServerUtil {
 		MessageInfo msgInfo = new MessageInfo();
 		msgInfo.setMessage(message);
 		msgInfo.setMessageType(messageType);
-		String msg = gson.toJson(msgInfo);
-		LOGGER.info("客户端发送消息:server:ALL,msg:{}", msg);
 		if(CollectionUtils.isNotEmpty(IoServerCollection.getSet())){
 			for (Iterator<IoServerBean>  it = IoServerCollection.getSet().iterator(); it.hasNext() ; ) {
 				IoServerBean server = it.next();
 				if(null != server.getSession()){
 					ServerUtil.send(messageType, server.getSession(), message);
+					break;
 				}
 			}
 		}
@@ -125,14 +124,18 @@ public class ServerUtil {
 	 */
 	public static void send(MessageType messageType, IoSession session, Object message) {
 		
-		// 给服务端发消息
-		MessageInfo msgInfo = new MessageInfo();
-		msgInfo.setMessage(message);
-		msgInfo.setMessageType(messageType);
-		String msg = gson.toJson(msgInfo);
-		
-		LOGGER.info("客户端发送消息:server:{}, msg:{}",session.getServiceAddress(), msg);
-		session.write(msg);
+		try {
+			// 给服务端发消息
+			MessageInfo msgInfo = new MessageInfo();
+			msgInfo.setMessage(message);
+			msgInfo.setMessageType(messageType);
+			String msg = gson.toJson(msgInfo);
+			
+			LOGGER.info("客户端发送消息:server:{}, msg:{}",session.getServiceAddress(), msg);
+			session.write(msg);
+		} catch (Exception e) {
+			LOGGER.error("client message send error:{}" ,e.getMessage() ,e);
+		}
 	}
 
 }
