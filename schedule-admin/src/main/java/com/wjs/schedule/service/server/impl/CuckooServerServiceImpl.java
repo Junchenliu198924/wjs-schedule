@@ -60,7 +60,7 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		socketClient.setCuckooClientStatus(CuckooClientJobStatus.RUNNING.getValue());
 		cuckooClientJobDetailMapper.updateByPrimaryKeySelective(socketClient);
 		
-		// socket写数据 TODO
+		// socket写数据,触发客户端任务调度 TODO
 //		socket.write(jobBean);
 		
 		LOGGER.info("调用远程任务开始,jobNname:{},bean:{}" ,jobBean.getJobName(), jobBean);

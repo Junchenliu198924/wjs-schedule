@@ -10,7 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.CuckooExecutor;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
@@ -26,7 +26,7 @@ public class ClientUtil {
 //		Map<MessageType, Object> retMap = gson.fromJson(message,  
 //                new TypeToken<Map<MessageType, Object>>() {}.getType()); 
 		MessageInfo msgInfo = gson.fromJson(message, MessageInfo.class);
-		if(MessageType.JOBDOING.equals(msgInfo.getMessageType())){
+		if(CuckooMessageType.JOBDOING.equals(msgInfo.getMessageType())){
 			JobInfoBean jobInfo = (JobInfoBean)msgInfo.getMessage();
 			
 			CuckooTaskBean task = CuckooTaskCache.get(jobInfo.getJobName());

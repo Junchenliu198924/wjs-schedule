@@ -31,4 +31,9 @@ public class CuckooJobConstant {
 	 */
 	public static final String QUARTZ_CRON_EXP = "quartzCronExpression";
 	
+	/**
+	 * 等待任务锁名称
+	 */
+	public static final String LOCK_NAME_PENDING_JOB = "lockNamePendingJob";
+	
 }

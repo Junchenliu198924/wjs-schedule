@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.enums.JobTriggerType;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 
 public class JobInfoBean implements Serializable{
 
@@ -48,7 +48,7 @@ public class JobInfoBean implements Serializable{
 	
 	
 	/**
-	 * 是否需要触发下次任务，默认是。在手工调用的时候，可以设置否
+	 * 是否需要触发下次任务，默认是。在手工调用的时候，可以设置否 
 	 */
 	private Boolean needTrigglerNext = true;
 	
@@ -60,7 +60,7 @@ public class JobInfoBean implements Serializable{
 	/**
 	 * 任务触发类型
 	 */
-	private JobTriggerType triggerType;
+	private CuckooJobTriggerType triggerType;
 	
 	
 
@@ -123,13 +123,13 @@ public class JobInfoBean implements Serializable{
 		this.forceJob = forceJob;
 	}
 
-	public Boolean getNeedTrigglerNext() {
-		return needTrigglerNext;
-	}
-
-	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
-		this.needTrigglerNext = needTrigglerNext;
-	}
+//	public Boolean getNeedTrigglerNext() {
+//		return needTrigglerNext;
+//	}
+//
+//	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
+//		this.needTrigglerNext = needTrigglerNext;
+//	}
 	
 
 	public String getCuckooParallelJobArgs() {
@@ -141,12 +141,21 @@ public class JobInfoBean implements Serializable{
 	}
 
 	
-	public JobTriggerType getTriggerType() {
+	public CuckooJobTriggerType getTriggerType() {
 		return triggerType;
 	}
 
-	public void setTriggerType(JobTriggerType triggerType) {
+	public void setTriggerType(CuckooJobTriggerType triggerType) {
 		this.triggerType = triggerType;
+	}
+	
+
+	public Boolean getNeedTrigglerNext() {
+		return needTrigglerNext;
+	}
+
+	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
+		this.needTrigglerNext = needTrigglerNext;
 	}
 
 	@Override

@@ -1,7 +1,8 @@
 package com.wjs.schedule.service.Job;
 
+import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
-import com.wjs.schedule.enums.JobExecStatus;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
 
 public interface CuckooJobLogService {
 	
@@ -23,5 +24,14 @@ public interface CuckooJobLogService {
 	 * @param id
 	 * @param succed
 	 */
-	public void updateJobLogStatusById(Long id, JobExecStatus succed);
+	public void updateJobLogStatusById(Long id, CuckooJobExecStatus succed);
+
+	/**
+	 * 从日志中查询是否触发下级任务
+	 * @param preJobInfo
+	 * @return
+	 */
+	public Boolean getJobNeedTriglerByJobInfo(CuckooJobDetails preJobInfo);
+
+	
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.wjs.schedule.bean.JobInfoBean;
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.net.server.ServerUtil;
@@ -55,14 +55,14 @@ public class CuckooTaskAspect {
 			
 			// 发送服务端，任务执行完成
 			
-			ServerUtil.send(MessageType.JOBSUCCED, jobinfo);
+			ServerUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
 
 			LOGGER.info("task exec succed taskName:{}, jobInfo:{}", task.value(), jobinfo);
 			return obj;
 		} catch (Exception e) {
 			LOGGER.error("task exec error taskName:{}", task.value(), e);
 			// 发送服务端，任务执行失败
-			ServerUtil.send(MessageType.JOBFAILED, jobinfo);
+			ServerUtil.send(CuckooMessageType.JOBFAILED, jobinfo);
 			throw e;
 		}
 

@@ -5,10 +5,10 @@ package com.wjs.schedule.enums;
  * @author Silver
  *
  */
-public enum JobExecStatus {
+public enum CuckooJobExecStatus {
 
 
-	STANDBY("STANDBY", "等待执行中"), 
+	PENDING("PENDING", "等待执行中"), 
 	RUNNING("RUNNING", "正在执行中"), 
 	FAILED("FAILED", "执行失败"),
 	SUCCED("SUCCED", "执行成功"),
@@ -18,7 +18,7 @@ public enum JobExecStatus {
 	
 	private final String description;
 	
-	JobExecStatus(String value, String description) {
+	CuckooJobExecStatus(String value, String description) {
 
 		this.value = value;
 		this.description = description;
@@ -36,9 +36,9 @@ public enum JobExecStatus {
 		return description;
 	}
 
-	public static JobExecStatus fromName(String input) {
+	public static CuckooJobExecStatus fromName(String input) {
 
-		for (JobExecStatus item : JobExecStatus.values()) {
+		for (CuckooJobExecStatus item : CuckooJobExecStatus.values()) {
 			if (item.name().equalsIgnoreCase(input))
 				return item;
 		}

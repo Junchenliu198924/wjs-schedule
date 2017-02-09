@@ -20,8 +20,8 @@ import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.domain.exec.CuckooJobDetailsCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogsCriteria;
-import com.wjs.schedule.enums.JobExecStatus;
-import com.wjs.schedule.enums.JobTriggerType;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobDependencyException;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
@@ -76,14 +76,14 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 		if(CollectionUtils.isEmpty(depJobIds)){
 			return;
 		}
-		if(JobTriggerType.FLOW.getValue().equals(jobInfo.getTriggerType()) || JobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType())){
+		if(CuckooJobTriggerType.FLOW.getValue().equals(jobInfo.getTriggerType()) || CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType())){
 
 			if(CollectionUtils.isNotEmpty(depJobIds)){
 
 				// 如果非日切任务，那么需要检查每个依赖任务的执行状态
 				CuckooJobDetailsCriteria depJobCrt = new CuckooJobDetailsCriteria();
 				depJobCrt.createCriteria().andIdIn(depJobIds)
-				.andExecJobStatusNotEqualTo(JobExecStatus.SUCCED.getValue());
+				.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue());
 				List<CuckooJobDetails> depJobs = cuckooJobDetailsMapper.selectByExample(depJobCrt);
 				if(CollectionUtils.isNotEmpty(depJobs)){
 					LOGGER.info("dependency has not succed yet ,job{}-{}:jobs:{}", jobInfo.getId(), jobInfo.getJobName(), depJobs);
@@ -92,7 +92,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 			}
 			
 			
-		}else if(JobTriggerType.DAILY.getValue().equals(jobInfo.getTriggerType())){
+		}else if(CuckooJobTriggerType.DAILY.getValue().equals(jobInfo.getTriggerType())){
 
 			if(CollectionUtils.isNotEmpty(depJobIds)){
 				
@@ -116,7 +116,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 				// 检查当天任务执行状况
 				CuckooJobExecLogsCriteria depLogExecCrt = new CuckooJobExecLogsCriteria();
 				depLogExecCrt.createCriteria().andIdIn(depJobIds)
-				.andExecJobStatusNotEqualTo(JobExecStatus.SUCCED.getValue())
+				.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue())
 				.andTxDateEqualTo(Integer.valueOf(String.valueOf(txdate)));
 				List<CuckooJobExecLogs> depLogExecJobs = cuckooJobExecLogsMapper.selectByExample(depLogExecCrt);
 				if(CollectionUtils.isNotEmpty(depLogExecJobs)){

@@ -3,6 +3,8 @@ package com.wjs.schedule.service.Job.impl;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,13 @@ import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.util.CuckBeanUtil;
 import com.wjs.schedule.vo.job.JobNext;
+import com.wjs.util.bean.PropertyUtil;
 
 @Service("cuckooJobNextService")
 public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooJobNextServiceImpl.class);
 	@Autowired
 	CuckooJobNextJobMapper cuckooJobNextJobMapper;
 
@@ -37,8 +42,36 @@ public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 		// 再增加触发
 		for (JobNext jobNext : nextJobs) {
 			CuckooJobNextJob cuckooJobNextJob = CuckBeanUtil.parseJobNext(jobNext);
-			cuckooJobNextJobMapper.insertSelective(cuckooJobNextJob);
+			try {
+				cuckooJobNextJobMapper.insertSelective(cuckooJobNextJob);
+			} catch (Exception e) {
+				LOGGER.error("add next job error, may be more then one job triggler job:{},it's forbidden.{}", cuckooJobNextJob.getNextJobId(), cuckooJobNextJob);
+				throw new BaseException("may be more then one job triggler job:{},it's forbidden.{}", cuckooJobNextJob.getNextJobId(), cuckooJobNextJob);
+			}
 		}
+	}
+
+	@Override
+	public List<Long> findNextJobIdByJobId(Long jobId) {
+		CuckooJobNextJobCriteria curJobCrt = new CuckooJobNextJobCriteria();
+		curJobCrt.createCriteria().andJobIdEqualTo(jobId);
+		
+		List<CuckooJobNextJob> nextJobs = cuckooJobNextJobMapper.selectByExample(curJobCrt);
+		return  PropertyUtil.fetchFieldList(nextJobs, "nextJobId");
+	}
+
+	@Override
+	public Long findJobIdByNextJobId(Long nextJobId) {
+		
+		
+		CuckooJobNextJobCriteria preJobCrt = new CuckooJobNextJobCriteria();
+		preJobCrt.createCriteria().andNextJobIdEqualTo(nextJobId);
+		
+		List<CuckooJobNextJob> preJobs = cuckooJobNextJobMapper.selectByExample(preJobCrt);
+		if(CollectionUtils.isNotEmpty(preJobs)){
+			return preJobs.get(0).getJobId();
+		}
+		return null;
 	}
 
 }

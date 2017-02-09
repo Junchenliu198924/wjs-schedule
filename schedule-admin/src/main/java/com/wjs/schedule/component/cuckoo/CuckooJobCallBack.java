@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
-import com.wjs.schedule.enums.JobExecStatus;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 
@@ -40,9 +40,9 @@ public class CuckooJobCallBack  {
 		CuckooJobExecLogs jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
-		cuckooJobService.updateJobStatusById(jobLog.getJobId(), JobExecStatus.SUCCED);
+		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
 		// 更新日志
-		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), JobExecStatus.SUCCED);
+		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED);
 		
 		// 触发下级任务
 		cuckooJobExecutor.executeNextJob(jobInfo);
@@ -58,9 +58,9 @@ public class CuckooJobCallBack  {
 		CuckooJobExecLogs jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
-		cuckooJobService.updateJobStatusById(jobLog.getJobId(), JobExecStatus.FAILED);
+		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);
 		// 更新日志
-		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), JobExecStatus.FAILED);
+		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.FAILED);
 	}
 
 }

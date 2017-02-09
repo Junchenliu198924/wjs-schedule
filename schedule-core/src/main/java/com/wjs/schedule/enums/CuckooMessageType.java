@@ -1,6 +1,6 @@
 package com.wjs.schedule.enums;
 
-public enum MessageType {
+public enum CuckooMessageType {
 	
  
 	
@@ -13,7 +13,7 @@ public enum MessageType {
 	
 	private final String description;
 	
-	MessageType(String value, String description) {
+	CuckooMessageType(String value, String description) {
 
 		this.value = value;
 		this.description = description;
@@ -31,9 +31,9 @@ public enum MessageType {
 		return description;
 	}
 
-	public static MessageType fromName(String input) {
+	public static CuckooMessageType fromName(String input) {
 
-		for (MessageType item : MessageType.values()) {
+		for (CuckooMessageType item : CuckooMessageType.values()) {
 			if (item.name().equalsIgnoreCase(input))
 				return item;
 		}

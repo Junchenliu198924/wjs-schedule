@@ -12,6 +12,7 @@ COMMENT='测试用'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
+
 CREATE TABLE cuckoo_job_exec_logs
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -22,13 +23,15 @@ CREATE TABLE cuckoo_job_exec_logs
 	trigger_type                   varchar(10)     DEFAULT ''         NOT NULL	COMMENT '触发类型',
 	cron_expression                varchar(20)     DEFAULT ''         NOT NULL	COMMENT 'cron任务表达式',
 	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期',
+	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
+	flow_cur_time                  decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务当前时间参数',
 	job_start_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '任务开始时间',
 	job_end_time                   decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '任务结束时间',
 	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
 	cuckoo_client_ip               varchar(30)     DEFAULT ''         NOT NULL	COMMENT '执行器IP',
 	cuckoo_client_tag              varchar(128)    DEFAULT ''         NOT NULL	COMMENT '客户端标识',
 	latest_check_time              decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '最近检查时间',
-	check_times                    int             DEFAULT 0          NOT NULL	COMMENT '断线已检查次数',
+	need_triggle_next              boolean         DEFAULT 1          NOT NULL	COMMENT '是否触发下级任务',
 	remark                         varchar(500)    DEFAULT ''         NOT NULL	COMMENT '备注',
 PRIMARY KEY(id)
 )
@@ -50,8 +53,11 @@ CREATE TABLE cuckoo_job_details
 	trigger_type                   varchar(10)     DEFAULT ''         NOT NULL	COMMENT '触发类型',
 	offset                         int             DEFAULT 0          NOT NULL	COMMENT '偏移量',
 	job_status                     varchar(10)     DEFAULT ''         NOT NULL	COMMENT '任务状态',
-	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
 	cuckoo_parallel_job_args       varchar(256)    DEFAULT ''         NOT NULL	COMMENT '并发/集群任务参数',
+	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
+	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期参数',
+	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
+	flow_cur_time                  decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务当前时间参数',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -60,6 +66,7 @@ COMMENT='任务表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_cuckoo_job_detail ON cuckoo_job_details(group_id ASC ,job_name ASC );
+
 
 
 CREATE TABLE cuckoo_job_dependency
@@ -101,6 +108,7 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='下级任务触发表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX uk_cuckoo_next_job ON cuckoo_job_next_job(next_job_id ASC );
 
 CREATE TABLE cuckoo_client_job_detail
 (
@@ -121,3 +129,17 @@ AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_client_job ON cuckoo_client_job_detail(job_class_application ASC ,cuckoo_client_tag ASC ,job_name ASC );
 
+
+CREATE TABLE cuckoo_locks
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	lock_name                      varchar(64)     DEFAULT ''         NOT NULL	COMMENT '锁名称',
+	cuckoo_server_ip               varchar(30)     DEFAULT ''         NOT NULL	COMMENT '服务器IP',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='任务执行锁存储表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX uk_cuckoo_locks ON cuckoo_locks(lock_name ASC );

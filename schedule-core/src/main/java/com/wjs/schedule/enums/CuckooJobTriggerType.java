@@ -1,6 +1,6 @@
 package com.wjs.schedule.enums;
 
-public enum JobTriggerType {
+public enum CuckooJobTriggerType {
 	
  
 	
@@ -12,7 +12,7 @@ public enum JobTriggerType {
 	
 	private final String description;
 	
-	JobTriggerType(String value, String description) {
+	CuckooJobTriggerType(String value, String description) {
 
 		this.value = value;
 		this.description = description;
@@ -30,9 +30,9 @@ public enum JobTriggerType {
 		return description;
 	}
 
-	public static JobTriggerType fromName(String input) {
+	public static CuckooJobTriggerType fromName(String input) {
 
-		for (JobTriggerType item : JobTriggerType.values()) {
+		for (CuckooJobTriggerType item : CuckooJobTriggerType.values()) {
 			if (item.name().equalsIgnoreCase(input))
 				return item;
 		}

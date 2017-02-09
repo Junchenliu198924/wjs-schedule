@@ -1,6 +1,9 @@
 package com.wjs.schedule.service.Job;
 
-import com.wjs.schedule.enums.JobExecStatus;
+import java.util.List;
+
+import com.wjs.schedule.domain.exec.CuckooJobDetails;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.vo.job.JobInfo;
 
 /**
@@ -70,7 +73,29 @@ public interface CuckooJobService {
 	 * @param jobId
 	 * @param succed
 	 */
-	public void updateJobStatusById(Long jobId, JobExecStatus succed);
+	public void updateJobStatusById(Long jobId, CuckooJobExecStatus succed);
+
+
+	/**
+	 * 根据ID查询任务明细
+	 * @param jobId
+	 * @return
+	 */
+	public CuckooJobDetails getJobById(Long jobId);
+
+
+	/**
+	 * 执行Debug任务
+	 */
+	public void tryTrigglePendingJob();
+
+
+	/**
+	 * 根据ID查询下级带触发任务
+	 * @param jobId
+	 * @return
+	 */
+	public List<CuckooJobDetails> getNextJobById(Long jobId);
 	 
 	
 }

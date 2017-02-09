@@ -14,7 +14,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.wjs.schedule.enums.Pages;
+import com.wjs.schedule.enums.CuckooAdminPages;
 import com.wjs.schedule.web.util.JsonResult;
 import com.wjs.schedule.web.util.JsonResult.Status;
 
@@ -50,8 +50,8 @@ public class ExceptionResolver extends SimpleMappingExceptionResolver {
 			printJson(response, gson.toJson(json));
 			return null;
 		} else {
-			ModelAndView modelAndView = new ModelAndView(Pages.ERROR.getValue());
-			modelAndView.addObject(Pages.ERROR.getDescription(), StringUtils.trimToNull(message));
+			ModelAndView modelAndView = new ModelAndView(CuckooAdminPages.ERROR.getValue());
+			modelAndView.addObject(CuckooAdminPages.ERROR.getDescription(), StringUtils.trimToNull(message));
 			return modelAndView;
 		}
 

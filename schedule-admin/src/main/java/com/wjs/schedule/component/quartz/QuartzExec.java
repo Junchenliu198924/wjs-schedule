@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
-import com.wjs.schedule.enums.JobStatus;
+import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
 @Component("quartzExec")
@@ -29,7 +29,7 @@ public class QuartzExec {
 	@Resource(name = "quartzScheduler")
 	private Scheduler scheduler;
 
-	public void addCronJob(String jobGroup, String jobName, String cronExpression, JobStatus jobStatus){
+	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus){
 
 		// TriggerKey : name + group
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroup);
@@ -49,7 +49,7 @@ public class QuartzExec {
 
 		try {
 			scheduler.scheduleJob(jobDetail, cronTrigger);
-			if(JobStatus.PAUSE.equals(jobStatus)){
+			if(CuckooJobStatus.PAUSE.equals(jobStatus)){
 
 				scheduler.pauseTrigger(triggerKey);
 			}
@@ -73,7 +73,7 @@ public class QuartzExec {
 
 	}
 
-	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, JobStatus jobStatus) {
+	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus) {
 		
 		JobKey jobKey = new JobKey(jobName, jobGroup);
 		try {

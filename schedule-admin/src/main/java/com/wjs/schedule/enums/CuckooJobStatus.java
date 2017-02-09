@@ -1,18 +1,21 @@
 package com.wjs.schedule.enums;
 
-public enum Pages {
+/**
+ * 任务状态
+ * @author Silver
+ *
+ */
+public enum CuckooJobStatus {
 	
  
-	
-	INDEX("/index", "首页"), 
-	LOGIN("/login", "登录页"),
-	ERROR("/error", "报错页面"); 
+	PAUSE("PAUSE", "暂停"), 
+	RUNNING("RUNNING", "启动"); 
 	
 	private final String value;
 	
 	private final String description;
 	
-	Pages(String value, String description) {
+	CuckooJobStatus(String value, String description) {
 
 		this.value = value;
 		this.description = description;
@@ -30,9 +33,9 @@ public enum Pages {
 		return description;
 	}
 
-	public static Pages fromName(String input) {
+	public static CuckooJobStatus fromName(String input) {
 
-		for (Pages item : Pages.values()) {
+		for (CuckooJobStatus item : CuckooJobStatus.values()) {
 			if (item.name().equalsIgnoreCase(input))
 				return item;
 		}

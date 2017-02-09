@@ -16,7 +16,7 @@ import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDetailsMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetails;
-import com.wjs.schedule.enums.JobTriggerType;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 
 public class QuartzJobExecutor extends QuartzJobBean {
@@ -61,10 +61,10 @@ public class QuartzJobExecutor extends QuartzJobBean {
 			cronExpression = cronTrigger.getCronExpression();
 			
 			
-			if(JobTriggerType.CRON.getValue().equals(cuckooJobDetails.getTriggerType())){
+			if(CuckooJobTriggerType.CRON.getValue().equals(cuckooJobDetails.getTriggerType())){
 
 				cuckooJobExecutor.executeCronJob(cuckooJobDetails, false, needTrigglerNext, cronExpression);
-			}else if(JobTriggerType.DAILY.getValue().equals(cuckooJobDetails.getTriggerType())){
+			}else if(CuckooJobTriggerType.DAILY.getValue().equals(cuckooJobDetails.getTriggerType())){
 				Integer txdate = null;
 				try {
 					txdate = data.getIntegerFromString(CuckooJobConstant.DAILY_JOB_TXDATE);

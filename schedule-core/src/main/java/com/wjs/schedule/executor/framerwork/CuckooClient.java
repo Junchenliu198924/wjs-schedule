@@ -25,7 +25,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.executor.aspectj.CuckooTaskAspect;
@@ -190,7 +190,7 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 				taskInfo.setBeanName(taskBean.getBeanName());
 				taskInfo.setMethodName(taskBean.getMethodName());
 				taskInfo.setTaskName(taskBean.getTaskName());
-				ServerUtil.send(MessageType.REGIST, taskInfo);
+				ServerUtil.send(CuckooMessageType.REGIST, taskInfo);
 			}
 		
 		}

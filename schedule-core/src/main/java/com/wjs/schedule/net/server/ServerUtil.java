@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.executor.framerwork.CuckooClient;
 import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
@@ -99,7 +99,7 @@ public class ServerUtil {
 	private static final Gson gson = new GsonBuilder().create();
 	
 	// 给所有服务器发消息
-	public static void send(MessageType messageType,  Object message) {
+	public static void send(CuckooMessageType messageType,  Object message) {
 		
 		// 给服务端发消息
 		MessageInfo msgInfo = new MessageInfo();
@@ -122,7 +122,7 @@ public class ServerUtil {
 	 * @param session
 	 * @param message
 	 */
-	public static void send(MessageType messageType, IoSession session, Object message) {
+	public static void send(CuckooMessageType messageType, IoSession session, Object message) {
 		
 		try {
 			// 给服务端发消息

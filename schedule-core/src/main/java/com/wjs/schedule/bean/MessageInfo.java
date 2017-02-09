@@ -2,22 +2,22 @@ package com.wjs.schedule.bean;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 
 public class MessageInfo {
 	
-	private MessageType messageType;
+	private CuckooMessageType messageType;
 	
 	
 	private Object message;
 
 
-	public MessageType getMessageType() {
+	public CuckooMessageType getMessageType() {
 		return messageType;
 	}
 
 
-	public void setMessageType(MessageType messageType) {
+	public void setMessageType(CuckooMessageType messageType) {
 		this.messageType = messageType;
 	}
 

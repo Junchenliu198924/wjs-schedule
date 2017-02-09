@@ -12,7 +12,7 @@ import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
-import com.wjs.schedule.enums.MessageType;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.net.server.ServerUtil;
 import com.wjs.schedule.service.server.CuckooServerService;
 
@@ -51,15 +51,15 @@ public class CuckooServerHandler extends IoHandlerAdapter {
 			return;
 		}
         
-        if(MessageType.REGIST.getValue().equals(msgInfo.getMessageType().getValue())){
+        if(CuckooMessageType.REGIST.getValue().equals(msgInfo.getMessageType().getValue())){
         	// 客户端任务注册.  {"messageType":"REGIST","message":{"appName":"member","beanName":"cuckooTestTaskImpl","methodName":"testJob","taskName":"testJob"}}
         	ClientTaskInfoBean taskInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), ClientTaskInfoBean.class);
         	cuckooServerService.addRemote(session, taskInfo);
-        } else if(MessageType.JOBSUCCED.getValue().equals(msgInfo.getMessageType().getValue())){
+        } else if(CuckooMessageType.JOBSUCCED.getValue().equals(msgInfo.getMessageType().getValue())){
         	// 客户端任务执行成功 .  {"messageType":"JOBSUCCED","message":{"jobName":"testJob2","txDate":20160101,"forceJob":false,"needTrigglerNext":true,"cuckooParallelJobArgs":""}}
         	JobInfoBean jobInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), JobInfoBean.class);
         	cuckooJobCallBack.execJobSuccedCallBack(jobInfo);
-        } else if(MessageType.JOBFAILED.getValue().equals(msgInfo.getMessageType().getValue())){
+        } else if(CuckooMessageType.JOBFAILED.getValue().equals(msgInfo.getMessageType().getValue())){
         	// 客户端任务执行失败.  {"messageType":"JOBFAILED","message":{"jobName":"testJob2","txDate":20160101,"forceJob":false,"needTrigglerNext":true,"cuckooParallelJobArgs":""}}
         	JobInfoBean jobInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), JobInfoBean.class);
         	cuckooJobCallBack.execJobFailedCallBack(jobInfo);
@@ -78,7 +78,7 @@ public class CuckooServerHandler extends IoHandlerAdapter {
      */
 	@Override
 	public void messageSent(IoSession session, Object message) throws Exception {
-		// TODO Auto-generated method stub
+		
 		super.messageSent(session, message);
 	}
     
