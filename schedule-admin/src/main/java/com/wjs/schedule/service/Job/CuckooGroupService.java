@@ -1,5 +1,8 @@
 package com.wjs.schedule.service.Job;
 
+import java.util.List;
+
+import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.vo.job.JobGroup;
 
 public interface CuckooGroupService {
@@ -10,5 +13,11 @@ public interface CuckooGroupService {
 	 * @return primarykey
 	 */
 	public Long addGroup(JobGroup group);
+
+	/**
+	 * 查询所有分组信息
+	 * @return
+	 */
+	public List<CuckooJobGroup> selectAllGroup();
 	
 }

@@ -2,7 +2,9 @@ package com.wjs.schedule.service.Job.impl;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +35,10 @@ import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.util.CuckBeanUtil;
-import com.wjs.schedule.vo.job.JobInfo;
+import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
+import com.wjs.schedule.vo.qry.JobInfoQry;
+import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.dao.PageDataList;
 
 @Service("cuckooJobService")
 public class CuckooJobServiceImpl implements CuckooJobService{
@@ -64,7 +69,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 	@Override
 	@Transactional
-	public Long addJob(JobInfo jobInfo) {
+	public Long addJob(CuckooJobDetailsVo jobInfo) {
 		
 		if(null == jobInfo || null == jobInfo.getGroupId()){
 			
@@ -94,7 +99,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		CuckooJobDetails cuckooJobDetails = CuckBeanUtil.parseJob(jobInfo);
 		cuckooJobDetails.setJobStatus(CuckooJobStatus.PAUSE.getValue());
 		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
-		cuckooJobDetailsMapper.insert(cuckooJobDetails);
+		cuckooJobDetailsMapper.insertSelective(cuckooJobDetails);
 		Long jobId = cuckooJobDetailsMapper.lastInsertId();
 		if(jobId == null){
 
@@ -130,7 +135,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 
 	@Override
 	@Transactional
-	public void modifyJob(JobInfo jobInfo) {
+	public void modifyJob(CuckooJobDetailsVo jobInfo) {
 		
 		if(null == jobInfo || null == jobInfo.getId()){
 			throw new BaseException("jobinfo should not be null");
@@ -369,6 +374,32 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		jobCrt.createCriteria().andIdIn(nextJobids);
 		
 		return cuckooJobDetailsMapper.selectByExample(jobCrt);
+	}
+
+	@Override
+	public PageDataList<CuckooJobDetails> pageList(JobInfoQry jobInfo, Integer start, Integer limit) {
+		
+		
+		CuckooJobDetailsCriteria crt = new CuckooJobDetailsCriteria();
+		CuckooJobDetailsCriteria.Criteria exp = crt.createCriteria();
+		if(null != jobInfo.getJobGroupId()){
+			exp.andGroupIdEqualTo(jobInfo.getJobGroupId());
+		}
+		crt.setStart(start);
+		crt.setLimit(limit);
+		
+
+		return cuckooJobDetailsMapper.pageByExample(crt);
+	}
+
+	@Override
+	public List<String> findAllApps() {
+		
+		List<CuckooJobDetails> jobs = cuckooJobDetailsMapper.selectByExample(new CuckooJobDetailsCriteria());
+		List<String> jobApps = PropertyUtil.fetchFieldList(jobs, "jobClassApplication");
+		// 简单去重
+		Set<String> dis = new HashSet<>(jobApps);
+		return new ArrayList<>(dis);
 	}
 
 

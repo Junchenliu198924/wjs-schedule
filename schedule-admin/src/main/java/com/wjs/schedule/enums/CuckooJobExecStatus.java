@@ -8,8 +8,9 @@ package com.wjs.schedule.enums;
 public enum CuckooJobExecStatus {
 
 
-	PENDING("PENDING", "等待执行中"), 
-	RUNNING("RUNNING", "正在执行中"), 
+	NULL("", "全部/无"),
+	PENDING("PENDING", "等待执行"), 
+	RUNNING("RUNNING", "正在执行"), 
 	FAILED("FAILED", "执行失败"),
 	SUCCED("SUCCED", "执行成功"),
 	BREAK("BREAK", "断线"); 

@@ -7,7 +7,8 @@ package com.wjs.schedule.enums;
  */
 public enum CuckooJobStatus {
 	
- 
+
+	NULL("", "全部/无"),
 	PAUSE("PAUSE", "暂停"), 
 	RUNNING("RUNNING", "启动"); 
 	

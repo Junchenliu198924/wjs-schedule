@@ -64,6 +64,11 @@ public class CuckooJobExecutor {
 			public void run() {
 				for (;;) {
 					cuckooJobService.tryTrigglePendingJob();
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						// ignore
+					}
 				}
 				
 			}
@@ -244,7 +249,6 @@ public class CuckooJobExecutor {
 		cuckooJobExecLogs.setCronExpression(cronExp == null ? null : String.valueOf(cronExp));
 		cuckooJobExecLogs.setGroupId(jobInfo.getGroupId());
 		cuckooJobExecLogs.setJobClassApplication(jobInfo.getJobClassApplication());
-		cuckooJobExecLogs.setJobClassName(jobInfo.getJobClassName());
 		Object curTime = data.get(CuckooJobConstant.FLOW_JOB_END_TIME);
 		Long flowCurrTime = (curTime == null ? null : Long.valueOf(String.valueOf(curTime)));
 		cuckooJobExecLogs.setJobEndTime(flowCurrTime);

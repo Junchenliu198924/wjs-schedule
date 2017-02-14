@@ -4,7 +4,7 @@ public enum CuckooAdminPages {
 	
  
 	
-	INDEX("/index", "首页"), 
+	INDEX("/jobinfo/index", "首页"), 
 	LOGIN("/login", "登录页"),
 	ERROR("/error", "报错页面"); 
 	

@@ -9,8 +9,11 @@ $(function() {
 			type:"post",
 	        data : function ( d ) {
 	        	var obj = {};
-	        	obj.jobGroup = $('#jobGroup').val();
-	        	obj.executorHandler = $('#executorHandler').val();
+	        	obj.jobGroupId = $('#jobGroup').val();
+	        	obj.jobClassApplication = $('#executorHandler').val();
+	        	obj.jobId = $('#jobId').val();
+	        	obj.jobStatus = $('#jobStatus').val();
+	        	obj.jobExecStatus = $('#jobExecStatus').val();
 	        	obj.start = d.start;
 	        	obj.length = d.length;
                 return obj;
@@ -20,10 +23,11 @@ $(function() {
 	    "ordering": false,
 	    //"scrollX": true,	// X轴滚动条，取消自适应
 	    "columns": [
-	                { "data": 'id', "bSortable": false, "visible" : false},
+	                { "data": 'id', "bSortable": false, "visible" : true}, 
+	                { "data": 'groupId', "bSortable": false, "visible" : false},
 	                { 
-	                	"data": 'jobGroup', 
-	                	"visible" : false,
+	                	"data": 'groupId', 
+	                	"visible" : true,
 	                	"render": function ( data, type, row ) {
 	            			var groupMenu = $("#jobGroup").find("option");
 	            			for ( var index in $("#jobGroup").find("option")) {
@@ -34,56 +38,55 @@ $(function() {
 	            			return data;
 	            		}
             		},
-					{ "data": 'jobName', "visible" : false},
-					{
-						"data": 'childJobKey',
-						"visible" : true,
-						"render": function ( data, type, row ) {
-							var jobKey = row.jobGroup + "_" + row.jobName;
-							return jobKey;
-						}
-					},
-	                { "data": 'jobDesc', "visible" : true},
-	                { "data": 'jobCron', "visible" : true},
-					{
-						"data": 'executorHandler',
-						"visible" : true,
-						"render": function ( data, type, row ) {
-							return (row.glueSwitch > 0)? "GLUE模式" : data;
-						}
-					},
-	                { "data": 'executorParam', "visible" : false},
+					{ "data": 'jobName', "visible" : true},
+	                { "data": 'jobClassApplication', "visible" : true},
+	                { "data": 'jobDesc', "visible" : false},
+	                { "data": 'triggerType', "visible" : true},
+	                { "data": 'cronExpression', "visible" : true},
+	                { "data": 'txDate', "visible" : false},
+	                { "data": 'offset', "visible" : false},
+	                { "data": 'jobStatus', "visible" : true},
+	               
+					 
+//	                { 
+//	                	"data": 'updateTime', 
+//	                	"visible" : false, 
+//	                	"render": function ( data, type, row ) {
+//	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+//	                	}
+//	               },
+	               
+//	                { 
+//	                	"data": 'jobStatus', 
+//	                	"visible" : true,
+//	                	"render": function ( data, type, row ) {
+//	                		if ('NORMAL' == data) {
+//	                			return '<small class="label label-success" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
+//							} else if ('PAUSED' == data){
+//								return '<small class="label label-default" title="暂停" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
+//							} else if ('BLOCKED' == data){
+//								return '<small class="label label-default" title="阻塞[串行]" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
+//							}
+//	                		return data;
+//	                	}
+//	                },
+	                { "data": 'cuckooParallelJobArgs', "visible" : true},
+	                { "data": 'execJobStatus', "visible" : true},
 	                { 
-	                	"data": 'addTime', 
-	                	"visible" : false, 
-	                	"render": function ( data, type, row ) {
-	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                	"data": 'flowLastTime', 
+	                	"visible" : false ,
+	                	"render": function ( data, type, row ){
+	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
 	                	}
 	                },
 	                { 
-	                	"data": 'updateTime', 
-	                	"visible" : false, 
-	                	"render": function ( data, type, row ) {
-	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                	"data": 'flowCurTime', 
+	                	"visible" : false ,
+	                	"render": function ( data, type, row ){
+	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
 	                	}
 	                },
-	                { "data": 'author', "visible" : true},
-	                { "data": 'alarmEmail', "visible" : false},
-	                { "data": 'glueSwitch', "visible" : false},
-	                { 
-	                	"data": 'jobStatus', 
-	                	"visible" : true,
-	                	"render": function ( data, type, row ) {
-	                		if ('NORMAL' == data) {
-	                			return '<small class="label label-success" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-							} else if ('PAUSED' == data){
-								return '<small class="label label-default" title="暂停" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-							} else if ('BLOCKED' == data){
-								return '<small class="label label-default" title="阻塞[串行]" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-							}
-	                		return data;
-	                	}
-	                },
+	                
 	                { "data": '操作' ,
 	                	"render": function ( data, type, row ) {
 	                		return function(){

@@ -41,23 +41,23 @@ COMMENT='任务执行流水表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
-
 CREATE TABLE cuckoo_job_details
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
 	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
-	job_class_name                 varchar(128)    DEFAULT ''         NOT NULL	COMMENT '作业执行远程类名称',
 	job_desc                       varchar(500)    DEFAULT ''         NOT NULL	COMMENT '任务描述',
 	trigger_type                   varchar(10)     DEFAULT ''         NOT NULL	COMMENT '触发类型',
+	cron_expression                varchar(20)     DEFAULT ''         NOT NULL	COMMENT 'cron任务表达式',
 	offset                         int             DEFAULT 0          NOT NULL	COMMENT '偏移量',
 	job_status                     varchar(10)     DEFAULT ''         NOT NULL	COMMENT '任务状态',
 	cuckoo_parallel_job_args       varchar(256)    DEFAULT ''         NOT NULL	COMMENT '并发/集群任务参数',
 	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
-	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期参数',
+	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期',
 	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
 	flow_cur_time                  decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务当前时间参数',
+	need_triggle_next              boolean         DEFAULT 1          NOT NULL	COMMENT '是否触发下级任务',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -66,6 +66,8 @@ COMMENT='任务表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_cuckoo_job_detail ON cuckoo_job_details(group_id ASC ,job_name ASC );
+
+
 
 
 

@@ -1,9 +1,13 @@
-package com.wjs.schedule.domain.exec;
+package com.wjs.schedule.vo.job;
 
-import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class CuckooJobDetails implements Serializable {
+/**
+ * 任务信息
+ * @author Silver
+ *
+ */
+public class CuckooJobDetailsVo {
     /**
      * 标准ID -- cuckoo_job_details.id
      * 
@@ -15,6 +19,11 @@ public class CuckooJobDetails implements Serializable {
      * 
      */
     private Long groupId;
+    
+    /**
+     * 分组名称
+     */
+    private Long groupName;
 
     /**
      * 任务名称 -- cuckoo_job_details.job_name
@@ -45,6 +54,12 @@ public class CuckooJobDetails implements Serializable {
      * 
      */
     private String triggerType;
+    
+    /**
+     * cron任务表达式 -- cuckoo_job_details.cron_expression
+     * 
+     */
+    private String cronExpression;
 
     /**
      * 偏移量 -- cuckoo_job_details.offset
@@ -206,7 +221,16 @@ public class CuckooJobDetails implements Serializable {
         this.triggerType = triggerType == null ? null : triggerType.trim();
     }
 
-    /**
+    
+    public String getCronExpression() {
+		return cronExpression;
+	}
+
+	public void setCronExpression(String cronExpression) {
+		this.cronExpression = cronExpression;
+	}
+
+	/**
      * 数据字段 cuckoo_job_details.offset的get方法 
      * 
      */
@@ -317,8 +341,19 @@ public class CuckooJobDetails implements Serializable {
     public void setFlowCurTime(Long flowCurTime) {
         this.flowCurTime = flowCurTime;
     }
+    
+    
+    
 
-    public String toString() {
+    public Long getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(Long groupName) {
+		this.groupName = groupName;
+	}
+
+	public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }
 }

@@ -40,18 +40,52 @@
 	    	<div class="row">
 	    		<div class="col-xs-4">
 	              	<div class="input-group">
-	                	<span class="input-group-addon">执行器</span>
-                		<select class="form-control" id="jobGroup" >
-                			<#list JobGroupList as group>
-                				<option value="${group.id}" >${group.title}</option>
+	                	<span class="input-group-addon">分组名称</span>
+                		<select class="form-control" id="jobGroupId" >
+                			<#list jobGroupList as group>
+                				<option value="${group.id}" >${group.groupName}</option>
                 			</#list>
 	                  	</select>
 	              	</div>
 	            </div>
                 <div class="col-xs-4">
                     <div class="input-group">
-                        <span class="input-group-addon">JobHandler</span>
-                        <input type="text" class="form-control" id="executorHandler" value="${jobName}" autocomplete="on" >
+	                	<span class="input-group-addon">执行应用</span>
+                		<select class="form-control" id="jobClassApplication" >
+                			<#list jobAppList as jobapp>
+                				<option value="${jobapp}" >${jobapp}</option>
+                			</#list>
+	                  	</select>
+                    </div>
+                </div>
+                
+                <div class="col-xs-4">
+	              	<div class="input-group">
+	                	<span class="input-group-addon">任务ID</span>
+                		<input type="text" class="form-control" id="jobId" value="${id}" autocomplete="on" >
+	              	</div>
+	            </div>
+          	</div>
+	    	
+	    	<div class="row">
+	    		<div class="col-xs-4">
+	              	<div class="input-group">
+	                	<span class="input-group-addon">任务状态</span>
+                		<select class="form-control" id="jobStatus" >
+                			<#list jobStatusList as list>
+                				<option value="${list.value}" >${list.description}</option>
+                			</#list>
+	                  	</select>
+	              	</div>
+	            </div>
+                <div class="col-xs-4">
+                    <div class="input-group">
+	                	<span class="input-group-addon">执行状态</span>
+                		<select class="form-control" id="jobExecStatus" >
+                			<#list jobExecStatus as list>
+                				<option value="${list.value}" >${list.description}</option>
+                			</#list>
+	                  	</select>
                     </div>
                 </div>
 	            <div class="col-xs-2">
@@ -61,6 +95,7 @@
 	            	<button class="btn btn-block btn-success add" type="button">+新增任务</button>
 	            </div>
           	</div>
+          	
 	    	
 			<div class="row">
 				<div class="col-xs-12">
@@ -73,19 +108,20 @@
 				                <thead>
 					            	<tr>
 					            		<th name="id" >id</th>
-					                	<th name="jobGroup" >jobGroup</th>
-					                  	<th name="jobName" >jobName</th>
-                                        <th name="childJobKey" >任务Key</th>
-					                  	<th name="jobDesc" >描述</th>
-					                  	<th name="jobCron" >Cron</th>
-                                        <th name="executorHandler" >JobJandler</th>
-					                  	<th name="executorParam" >任务参数</th>
-					                  	<th name="addTime" >新增时间</th>
-					                  	<th name="updateTime" >更新时间</th>
-					                  	<th name="author" >负责人</th>
-					                  	<th name="alarmEmail" >报警邮件</th>
-					                  	<th name="glueSwitch" >GLUE模式</th>
-					                  	<th name="jobStatus" >状态</th>
+					                	<th name="groupId" >分组ID</th>
+					                	<th name="groupName" >分组名称</th>
+					                  	<th name="jobName" >任务名称</th> 
+					                  	<th name="jobClassApplication" >执行应用</th>
+					                  	<th name="jobDesc" >描述</th> 
+					                  	<th name="triggerType" >触发类型</th>
+					                  	<th name="cronExpression" >Cron</th> 
+					                  	<th name="txDate" >业务日期</th> 
+					                  	<th name="offset" >业务偏移日期</th> 
+					                  	<th name="jobStatus" >任务状态</th> 
+					                  	<th name="cuckooParallelJobArgs" >任务参数</th> 
+					                  	<th name="execJobStatus" >执行状态</th>
+					                  	<th name="flowLastTime" >流式任务上一次时间参数</th>
+					                  	<th name="flowCurTime" >流式任务当前时间参数</th> 
 					                  	<th>操作</th>
 					                </tr>
 				                </thead>

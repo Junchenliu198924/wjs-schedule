@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.vo.job.JobInfo;
+import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
+import com.wjs.schedule.vo.qry.JobInfoQry;
+import com.wjs.util.dao.PageDataList;
 
 /**
  * 任务执行服务接口
@@ -18,7 +20,7 @@ public interface CuckooJobService {
 	/**
 	 * 新增一个任务,返回任务id
 	 */
-	public Long addJob(JobInfo jobInfo);
+	public Long addJob(CuckooJobDetailsVo jobInfo);
 	
 
 	/**
@@ -29,7 +31,7 @@ public interface CuckooJobService {
 	/**
 	 * 修改一个任务
 	 */
-	public void modifyJob(JobInfo jobInfo);
+	public void modifyJob(CuckooJobDetailsVo jobInfo);
 	
 	
 	
@@ -96,6 +98,22 @@ public interface CuckooJobService {
 	 * @return
 	 */
 	public List<CuckooJobDetails> getNextJobById(Long jobId);
+
+	/**
+	 * 分页查询任务数据
+	 * @param jobInfo
+	 * @param start
+	 * @param length
+	 * @return
+	 */
+	public PageDataList<CuckooJobDetails> pageList(JobInfoQry jobInfo, Integer start, Integer length);
+
+
+	/**
+	 * 查询所有客户端应用名称
+	 * @return
+	 */
+	public List<String> findAllApps();
 	 
 	
 }

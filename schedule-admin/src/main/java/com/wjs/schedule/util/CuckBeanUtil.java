@@ -4,22 +4,21 @@ import com.wjs.schedule.domain.exec.CuckooJobDependency;
 import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.domain.exec.CuckooJobNextJob;
 import com.wjs.schedule.vo.job.JobDependency;
-import com.wjs.schedule.vo.job.JobInfo;
+import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
 import com.wjs.schedule.vo.job.JobNext;
 
 public class CuckBeanUtil {
 
-	public static CuckooJobDetails parseJob(JobInfo jobInfo) {
+	public static CuckooJobDetails parseJob(CuckooJobDetailsVo jobInfo) {
 
 		CuckooJobDetails job = new CuckooJobDetails();
 		job.setId(jobInfo.getId());
 		job.setGroupId(jobInfo.getGroupId());
 		job.setJobClassApplication(jobInfo.getJobClassApplication());
-		job.setJobClassName(jobInfo.getJobClassName());
 		job.setJobDesc(jobInfo.getJobDesc());
 		job.setJobName(jobInfo.getJobName());
 		job.setJobStatus(jobInfo.getJobStatus());
-		job.setOffset(jobInfo.getOffSet());
+		job.setOffset(jobInfo.getOffset());
 		job.setTriggerType(jobInfo.getTriggerType());
 		return job;
 	}

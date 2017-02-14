@@ -20,6 +20,16 @@
 	<mvc:resources mapping="/static/**" location="/static/" />
 	<mvc:resources mapping="/**/*.html" location="/" />
 	
+	
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/template/" />
+		<property name="freemarkerSettings">
+			<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="location" value="classpath:freemarker.properties" />
+			</bean>
+		</property>
+	</bean>
+	
 	<bean id="viewResolver"	class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
 		<property name="prefix" value="" />

@@ -9,25 +9,26 @@ import com.wjs.schedule.ServiceUnitBaseTest;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.service.Job.CuckooJobService;
-import com.wjs.schedule.vo.job.JobInfo;
+import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
 
 public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 
 	@Autowired
 	CuckooJobService cuckooJobService;
 	
+	private static Long groupId = 4L;
 	@Test
 	public void testAddCronJob(){
 
-		JobInfo jobInfo = new JobInfo();
-		jobInfo.setGroupId(4L);
+		CuckooJobDetailsVo jobInfo = new CuckooJobDetailsVo();
+		jobInfo.setGroupId(groupId);
 		jobInfo.setCronExpression("0/5 * * * * ?");
-		jobInfo.setJobClassApplication("com.member");
+		jobInfo.setJobClassApplication("com.cif");
 		jobInfo.setJobClassName("execJob");
 		jobInfo.setJobDesc("描述：测试cron任务");
 		jobInfo.setJobName("测试cron任务");
 		jobInfo.setJobStatus(CuckooJobStatus.RUNNING.getValue());
-		jobInfo.setOffSet(-1);
+		jobInfo.setOffset(-1);
 		jobInfo.setTriggerType(CuckooJobTriggerType.CRON.getValue());
 		
 		cuckooJobService.addJob(jobInfo);
@@ -38,8 +39,8 @@ public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 	@Test
 	public void testAddSimpleJob(){
 
-		JobInfo jobInfo = new JobInfo();
-		jobInfo.setGroupId(4L);
+		CuckooJobDetailsVo jobInfo = new CuckooJobDetailsVo();
+		jobInfo.setGroupId(groupId);
 		jobInfo.setJobClassApplication("com.member");
 		jobInfo.setJobClassName("execJob");
 		jobInfo.setJobDesc("描述：测试flow任务");

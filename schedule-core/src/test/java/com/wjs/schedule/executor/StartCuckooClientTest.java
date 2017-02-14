@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.wjs.schedule.ServiceUnitBaseTest;
 import com.wjs.schedule.bean.JobInfoBean;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.executor.framerwork.CuckooClient;
 import com.wjs.schedule.service.CuckooTestTask;
 
@@ -28,7 +29,15 @@ public class StartCuckooClientTest extends ServiceUnitBaseTest {
 			ApplicationContext applicationContext = CuckooClient.getApplicationContext();
 			Object obj = applicationContext.getBean("cuckooTestTask2Impl");
 			JobInfoBean jobInfo = new JobInfoBean();
+			jobInfo.setCuckooParallelJobArgs("");
+			jobInfo.setFlowCurrTime(System.currentTimeMillis());
+			jobInfo.setFlowLastTime(System.currentTimeMillis());
+			jobInfo.setForceJob(true);
+			jobInfo.setJobId(1L);
+			jobInfo.setJobLogId(1L);
 			jobInfo.setJobName("testJob2");
+			jobInfo.setNeedTrigglerNext(true);
+			jobInfo.setTriggerType(CuckooJobTriggerType.CRON);
 			jobInfo.setTxDate(20160101);
 
 			try {
