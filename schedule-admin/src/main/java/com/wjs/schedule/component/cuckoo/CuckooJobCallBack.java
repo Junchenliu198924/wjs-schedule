@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.bean.JobInfoBean;
-import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobService;
@@ -37,7 +37,7 @@ public class CuckooJobCallBack  {
 	@Transactional
 	public void execJobSuccedCallBack(JobInfoBean jobInfo) {
 		
-		CuckooJobExecLogs jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
+		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
 		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
@@ -55,7 +55,7 @@ public class CuckooJobCallBack  {
 	@Transactional
 	public void execJobFailedCallBack(JobInfoBean jobInfo) {
 
-		CuckooJobExecLogs jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
+		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
 		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);

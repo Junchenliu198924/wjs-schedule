@@ -3,47 +3,47 @@ package com.wjs.schedule.domain.exec;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CuckooJobExecLogsCriteria {
+public class CuckooJobExecLogCriteria {
     /**
-     * cuckoo_job_exec_logs表的操作属性:orderByClause
+     * cuckoo_job_exec_log表的操作属性:orderByClause
      * 
      */
     protected String orderByClause;
 
     /**
-     * cuckoo_job_exec_logs表的操作属性:start
+     * cuckoo_job_exec_log表的操作属性:start
      * 
      */
     protected int start;
 
     /**
-     * cuckoo_job_exec_logs表的操作属性:limit
+     * cuckoo_job_exec_log表的操作属性:limit
      * 
      */
     protected int limit;
 
     /**
-     * cuckoo_job_exec_logs表的操作属性:distinct
+     * cuckoo_job_exec_log表的操作属性:distinct
      * 
      */
     protected boolean distinct;
 
     /**
-     * cuckoo_job_exec_logs表的操作属性:oredCriteria
+     * cuckoo_job_exec_log表的操作属性:oredCriteria
      * 
      */
     protected List<Criteria> oredCriteria;
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: CuckooJobExecLogsCriteria  
+     * cuckoo_job_exec_log数据表的操作方法: CuckooJobExecLogCriteria  
      * 
      */
-    public CuckooJobExecLogsCriteria() {
+    public CuckooJobExecLogCriteria() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: setOrderByClause  
+     * cuckoo_job_exec_log数据表的操作方法: setOrderByClause  
      * 
      */
     public void setOrderByClause(String orderByClause) {
@@ -51,7 +51,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: getOrderByClause  
+     * cuckoo_job_exec_log数据表的操作方法: getOrderByClause  
      * 
      */
     public String getOrderByClause() {
@@ -59,7 +59,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: setStart  
+     * cuckoo_job_exec_log数据表的操作方法: setStart  
      * 
      */
     public void setStart(int start) {
@@ -67,7 +67,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: getStart  
+     * cuckoo_job_exec_log数据表的操作方法: getStart  
      * 
      */
     public int getStart() {
@@ -75,7 +75,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: setLimit  
+     * cuckoo_job_exec_log数据表的操作方法: setLimit  
      * 
      */
     public void setLimit(int limit) {
@@ -83,7 +83,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: getLimit  
+     * cuckoo_job_exec_log数据表的操作方法: getLimit  
      * 
      */
     public int getLimit() {
@@ -91,7 +91,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: setDistinct  
+     * cuckoo_job_exec_log数据表的操作方法: setDistinct  
      * 
      */
     public void setDistinct(boolean distinct) {
@@ -99,7 +99,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: isDistinct  
+     * cuckoo_job_exec_log数据表的操作方法: isDistinct  
      * 
      */
     public boolean isDistinct() {
@@ -107,7 +107,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: getOredCriteria  
+     * cuckoo_job_exec_log数据表的操作方法: getOredCriteria  
      * 
      */
     public List<Criteria> getOredCriteria() {
@@ -115,7 +115,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: or  
+     * cuckoo_job_exec_log数据表的操作方法: or  
      * 
      */
     public void or(Criteria criteria) {
@@ -123,7 +123,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: or  
+     * cuckoo_job_exec_log数据表的操作方法: or  
      * 
      */
     public Criteria or() {
@@ -133,7 +133,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: createCriteria  
+     * cuckoo_job_exec_log数据表的操作方法: createCriteria  
      * 
      */
     public Criteria createCriteria() {
@@ -145,7 +145,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: createCriteriaInternal  
+     * cuckoo_job_exec_log数据表的操作方法: createCriteriaInternal  
      * 
      */
     protected Criteria createCriteriaInternal() {
@@ -154,7 +154,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs数据表的操作方法: clear  
+     * cuckoo_job_exec_log数据表的操作方法: clear  
      * 
      */
     public void clear() {
@@ -164,7 +164,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs表的操作类
+     * cuckoo_job_exec_log表的操作类
      * 
      */
     protected abstract static class GeneratedCriteria {
@@ -1370,7 +1370,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs表的操作类
+     * cuckoo_job_exec_log表的操作类
      * 
      */
     public static class Criteria extends GeneratedCriteria {
@@ -1381,7 +1381,7 @@ public class CuckooJobExecLogsCriteria {
     }
 
     /**
-     * cuckoo_job_exec_logs表的操作类
+     * cuckoo_job_exec_log表的操作类
      * 
      */
     public static class Criterion {

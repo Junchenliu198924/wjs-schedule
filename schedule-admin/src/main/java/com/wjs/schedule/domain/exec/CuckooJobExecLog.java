@@ -3,123 +3,123 @@ package com.wjs.schedule.domain.exec;
 import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class CuckooJobExecLogs implements Serializable {
+public class CuckooJobExecLog implements Serializable {
     /**
-     * 标准ID -- cuckoo_job_exec_logs.id
+     * 标准ID -- cuckoo_job_exec_log.id
      * 
      */
     private Long id;
 
     /**
-     * 任务ID -- cuckoo_job_exec_logs.job_id
+     * 任务ID -- cuckoo_job_exec_log.job_id
      * 
      */
     private Long jobId;
 
     /**
-     * 分组ID -- cuckoo_job_exec_logs.group_id
+     * 分组ID -- cuckoo_job_exec_log.group_id
      * 
      */
     private Long groupId;
 
     /**
-     * 作业执行应用名 -- cuckoo_job_exec_logs.job_class_application
+     * 作业执行应用名 -- cuckoo_job_exec_log.job_class_application
      * 
      */
     private String jobClassApplication;
 
     /**
-     * 作业执行远程类名称 -- cuckoo_job_exec_logs.job_class_name
+     * 作业执行远程类名称 -- cuckoo_job_exec_log.job_class_name
      * 
      */
     private String jobClassName;
 
     /**
-     * 触发类型 -- cuckoo_job_exec_logs.trigger_type
+     * 触发类型 -- cuckoo_job_exec_log.trigger_type
      * 
      */
     private String triggerType;
 
     /**
-     * cron任务表达式 -- cuckoo_job_exec_logs.cron_expression
+     * cron任务表达式 -- cuckoo_job_exec_log.cron_expression
      * 
      */
     private String cronExpression;
 
     /**
-     * 任务执行业务日期 -- cuckoo_job_exec_logs.tx_date
+     * 任务执行业务日期 -- cuckoo_job_exec_log.tx_date
      * 
      */
     private Integer txDate;
 
     /**
-     * 流式任务上一次时间参数 -- cuckoo_job_exec_logs.flow_last_time
+     * 流式任务上一次时间参数 -- cuckoo_job_exec_log.flow_last_time
      * 
      */
     private Long flowLastTime;
 
     /**
-     * 流式任务当前时间参数 -- cuckoo_job_exec_logs.flow_cur_time
+     * 流式任务当前时间参数 -- cuckoo_job_exec_log.flow_cur_time
      * 
      */
     private Long flowCurTime;
 
     /**
-     * 任务开始时间 -- cuckoo_job_exec_logs.job_start_time
+     * 任务开始时间 -- cuckoo_job_exec_log.job_start_time
      * 
      */
     private Long jobStartTime;
 
     /**
-     * 任务结束时间 -- cuckoo_job_exec_logs.job_end_time
+     * 任务结束时间 -- cuckoo_job_exec_log.job_end_time
      * 
      */
     private Long jobEndTime;
 
     /**
-     * 执行状态 -- cuckoo_job_exec_logs.exec_job_status
+     * 执行状态 -- cuckoo_job_exec_log.exec_job_status
      * 
      */
     private String execJobStatus;
 
     /**
-     * 执行器IP -- cuckoo_job_exec_logs.cuckoo_client_ip
+     * 执行器IP -- cuckoo_job_exec_log.cuckoo_client_ip
      * 
      */
     private String cuckooClientIp;
 
     /**
-     * 客户端标识 -- cuckoo_job_exec_logs.cuckoo_client_tag
+     * 客户端标识 -- cuckoo_job_exec_log.cuckoo_client_tag
      * 
      */
     private String cuckooClientTag;
 
     /**
-     * 最近检查时间 -- cuckoo_job_exec_logs.latest_check_time
+     * 最近检查时间 -- cuckoo_job_exec_log.latest_check_time
      * 
      */
     private Long latestCheckTime;
 
     /**
-     * 是否触发下级任务 -- cuckoo_job_exec_logs.need_triggle_next
+     * 是否触发下级任务 -- cuckoo_job_exec_log.need_triggle_next
      * 
      */
     private Boolean needTriggleNext;
 
     /**
-     * 备注 -- cuckoo_job_exec_logs.remark
+     * 备注 -- cuckoo_job_exec_log.remark
      * 
      */
     private String remark;
 
     /**
-     * cuckoo_job_exec_logs表的操作属性:serialVersionUID
+     * cuckoo_job_exec_log表的操作属性:serialVersionUID
      * 
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.id的get方法 
+     * 数据字段 cuckoo_job_exec_log.id的get方法 
      * 
      */
     public Long getId() {
@@ -127,7 +127,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.id的set方法
+     * 数据字段 cuckoo_job_exec_log.id的set方法
      * 
      */
     public void setId(Long id) {
@@ -135,7 +135,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_id的get方法 
+     * 数据字段 cuckoo_job_exec_log.job_id的get方法 
      * 
      */
     public Long getJobId() {
@@ -143,7 +143,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_id的set方法
+     * 数据字段 cuckoo_job_exec_log.job_id的set方法
      * 
      */
     public void setJobId(Long jobId) {
@@ -151,7 +151,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.group_id的get方法 
+     * 数据字段 cuckoo_job_exec_log.group_id的get方法 
      * 
      */
     public Long getGroupId() {
@@ -159,7 +159,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.group_id的set方法
+     * 数据字段 cuckoo_job_exec_log.group_id的set方法
      * 
      */
     public void setGroupId(Long groupId) {
@@ -167,7 +167,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_class_application的get方法 
+     * 数据字段 cuckoo_job_exec_log.job_class_application的get方法 
      * 
      */
     public String getJobClassApplication() {
@@ -175,7 +175,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_class_application的set方法
+     * 数据字段 cuckoo_job_exec_log.job_class_application的set方法
      * 
      */
     public void setJobClassApplication(String jobClassApplication) {
@@ -183,7 +183,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_class_name的get方法 
+     * 数据字段 cuckoo_job_exec_log.job_class_name的get方法 
      * 
      */
     public String getJobClassName() {
@@ -191,7 +191,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_class_name的set方法
+     * 数据字段 cuckoo_job_exec_log.job_class_name的set方法
      * 
      */
     public void setJobClassName(String jobClassName) {
@@ -199,7 +199,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.trigger_type的get方法 
+     * 数据字段 cuckoo_job_exec_log.trigger_type的get方法 
      * 
      */
     public String getTriggerType() {
@@ -207,7 +207,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.trigger_type的set方法
+     * 数据字段 cuckoo_job_exec_log.trigger_type的set方法
      * 
      */
     public void setTriggerType(String triggerType) {
@@ -215,7 +215,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cron_expression的get方法 
+     * 数据字段 cuckoo_job_exec_log.cron_expression的get方法 
      * 
      */
     public String getCronExpression() {
@@ -223,7 +223,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cron_expression的set方法
+     * 数据字段 cuckoo_job_exec_log.cron_expression的set方法
      * 
      */
     public void setCronExpression(String cronExpression) {
@@ -231,7 +231,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.tx_date的get方法 
+     * 数据字段 cuckoo_job_exec_log.tx_date的get方法 
      * 
      */
     public Integer getTxDate() {
@@ -239,7 +239,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.tx_date的set方法
+     * 数据字段 cuckoo_job_exec_log.tx_date的set方法
      * 
      */
     public void setTxDate(Integer txDate) {
@@ -247,7 +247,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.flow_last_time的get方法 
+     * 数据字段 cuckoo_job_exec_log.flow_last_time的get方法 
      * 
      */
     public Long getFlowLastTime() {
@@ -255,7 +255,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.flow_last_time的set方法
+     * 数据字段 cuckoo_job_exec_log.flow_last_time的set方法
      * 
      */
     public void setFlowLastTime(Long flowLastTime) {
@@ -263,7 +263,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.flow_cur_time的get方法 
+     * 数据字段 cuckoo_job_exec_log.flow_cur_time的get方法 
      * 
      */
     public Long getFlowCurTime() {
@@ -271,7 +271,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.flow_cur_time的set方法
+     * 数据字段 cuckoo_job_exec_log.flow_cur_time的set方法
      * 
      */
     public void setFlowCurTime(Long flowCurTime) {
@@ -279,7 +279,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_start_time的get方法 
+     * 数据字段 cuckoo_job_exec_log.job_start_time的get方法 
      * 
      */
     public Long getJobStartTime() {
@@ -287,7 +287,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_start_time的set方法
+     * 数据字段 cuckoo_job_exec_log.job_start_time的set方法
      * 
      */
     public void setJobStartTime(Long jobStartTime) {
@@ -295,7 +295,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_end_time的get方法 
+     * 数据字段 cuckoo_job_exec_log.job_end_time的get方法 
      * 
      */
     public Long getJobEndTime() {
@@ -303,7 +303,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.job_end_time的set方法
+     * 数据字段 cuckoo_job_exec_log.job_end_time的set方法
      * 
      */
     public void setJobEndTime(Long jobEndTime) {
@@ -311,7 +311,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.exec_job_status的get方法 
+     * 数据字段 cuckoo_job_exec_log.exec_job_status的get方法 
      * 
      */
     public String getExecJobStatus() {
@@ -319,7 +319,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.exec_job_status的set方法
+     * 数据字段 cuckoo_job_exec_log.exec_job_status的set方法
      * 
      */
     public void setExecJobStatus(String execJobStatus) {
@@ -327,7 +327,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cuckoo_client_ip的get方法 
+     * 数据字段 cuckoo_job_exec_log.cuckoo_client_ip的get方法 
      * 
      */
     public String getCuckooClientIp() {
@@ -335,7 +335,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cuckoo_client_ip的set方法
+     * 数据字段 cuckoo_job_exec_log.cuckoo_client_ip的set方法
      * 
      */
     public void setCuckooClientIp(String cuckooClientIp) {
@@ -343,7 +343,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cuckoo_client_tag的get方法 
+     * 数据字段 cuckoo_job_exec_log.cuckoo_client_tag的get方法 
      * 
      */
     public String getCuckooClientTag() {
@@ -351,7 +351,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.cuckoo_client_tag的set方法
+     * 数据字段 cuckoo_job_exec_log.cuckoo_client_tag的set方法
      * 
      */
     public void setCuckooClientTag(String cuckooClientTag) {
@@ -359,7 +359,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.latest_check_time的get方法 
+     * 数据字段 cuckoo_job_exec_log.latest_check_time的get方法 
      * 
      */
     public Long getLatestCheckTime() {
@@ -367,7 +367,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.latest_check_time的set方法
+     * 数据字段 cuckoo_job_exec_log.latest_check_time的set方法
      * 
      */
     public void setLatestCheckTime(Long latestCheckTime) {
@@ -375,7 +375,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.need_triggle_next的get方法 
+     * 数据字段 cuckoo_job_exec_log.need_triggle_next的get方法 
      * 
      */
     public Boolean getNeedTriggleNext() {
@@ -383,7 +383,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.need_triggle_next的set方法
+     * 数据字段 cuckoo_job_exec_log.need_triggle_next的set方法
      * 
      */
     public void setNeedTriggleNext(Boolean needTriggleNext) {
@@ -391,7 +391,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.remark的get方法 
+     * 数据字段 cuckoo_job_exec_log.remark的get方法 
      * 
      */
     public String getRemark() {
@@ -399,7 +399,7 @@ public class CuckooJobExecLogs implements Serializable {
     }
 
     /**
-     * 数据字段 cuckoo_job_exec_logs.remark的set方法
+     * 数据字段 cuckoo_job_exec_log.remark的set方法
      * 
      */
     public void setRemark(String remark) {

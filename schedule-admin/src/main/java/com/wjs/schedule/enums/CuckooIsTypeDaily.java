@@ -1,20 +1,25 @@
 package com.wjs.schedule.enums;
 
-public enum CuckooJobTriggerType {
+/**
+ * 是否为日切任务
+ * @author Silver
+ *
+ */
+public enum CuckooIsTypeDaily {
 	
- 
-	
-	CRON("CRON", "Cron任务")/*任务由Cron触发*/, 
-	JOB("JOB", "普通任务")/*任务由父任务触发*/; 
+
+	YES("YES", "是日切任务"), 
+	NO("NO", "不是日切任务"); 
 	
 	private final String value;
 	
 	private final String description;
 	
-	CuckooJobTriggerType(String value, String description) {
+	CuckooIsTypeDaily(String value, String description) {
 
 		this.value = value;
 		this.description = description;
+
 	}
 	
 
@@ -28,9 +33,9 @@ public enum CuckooJobTriggerType {
 		return description;
 	}
 
-	public static CuckooJobTriggerType fromName(String input) {
+	public static CuckooIsTypeDaily fromName(String input) {
 
-		for (CuckooJobTriggerType item : CuckooJobTriggerType.values()) {
+		for (CuckooIsTypeDaily item : CuckooIsTypeDaily.values()) {
 			if (item.name().equalsIgnoreCase(input))
 				return item;
 		}

@@ -1,5 +1,7 @@
 package com.wjs.schedule.component.quartz;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.quartz.CronScheduleBuilder;
@@ -11,6 +13,8 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
@@ -22,18 +26,20 @@ import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
 @Component("quartzExec")
-public class QuartzExec {
+public class QuartzManage {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(QuartzExec.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuartzManage.class);
 
 	@Resource(name = "quartzScheduler")
 	private Scheduler scheduler;
 
+	static final String quartzCronGroup = "quartz_group";
+	static final String quartzSimpleGroup = "quartz_simple";
 	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus){
-
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		// TriggerKey : name + group
-		TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroup);
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzCronGroup);
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 
 		// JobDetail : jobClass
 		Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
@@ -54,14 +60,48 @@ public class QuartzExec {
 				scheduler.pauseTrigger(triggerKey);
 			}
 		} catch (SchedulerException e) {
-			LOGGER.error("新增任务调度失败:{}", e.getMessage(), e);
+			LOGGER.error("新增CRON任务调度失败:{}", e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 	}
+	
+	/**
+	 * 简单触发器，用于触发手工执行任务，或者是由父任务触发的任务
+	 * @param groupId
+	 * @param id
+	 * @param running
+	 */
+	public void addSimpleJob(String jobGroup, String jobName) {
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
+		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
+		try {
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.deleteJob(jobKey);
+			}
+			Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
+			JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
+	
+			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
+					.repeatMinutelyForTotalCount(1) // 只触发一次
+					.withMisfireHandlingInstructionIgnoreMisfires();
+			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
+					.withSchedule(simpleScheduleBuilder)
+					.startAt(new Date(System.currentTimeMillis() + 10000)) //  设置其实时间
+					.build();
+			scheduler.scheduleJob(jobDetail, simpleTrigger);
+		} catch (SchedulerException e) {
+			LOGGER.error("任务调度失败:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+		
+	}
+	
 
-	public void deleteJob(String jobGroup, String jobName) {
+	public void deleteCronJob(String jobGroup, String jobName) {
 
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.deleteJob(jobKey);
@@ -74,8 +114,9 @@ public class QuartzExec {
 	}
 
 	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus) {
-		
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.deleteJob(jobKey);
@@ -89,13 +130,14 @@ public class QuartzExec {
 
 	public void pauseJob(String jobGroup, String jobName) {
 
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.pauseJob(jobKey);
 			}
 		} catch (SchedulerException e) {
-			LOGGER.error("暂停任务调度失败:jobGroup:{},jobName:{},{}", jobGroup, jobName, e.getMessage(), e);
+			LOGGER.error("暂停任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 		
@@ -113,14 +155,15 @@ public class QuartzExec {
 	}
 
 	public void resumeJob(String jobGroup, String jobName) {
-		
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.resumeJob(jobKey);
 			}
 		} catch (SchedulerException e) {
-			LOGGER.error("恢复任务调度失败:jobGroup:{},jobName:{},{}", jobGroup, jobName, e.getMessage(), e);
+			LOGGER.error("恢复任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 	}
@@ -144,11 +187,11 @@ public class QuartzExec {
 	 * @param needTrigglerNext
 	 * @param tx_date
 	 */
-	public void triggerJob(String jobGroup, String jobName, boolean forceJob, Boolean needTrigglerNext, Integer txdate) {
+	public void triggerJob(String jobGroup, String jobName, Boolean needTrigglerNext, Integer txdate) {
 
-		JobKey jobKey = new JobKey(jobName, jobGroup);
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		JobDataMap data = new JobDataMap();
-		data.put(CuckooJobConstant.FORCE_JOB, forceJob);
 		data.put(CuckooJobConstant.NEED_TRIGGLE_NEXT, needTrigglerNext);
 		data.put(CuckooJobConstant.DAILY_JOB_TXDATE, txdate);
 		try {
@@ -156,10 +199,11 @@ public class QuartzExec {
 				scheduler.triggerJob(jobKey, data);
 			}
 		} catch (SchedulerException e) {
-			LOGGER.error("执行任务调度失败:jobGroup:{},jobName:{},{}", jobGroup, jobName, e.getMessage(), e);
+			LOGGER.error("执行任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 	}
+
 	
 	
 }

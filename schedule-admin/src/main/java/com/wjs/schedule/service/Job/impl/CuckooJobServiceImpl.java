@@ -1,10 +1,9 @@
 package com.wjs.schedule.service.Job.impl;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,16 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
-import com.wjs.schedule.component.quartz.QuartzExec;
-import com.wjs.schedule.constant.CuckooJobConstant;
-import com.wjs.schedule.dao.exec.CuckooJobDetailsMapper;
+import com.wjs.schedule.component.quartz.QuartzManage;
+import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
 import com.wjs.schedule.dao.exec.CuckooLocksMapper;
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
-import com.wjs.schedule.domain.exec.CuckooJobDetailsCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
-import com.wjs.schedule.domain.exec.CuckooLocks;
-import com.wjs.schedule.domain.exec.CuckooLocksCriteria;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
@@ -35,7 +31,7 @@ import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.util.CuckBeanUtil;
-import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
+import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
@@ -50,7 +46,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	CuckooJobGroupMapper cuckooJobGroupMapper;
 	
 	@Autowired
-	CuckooJobDetailsMapper cuckooJobDetailsMapper;
+	CuckooJobDetailMapper cuckooJobDetailMapper;
 	
 	@Autowired
 	CuckooLocksMapper cuckooLocksMapper;
@@ -59,7 +55,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	CuckooJobExecutor cuckooJobExecutor;
 	
 	@Autowired
-	QuartzExec quartzExec;
+	QuartzManage quartzExec;
 	
 	@Autowired
 	CuckooJobNextService cuckooJobNextService;
@@ -69,7 +65,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 	@Override
 	@Transactional
-	public Long addJob(CuckooJobDetailsVo jobInfo) {
+	public Long addJob(CuckooJobDetailVo jobInfo) {
 		
 		if(null == jobInfo || null == jobInfo.getGroupId()){
 			
@@ -81,14 +77,14 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			throw new BaseException("can not find jobgroup by groupId:"+jobInfo.getGroupId());
 		}
 		// 校验任务名称是否重复
-//		CuckooJobDetailsCriteria jobNameCrt = new CuckooJobDetailsCriteria();
+//		CuckooJobDetailCriteria jobNameCrt = new CuckooJobDetailCriteria();
 //		jobNameCrt.createCriteria().andGroupIdEqualTo(jobInfo.getGroupId()).andJobNameEqualTo(jobInfo.getJobName());
-//		List<CuckooJobDetails> jobNameChecks = cuckooJobDetailsMapper.selectByExample(jobNameCrt);
+//		List<CuckooJobDetail> jobNameChecks = cuckooJobDetailMapper.selectByExample(jobNameCrt);
 //		if(CollectionUtils.isNotEmpty(jobNameChecks)){
 //			throw new BaseException("job name has already exists:" + jobInfo.getJobName());
 //		}
 		// 如果是cron，校验cron是否正确
-		if(CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(jobInfo.getTriggerType()) ){
+		if(CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType())){
 			jobInfo.setCronExpression(StringUtils.trim(jobInfo.getCronExpression()));
 			if(!CronExpression.isValidExpression(jobInfo.getCronExpression())){
 
@@ -96,18 +92,18 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			}
 		}
 		// 新增wjs_schedule_cockoo_job_details 数据，默认暂停
-		CuckooJobDetails cuckooJobDetails = CuckBeanUtil.parseJob(jobInfo);
-		cuckooJobDetails.setJobStatus(CuckooJobStatus.PAUSE.getValue());
-		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
-		cuckooJobDetailsMapper.insertSelective(cuckooJobDetails);
-		Long jobId = cuckooJobDetailsMapper.lastInsertId();
+		CuckooJobDetail cuckooJobDetail = CuckBeanUtil.parseJob(jobInfo);
+		cuckooJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
+		cuckooJobDetail.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
+		cuckooJobDetailMapper.insertSelective(cuckooJobDetail);
+		Long jobId = cuckooJobDetailMapper.lastInsertId();
 		if(jobId == null){
 
 			throw new BaseException("cuckoo_job_details insert error,can not get autoincriment id");
 		}
 		
 		// 如果是cron类型的，调用quartzAPI,新增任务，并且设置任务为暂停
-		if(CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(jobInfo.getTriggerType())){
+		if(CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType())){
 			quartzExec.addCronJob(String.valueOf(jobInfo.getGroupId()), String.valueOf(jobId), jobInfo.getCronExpression(), CuckooJobStatus.fromName(jobInfo.getJobStatus()));
 		}
 		
@@ -123,51 +119,48 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			throw new BaseException("id should not be null");
 		}
 		// 根据ID查询任务信息
-		CuckooJobDetails cuckooJobDetail = cuckooJobDetailsMapper.selectByPrimaryKey(id);
+		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
 		// 根据id删除cuckoo数据
 		if(null != cuckooJobDetail){
-			cuckooJobDetailsMapper.deleteByPrimaryKey(id);
+			cuckooJobDetailMapper.deleteByPrimaryKey(id);
 			// 根据任务信息删除quartz信息
-			quartzExec.deleteJob(String.valueOf(cuckooJobDetail.getGroupId()), String.valueOf(cuckooJobDetail.getId()));
+			quartzExec.deleteCronJob(String.valueOf(cuckooJobDetail.getGroupId()), String.valueOf(cuckooJobDetail.getId()));
 		}
 			
 	}
 
 	@Override
 	@Transactional
-	public void modifyJob(CuckooJobDetailsVo jobInfo) {
+	public void modifyJob(CuckooJobDetailVo jobInfo) {
 		
 		if(null == jobInfo || null == jobInfo.getId()){
 			throw new BaseException("jobinfo should not be null");
 		}
 
 		// 根据ID查询任务信息
-		CuckooJobDetails orginJobDetail = cuckooJobDetailsMapper.selectByPrimaryKey(jobInfo.getId());
+		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobInfo.getId());
 
 		if(null == orginJobDetail){
 			throw new BaseException("can not find jobinfo by id : " + jobInfo.getId());
 		}
-		CuckooJobDetails targetJobDetail = CuckBeanUtil.parseJob(jobInfo);
+		CuckooJobDetail targetJobDetail = CuckBeanUtil.parseJob(jobInfo);
 		
 		// 修改cuckoo任务
 		if(orginJobDetail.getGroupId().equals(targetJobDetail.getGroupId())){
 			// 如果原始任务组编号与目前任务组编号相同
-			cuckooJobDetailsMapper.updateByPrimaryKeySelective(targetJobDetail);
-			if(CuckooJobTriggerType.FLOW.getValue().equals(orginJobDetail.getTriggerType()) ){
-				// 原来任务类型为Flow
-				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(targetJobDetail.getTriggerType()) ){
-					// 且新任务为Cron，那么需要新增quartz。否则不做处理
-					quartzExec.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
-				}
+			cuckooJobDetailMapper.updateByPrimaryKeySelective(targetJobDetail);
+			if(CuckooJobTriggerType.JOB.getValue().equals(orginJobDetail.getTriggerType()) && CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
+				// 原来任务类型为job触发 且新任务为Cron，那么需要新增quartz。否则不做处理
+				quartzExec.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 				
-			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(orginJobDetail.getTriggerType()) ){
+			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 如果原来任务类型为Cron，那么修改一条任务
-				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(targetJobDetail.getTriggerType()) ){
+				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					// 且新任务为Cron，那么需要修改quartz
 					quartzExec.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 				}else{
-					// 且新任务为FLOW，那么需要删除quartz
-					quartzExec.deleteJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
+					// 且新任务为NORMAL，那么需要删除quartz
+					quartzExec.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
 				}
 			}else {
 				throw new BaseException("unknow job triggle type : "+ jobInfo.getTriggerType());
@@ -175,16 +168,13 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}else{
 			// 如果原始任务组编号与目前任务组编号不同
 			// 删除任务
-			quartzExec.deleteJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
+			quartzExec.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
 			// 新增任务
-			if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(targetJobDetail.getTriggerType()) ){
-				// 且新任务为Cron，那么需要新增quartz。否则不做处理
+			if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
+				// 新任务为Cron，那么需要新增quartz。否则不做处理
 				quartzExec.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 			}
 		}
-		
-		
-
 		
 	}
 
@@ -199,14 +189,14 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 
 		// 根据ID查询任务信息
-		CuckooJobDetails orginJobDetail = cuckooJobDetailsMapper.selectByPrimaryKey(id);
+		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
 		orginJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
 		
 		// 更新cuckoo状态
-		cuckooJobDetailsMapper.updateByPrimaryKeySelective(orginJobDetail);
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
 		
 		// 更新quartz任务状态
-		if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(orginJobDetail.getTriggerType())){
+		if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType())){
 			quartzExec.pauseJob(String.valueOf(orginJobDetail.getGroupId()),String.valueOf(orginJobDetail.getId()));
 		}
 	}
@@ -215,9 +205,9 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	public void pauseAllJob() {
 
 		// 更新cuckoo状态
-		CuckooJobDetails orginJobDetail = new CuckooJobDetails();
+		CuckooJobDetail orginJobDetail = new CuckooJobDetail();
 		orginJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
-		cuckooJobDetailsMapper.updateByExampleSelective(orginJobDetail, new CuckooJobDetailsCriteria());
+		cuckooJobDetailMapper.updateByExampleSelective(orginJobDetail, new CuckooJobDetailCriteria());
 		
 		// 更新quartz任务状态
 		quartzExec.pauseAll();
@@ -232,14 +222,14 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 
 		// 根据ID查询任务信息
-		CuckooJobDetails orginJobDetail = cuckooJobDetailsMapper.selectByPrimaryKey(id);
+		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
 		orginJobDetail.setJobStatus(CuckooJobStatus.RUNNING.getValue());
 
 		// 更新cuckoo状态
-		cuckooJobDetailsMapper.updateByPrimaryKeySelective(orginJobDetail);
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
 
 		// 更新quartz任务状态
-		if (CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) || CuckooJobTriggerType.DAILY.getValue().equals(orginJobDetail.getTriggerType())) {
+		if (CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ) {
 			quartzExec.resumeJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
 		}
 
@@ -252,7 +242,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	}
 
 	@Override
-	public void forceTriggleCronJob(Long id, Boolean needTrigglerNext, Integer tx_date) {
+	public void pendingDailyJob(Long id, Boolean needTriggleNext, Integer txDate) {
 
 		// 根据ID查询Cuckoo
 		if (null == id) {
@@ -260,103 +250,119 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 
 		// 根据ID查询任务信息
-		CuckooJobDetails orginJobDetail = cuckooJobDetailsMapper.selectByPrimaryKey(id);
+		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
 		if(null == orginJobDetail){
 			throw new BaseException("can not find job by id:" + id);
 		}
-		// 触发Cron任务
-		quartzExec.triggerJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()), true, needTrigglerNext, tx_date);
-
+		
+		// 日切任务 -- 放到PENDING任务队列中
+		orginJobDetail.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
+		orginJobDetail.setTxDate(txDate);
+		orginJobDetail.setNeedTriggleNext(needTriggleNext);
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
+		
+		// 使用Quartz.simpleJob进行触发 
+		quartzExec.addSimpleJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
 	}
+	
 
+	
 	@Override
-	public void forceTriggleFlowJob(Long id, Boolean needTrigglerNext, Long startTime, Long endTime) {
+	public void pendingUnDailyJob(Long id, Boolean needTriggleNext, Long startTime, Long endTime) {
 		
 		if (null == id) {
 			throw new BaseException("id should not be null");
 		}
 
 		// 根据ID查询任务信息
-		CuckooJobDetails cuckooJobDetails = cuckooJobDetailsMapper.selectByPrimaryKey(id);
+		CuckooJobDetail cuckooJobDetails = cuckooJobDetailMapper.selectByPrimaryKey(id);
 		if(null == cuckooJobDetails){
 
 			throw new BaseException("can not find job by id:" + id);
 		}
-		cuckooJobExecutor.executeFlowJob(cuckooJobDetails, true, needTrigglerNext, startTime, endTime);
+		// 非日切任务 -- 放到PENDING任务队列中
+		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
+		cuckooJobDetails.setFlowLastTime(startTime);
+		cuckooJobDetails.setFlowCurTime(endTime);
+		cuckooJobDetails.setNeedTriggleNext(needTriggleNext);
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
+		
+
+		// 使用Quartz.simpleJob进行触发 
+		quartzExec.addSimpleJob(String.valueOf(cuckooJobDetails.getGroupId()), String.valueOf(cuckooJobDetails.getId()));
 	}
+
+	
 
 	@Override
 	public void updateJobStatusById(Long jobId, CuckooJobExecStatus execStatus) {
 
-		CuckooJobDetails cuckooJobDetails = new CuckooJobDetails();
+		CuckooJobDetail cuckooJobDetails = new CuckooJobDetail();
 		cuckooJobDetails.setId(jobId);
 		cuckooJobDetails.setExecJobStatus(execStatus.getValue());
-		cuckooJobDetailsMapper.updateByPrimaryKey(cuckooJobDetails);
+		cuckooJobDetailMapper.updateByPrimaryKey(cuckooJobDetails);
 		
 	}
 
 	@Override
-	public CuckooJobDetails getJobById(Long jobId) {
+	public CuckooJobDetail getJobById(Long jobId) {
 
-		return cuckooJobDetailsMapper.selectByPrimaryKey(jobId);
+		return cuckooJobDetailMapper.selectByPrimaryKey(jobId);
 	}
 
-	@Override
-	public void tryTrigglePendingJob() {
-		
-//		1.通过Lock表进行加锁pending任务锁，
-		CuckooLocksCriteria lockCrt = new CuckooLocksCriteria();
-		lockCrt.createCriteria().andLockNameEqualTo(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
-		CuckooLocks locks = cuckooLocksMapper.lockByExample(lockCrt);
-		if(null == locks){
-//			如果没有锁，那么insert一条记录，如果是异常的话（唯一索引造成），需要catch
-			CuckooLocks newLock = new CuckooLocks();
-			try {
-				newLock.setCuckooServerIp(InetAddress.getLocalHost().getHostAddress());
-				newLock.setLockName(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
-				cuckooLocksMapper.insertSelective(newLock);
-			} catch (Exception e) {
-				LOGGER.error("add new pending lock error:{}",e.getMessage() ,e);
-			}
-		}
-//		存在锁记录继续
-		
-//		4.查询任务表中状态为pending的任务，获取任务执行
-		CuckooJobDetailsCriteria jobCrt = new CuckooJobDetailsCriteria();
-		jobCrt.createCriteria().andExecJobStatusEqualTo(CuckooJobExecStatus.PENDING.getValue());
-		List<CuckooJobDetails> pendingJobs = cuckooJobDetailsMapper.selectByExample(jobCrt);
-		if(CollectionUtils.isNotEmpty(pendingJobs)){
-			for (CuckooJobDetails cuckooJobDetails : pendingJobs) {
-				// 当前任务pending的任务为被触发的任务，查询依赖任务执行情况，参数取自触发任务的参数
-				JobInfoBean jobInfoBean = extractJobparam(cuckooJobDetails);
-				cuckooJobExecutor.executeCurJob(jobInfoBean);
-			}
-		}
-	}
+//	@Override
+//	public void tryTrigglePendingJob() {
+//		
+////		1.通过Lock表进行加锁pending任务锁，
+//		CuckooLocksCriteria lockCrt = new CuckooLocksCriteria();
+//		lockCrt.createCriteria().andLockNameEqualTo(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
+//		CuckooLocks locks = cuckooLocksMapper.lockByExample(lockCrt);
+//		if(null == locks){
+////			如果没有锁，那么insert一条记录，如果是异常的话（唯一索引造成），需要catch
+//			CuckooLocks newLock = new CuckooLocks();
+//			try {
+//				newLock.setCuckooServerIp(InetAddress.getLocalHost().getHostAddress());
+//				newLock.setLockName(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
+//				cuckooLocksMapper.insertSelective(newLock);
+//			} catch (Exception e) {
+//				LOGGER.error("add new pending lock error:{}",e.getMessage() ,e);
+//			}
+//		}
+////		存在锁记录继续
+//		
+////		4.查询任务表中状态为pending的任务，获取任务执行
+//		CuckooJobDetailCriteria jobCrt = new CuckooJobDetailCriteria();
+//		jobCrt.createCriteria().andExecJobStatusEqualTo(CuckooJobExecStatus.PENDING.getValue());
+//		List<CuckooJobDetail> pendingJobs = cuckooJobDetailMapper.selectByExample(jobCrt);
+//		if(CollectionUtils.isNotEmpty(pendingJobs)){
+//			for (CuckooJobDetail cuckooJobDetails : pendingJobs) {
+//				// 当前任务pending的任务为被触发的任务，查询依赖任务执行情况，参数取自触发任务的参数
+//				JobInfoBean jobInfoBean = extractJobparam(cuckooJobDetails);
+//				cuckooJobExecutor.executeCurJob(jobInfoBean);
+//			}
+//		}
+//	}
 
 	/**
 	 * 当前任务pending的任务为被触发的任务，参数取自触发任务的参数
 	 * @param cuckooJobDetails
 	 * @return
 	 */
-	private JobInfoBean extractJobparam(CuckooJobDetails cuckooJobDetails) {
+	private JobInfoBean extractJobparam(CuckooJobDetail cuckooJobDetails) {
 		JobInfoBean jobInfo = new JobInfoBean();
 		
 		jobInfo.setCuckooParallelJobArgs(cuckooJobDetails.getCuckooParallelJobArgs());
-		jobInfo.setForceJob(false);
 		jobInfo.setJobId(cuckooJobDetails.getId());
 		jobInfo.setJobName(cuckooJobDetails.getJobName());
-		jobInfo.setTriggerType(CuckooJobTriggerType.fromName(cuckooJobDetails.getTriggerType()));
 		
 		// 查询被触发任务信息
 		Long preJobId = cuckooJobNextService.findJobIdByNextJobId(cuckooJobDetails.getId());
 		if(null ==  preJobId){
 			return null;
 		}
-		CuckooJobDetails preJobInfo = getJobById(preJobId);
+		CuckooJobDetail preJobInfo = getJobById(preJobId);
 		jobInfo.setFlowCurrTime(preJobInfo.getFlowCurTime());
 		jobInfo.setFlowLastTime(preJobInfo.getFlowLastTime());
-		jobInfo.setNeedTrigglerNext(cuckooJobLogService.getJobNeedTriglerByJobInfo(preJobInfo));
 		jobInfo.setTxDate(preJobInfo.getTxDate());
 		
 		
@@ -364,42 +370,59 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	}
 
 	@Override
-	public List<CuckooJobDetails> getNextJobById(Long jobId) {
+	public List<CuckooJobDetail> getNextJobById(Long jobId) {
 
 		List<Long> nextJobids = cuckooJobNextService.findNextJobIdByJobId(jobId);
 		if(CollectionUtils.isEmpty(nextJobids)){
 			return new ArrayList<>(0);
 		}
-		CuckooJobDetailsCriteria jobCrt = new CuckooJobDetailsCriteria();
+		CuckooJobDetailCriteria jobCrt = new CuckooJobDetailCriteria();
 		jobCrt.createCriteria().andIdIn(nextJobids);
 		
-		return cuckooJobDetailsMapper.selectByExample(jobCrt);
+		return cuckooJobDetailMapper.selectByExample(jobCrt);
 	}
 
 	@Override
-	public PageDataList<CuckooJobDetails> pageList(JobInfoQry jobInfo, Integer start, Integer limit) {
+	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo, Integer start, Integer limit) {
 		
 		
-		CuckooJobDetailsCriteria crt = new CuckooJobDetailsCriteria();
-		CuckooJobDetailsCriteria.Criteria exp = crt.createCriteria();
+		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		CuckooJobDetailCriteria.Criteria exp = crt.createCriteria();
 		if(null != jobInfo.getJobGroupId()){
 			exp.andGroupIdEqualTo(jobInfo.getJobGroupId());
+		}
+		if(null != jobInfo.getJobId()){
+			exp.andIdEqualTo(jobInfo.getJobId());
+		}
+		if(StringUtils.isNotEmpty(jobInfo.getJobClassApplication())){
+			exp.andJobClassApplicationEqualTo(jobInfo.getJobClassApplication());
+		}
+		if(StringUtils.isNotEmpty(jobInfo.getJobExecStatus())){
+			exp.andExecJobStatusEqualTo(jobInfo.getJobExecStatus());
+		}
+		if(StringUtils.isNotEmpty(jobInfo.getJobStatus())){
+			exp.andJobStatusEqualTo(jobInfo.getJobStatus());
 		}
 		crt.setStart(start);
 		crt.setLimit(limit);
 		
 
-		return cuckooJobDetailsMapper.pageByExample(crt);
+		return cuckooJobDetailMapper.pageByExample(crt);
 	}
 
 	@Override
-	public List<String> findAllApps() {
+	public Map<String,String> findAllApps() {
 		
-		List<CuckooJobDetails> jobs = cuckooJobDetailsMapper.selectByExample(new CuckooJobDetailsCriteria());
+		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(new CuckooJobDetailCriteria());
 		List<String> jobApps = PropertyUtil.fetchFieldList(jobs, "jobClassApplication");
-		// 简单去重
-		Set<String> dis = new HashSet<>(jobApps);
-		return new ArrayList<>(dis);
+		Map<String, String> rtn = new LinkedHashMap<>();
+		rtn.put("", "全部/无");
+		if(CollectionUtils.isNotEmpty(jobApps)){
+			for (String jobApp : jobApps) {
+				rtn.put(jobApp, jobApp);
+			}
+		}
+		return rtn;
 	}
 
 

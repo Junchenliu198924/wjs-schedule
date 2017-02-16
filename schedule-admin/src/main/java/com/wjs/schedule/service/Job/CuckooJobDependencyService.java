@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.quartz.JobDataMap;
 
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.exception.JobDependencyException;
 import com.wjs.schedule.vo.job.JobDependency;
 
@@ -20,5 +20,5 @@ public interface CuckooJobDependencyService {
 	 * @param jobInfo
 	 * @param data
 	 */
-	public void checkDepedencyJobFinished(CuckooJobDetails jobInfo, JobDataMap data) throws JobDependencyException;
+	public void checkDepedencyJobFinished(CuckooJobDetail jobInfo) throws JobDependencyException;
 }

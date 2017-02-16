@@ -44,13 +44,13 @@ public class JobInfoBean implements Serializable{
 	/**
 	 * 是否被强制触发任务。在手工调用时可以选择，默认为否
 	 */
-	private Boolean forceJob = false;
+//	private Boolean forceJob = false;
 	
 	
 	/**
 	 * 是否需要触发下次任务，默认是。在手工调用的时候，可以设置否 
 	 */
-	private Boolean needTrigglerNext = true;
+//	private Boolean needTrigglerNext = true;
 	
 	/**
 	 * 任务执行分片参数
@@ -60,7 +60,7 @@ public class JobInfoBean implements Serializable{
 	/**
 	 * 任务触发类型
 	 */
-	private CuckooJobTriggerType triggerType;
+//	private CuckooJobTriggerType triggerType;
 	
 	
 
@@ -115,13 +115,13 @@ public class JobInfoBean implements Serializable{
 	}
 	
 	
-	public Boolean getForceJob() {
-		return forceJob;
-	}
-
-	public void setForceJob(Boolean forceJob) {
-		this.forceJob = forceJob;
-	}
+//	public Boolean getForceJob() {
+//		return forceJob;
+//	}
+//
+//	public void setForceJob(Boolean forceJob) {
+//		this.forceJob = forceJob;
+//	}
 
 //	public Boolean getNeedTrigglerNext() {
 //		return needTrigglerNext;
@@ -141,22 +141,22 @@ public class JobInfoBean implements Serializable{
 	}
 
 	
-	public CuckooJobTriggerType getTriggerType() {
-		return triggerType;
-	}
-
-	public void setTriggerType(CuckooJobTriggerType triggerType) {
-		this.triggerType = triggerType;
-	}
+//	public CuckooJobTriggerType getTriggerType() {
+//		return triggerType;
+//	}
+//
+//	public void setTriggerType(CuckooJobTriggerType triggerType) {
+//		this.triggerType = triggerType;
+//	}
 	
 
-	public Boolean getNeedTrigglerNext() {
-		return needTrigglerNext;
-	}
-
-	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
-		this.needTrigglerNext = needTrigglerNext;
-	}
+//	public Boolean getNeedTrigglerNext() {
+//		return needTrigglerNext;
+//	}
+//
+//	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
+//		this.needTrigglerNext = needTrigglerNext;
+//	}
 
 	@Override
 	public String toString() {

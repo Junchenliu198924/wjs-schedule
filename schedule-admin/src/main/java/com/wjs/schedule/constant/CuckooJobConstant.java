@@ -5,7 +5,7 @@ public class CuckooJobConstant {
 	/**
 	 * 是否强制启动任务
 	 */
-	public static final String FORCE_JOB = "forceJob";
+//	public static final String FORCE_JOB = "forceJob";
 	/**
 	 * 是否触发下级任务
 	 */
@@ -29,11 +29,13 @@ public class CuckooJobConstant {
 	/**
 	 * Cron表达式
 	 */
-	public static final String QUARTZ_CRON_EXP = "quartzCronExpression";
+//	public static final String QUARTZ_CRON_EXP = "quartzCronExpression";
 	
 	/**
 	 * 等待任务锁名称
 	 */
-	public static final String LOCK_NAME_PENDING_JOB = "lockNamePendingJob";
+//	public static final String LOCK_NAME_PENDING_JOB = "lockNamePendingJob";
+	
+	public static final String QUARTZ_JOBNAME_JOINT = "_";
 	
 }

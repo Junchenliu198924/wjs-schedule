@@ -15,6 +15,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wjs.schedule.enums.CuckooAdminPages;
+import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.web.util.JsonResult;
 import com.wjs.schedule.web.util.JsonResult.Status;
 
@@ -40,7 +41,13 @@ public class ExceptionResolver extends SimpleMappingExceptionResolver {
 			LOGGER.error("ERROR_MARK: {},message", ex.getClass(), ex.getMessage(), ex);
 		}
 
+
 		String message = "";
+		if(ex instanceof BaseException){
+			message = ex.getMessage(); // 自定义异常特殊处理
+		}else{
+			message = "系统异常:" + ex.getMessage();
+		}
 		String requestType = request.getHeader("X-Requested-With");
 		//判断用户请求方式是否为ajax
 		if (StringUtils.isNotBlank(requestType) && requestType.equals("XMLHttpRequest")) {

@@ -2,12 +2,14 @@ package com.wjs.schedule.vo.job;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.wjs.schedule.enums.CuckooIsTypeDaily;
+
 /**
  * 任务信息
  * @author Silver
  *
  */
-public class CuckooJobDetailsVo {
+public class CuckooJobDetailVo {
     /**
      * 标准ID -- cuckoo_job_details.id
      * 
@@ -37,11 +39,6 @@ public class CuckooJobDetailsVo {
      */
     private String jobClassApplication;
 
-    /**
-     * 作业执行远程类名称 -- cuckoo_job_details.job_class_name
-     * 
-     */
-    private String jobClassName;
 
     /**
      * 任务描述 -- cuckoo_job_details.job_desc
@@ -60,6 +57,11 @@ public class CuckooJobDetailsVo {
      * 
      */
     private String cronExpression;
+    
+    /**
+     * 是否未日切任务
+     */
+    private String typeDaily = CuckooIsTypeDaily.NO.getValue();
 
     /**
      * 偏移量 -- cuckoo_job_details.offset
@@ -171,22 +173,6 @@ public class CuckooJobDetailsVo {
      */
     public void setJobClassApplication(String jobClassApplication) {
         this.jobClassApplication = jobClassApplication == null ? null : jobClassApplication.trim();
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.job_class_name的get方法 
-     * 
-     */
-    public String getJobClassName() {
-        return jobClassName;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.job_class_name的set方法
-     * 
-     */
-    public void setJobClassName(String jobClassName) {
-        this.jobClassName = jobClassName == null ? null : jobClassName.trim();
     }
 
     /**
@@ -351,6 +337,15 @@ public class CuckooJobDetailsVo {
 
 	public void setGroupName(Long groupName) {
 		this.groupName = groupName;
+	}
+
+	
+	public String getTypeDaily() {
+		return typeDaily;
+	}
+
+	public void setTypeDaily(String typeDaily) {
+		this.typeDaily = typeDaily;
 	}
 
 	public String toString() {

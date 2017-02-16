@@ -1,7 +1,7 @@
 package com.wjs.schedule.service.Job;
 
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
-import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 
 public interface CuckooJobLogService {
@@ -10,14 +10,14 @@ public interface CuckooJobLogService {
 	 * 新增日志
 	 * @param log
 	 */
-	public void insertSelective(CuckooJobExecLogs log);
+	public void insertSelective(CuckooJobExecLog log);
 
 	/**
 	 * 根据日志ID获取日志信息
 	 * @param id
 	 * @return
 	 */
-	public CuckooJobExecLogs getJobLogByLogId(Long id);
+	public CuckooJobExecLog getJobLogByLogId(Long id);
 
 	/**
 	 * 根据主键更新日志状态
@@ -31,7 +31,7 @@ public interface CuckooJobLogService {
 	 * @param preJobInfo
 	 * @return
 	 */
-	public Boolean getJobNeedTriglerByJobInfo(CuckooJobDetails preJobInfo);
+	public Boolean getJobNeedTriglerByJobInfo(CuckooJobDetail preJobInfo);
 
 	
 }

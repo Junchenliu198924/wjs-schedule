@@ -1,10 +1,11 @@
 package com.wjs.schedule.service.Job;
 
 import java.util.List;
+import java.util.Map;
 
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.vo.job.CuckooJobDetailsVo;
+import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.dao.PageDataList;
 
@@ -20,7 +21,7 @@ public interface CuckooJobService {
 	/**
 	 * 新增一个任务,返回任务id
 	 */
-	public Long addJob(CuckooJobDetailsVo jobInfo);
+	public Long addJob(CuckooJobDetailVo jobInfo);
 	
 
 	/**
@@ -31,7 +32,7 @@ public interface CuckooJobService {
 	/**
 	 * 修改一个任务
 	 */
-	public void modifyJob(CuckooJobDetailsVo jobInfo);
+	public void modifyJob(CuckooJobDetailVo jobInfo);
 	
 	
 	
@@ -56,19 +57,20 @@ public interface CuckooJobService {
 	public void resumeAllJob();
 	
 	/**
-	 * 手工触发一个Cron任务
+	 * 将一个日切任务加入到待执行队列中
 	 * @param id
 	 * @param triggleNext
 	 */
-	public void forceTriggleCronJob(Long id,Boolean needTrigglerNext,Integer tx_date);
+	public void pendingDailyJob(Long id,Boolean needTrigglerNext,Integer txDate);
 	 
 	/**
-	 * 手工触发一个Flow任务
+	 * 将一个非日切任务加入到待执行队列中
 	 * @param id
 	 * @param triggleNext
 	 */
-	public void forceTriggleFlowJob(Long id,Boolean needTrigglerNext,Long startTime,Long endTime);
-
+	public void pendingUnDailyJob(Long id,Boolean needTrigglerNext,Long startTime,Long endTime);
+	
+	
 
 	/**
 	 * 修改任务执行状态
@@ -83,13 +85,13 @@ public interface CuckooJobService {
 	 * @param jobId
 	 * @return
 	 */
-	public CuckooJobDetails getJobById(Long jobId);
+	public CuckooJobDetail getJobById(Long jobId);
 
 
-	/**
-	 * 执行Debug任务
-	 */
-	public void tryTrigglePendingJob();
+//	/**
+//	 * 执行Debug任务
+//	 */
+//	public void tryTrigglePendingJob();
 
 
 	/**
@@ -97,7 +99,7 @@ public interface CuckooJobService {
 	 * @param jobId
 	 * @return
 	 */
-	public List<CuckooJobDetails> getNextJobById(Long jobId);
+	public List<CuckooJobDetail> getNextJobById(Long jobId);
 
 	/**
 	 * 分页查询任务数据
@@ -106,14 +108,14 @@ public interface CuckooJobService {
 	 * @param length
 	 * @return
 	 */
-	public PageDataList<CuckooJobDetails> pageList(JobInfoQry jobInfo, Integer start, Integer length);
+	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo, Integer start, Integer length);
 
 
 	/**
 	 * 查询所有客户端应用名称
 	 * @return
 	 */
-	public List<String> findAllApps();
+	public Map<String,String> findAllApps();
 	 
 	
 }

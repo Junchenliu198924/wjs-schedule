@@ -51,9 +51,10 @@
                 <div class="col-xs-4">
                     <div class="input-group">
 	                	<span class="input-group-addon">执行应用</span>
+	                	
                 		<select class="form-control" id="jobClassApplication" >
-                			<#list jobAppList as jobapp>
-                				<option value="${jobapp}" >${jobapp}</option>
+                			<#list jobAppList?keys as app>
+                				<option value="${app}" >${jobAppList[app]}</option>
                 			</#list>
 	                  	</select>
                     </div>
@@ -115,6 +116,7 @@
 					                  	<th name="jobDesc" >描述</th> 
 					                  	<th name="triggerType" >触发类型</th>
 					                  	<th name="cronExpression" >Cron</th> 
+					                  	<th name="typeDaily" >是否日切任务</th> 
 					                  	<th name="txDate" >业务日期</th> 
 					                  	<th name="offset" >业务偏移日期</th> 
 					                  	<th name="jobStatus" >任务状态</th> 
@@ -273,6 +275,66 @@ public class DemoGlueJobHandler extends IJobHandler {
 		</div>
 	</div>
 </div>
+
+
+
+<!-- 执行参数.模态框 -->
+<div class="modal fade" id="triggerModal" tabindex="-1" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+            	<h4 class="modal-title" name="triggerHeader" >CRON任务</h4>
+         	</div>
+         	<div class="modal-body">
+				<form class="form-horizontal form" role="form" >
+					<div class="form-group" name="dailyParam">
+                        <label for="lastname" class="col-sm-2 control-label">执行日期<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                        	<input type="text" class="form-control" name="txDate" placeholder="格式 “yyyyMMdd”" maxlength="50" >
+                        </div>
+                        
+					</div>
+                   
+                   	<div class="form-group hide" name="cronParam">
+                        <label for="lastname" class="col-sm-2 control-label">任务起始日期<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                        	<input type="text" class="form-control" name="flowLastTime" placeholder="格式“yyyyMMddHHmmss”" maxlength="50" >
+                        </div>
+                        <label for="lastname" class="col-sm-2 control-label">任务结束日期<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                        	<input type="text" class="form-control" name="flowCurTime" placeholder="格式“yyyyMMddHHmmss”" maxlength="50" >
+                        </div>
+					</div>
+                   
+                   
+                   <div class="form-group" >
+                        <label for="lastname" class="col-sm-2 control-label">触发后续任务<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                        	<select class="form-control" name="needTriggleNext" >
+                				<option value="false" selected>否</option>
+                				<option value="true" >是</option>
+	                  		</select>
+                        </div>
+                        
+					</div>
+                   
+                   
+                   <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-6">
+							<button type="submit" class="btn btn-primary"  >执行</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <input type="hidden" name="id" >
+                            <input type="hidden" name="typeDaily" >
+                            <input type="hidden" name="triggerType" >
+                            
+						</div>
+					</div>
+				</form>
+         	</div>
+		</div>
+	</div>
+</div>
+
 
 <@netCommon.commonScript />
 <!-- DataTables -->

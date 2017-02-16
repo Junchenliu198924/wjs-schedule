@@ -12,16 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDependencyMapper;
-import com.wjs.schedule.dao.exec.CuckooJobDetailsMapper;
-import com.wjs.schedule.dao.exec.CuckooJobExecLogsMapper;
+import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDependency;
 import com.wjs.schedule.domain.exec.CuckooJobDependencyCriteria;
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
-import com.wjs.schedule.domain.exec.CuckooJobDetailsCriteria;
-import com.wjs.schedule.domain.exec.CuckooJobExecLogs;
-import com.wjs.schedule.domain.exec.CuckooJobExecLogsCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
+import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobDependencyException;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
@@ -40,10 +40,10 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 	CuckooJobDependencyMapper cuckooJobDependencyMapper;
 	
 	@Autowired
-	CuckooJobDetailsMapper cuckooJobDetailsMapper;
+	CuckooJobDetailMapper cuckooJobDetailMapper;
 	
 	@Autowired
-	CuckooJobExecLogsMapper cuckooJobExecLogsMapper;
+	CuckooJobExecLogMapper cuckooJobExecLogMapper;
 	
 	@Override
 	@Transactional
@@ -66,7 +66,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 	}
 
 	@Override
-	public void checkDepedencyJobFinished(CuckooJobDetails jobInfo, JobDataMap data) throws JobDependencyException {
+	public void checkDepedencyJobFinished(CuckooJobDetail jobInfo) throws JobDependencyException {
 		
 
 		CuckooJobDependencyCriteria depJobMapCrt = new CuckooJobDependencyCriteria();
@@ -76,15 +76,15 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 		if(CollectionUtils.isEmpty(depJobIds)){
 			return;
 		}
-		if(CuckooJobTriggerType.FLOW.getValue().equals(jobInfo.getTriggerType()) || CuckooJobTriggerType.CRON.getValue().equals(jobInfo.getTriggerType())){
+		if(CuckooIsTypeDaily.NO.getValue().equals(jobInfo.getTypeDaily()) ){
 
 			if(CollectionUtils.isNotEmpty(depJobIds)){
 
 				// 如果非日切任务，那么需要检查每个依赖任务的执行状态
-				CuckooJobDetailsCriteria depJobCrt = new CuckooJobDetailsCriteria();
+				CuckooJobDetailCriteria depJobCrt = new CuckooJobDetailCriteria();
 				depJobCrt.createCriteria().andIdIn(depJobIds)
 				.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue());
-				List<CuckooJobDetails> depJobs = cuckooJobDetailsMapper.selectByExample(depJobCrt);
+				List<CuckooJobDetail> depJobs = cuckooJobDetailMapper.selectByExample(depJobCrt);
 				if(CollectionUtils.isNotEmpty(depJobs)){
 					LOGGER.info("dependency has not succed yet ,job{}-{}:jobs:{}", jobInfo.getId(), jobInfo.getJobName(), depJobs);
 					throw new BaseException("dependency has not succed yet ,job{}-{}:jobs:{}", jobInfo.getId(), jobInfo.getJobName(), depJobs);
@@ -92,42 +92,32 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 			}
 			
 			
-		}else if(CuckooJobTriggerType.DAILY.getValue().equals(jobInfo.getTriggerType())){
-
+		}else{
+			
 			if(CollectionUtils.isNotEmpty(depJobIds)){
-				
-				Object txdate = data.get(CuckooJobConstant.DAILY_JOB_TXDATE);
-				if(null == txdate){
-					LOGGER.info("daily job exec has no txdate, jobInfo:{}", jobInfo);
-					throw new BaseException("daily job exec has no txdate, jobInfo:{}", jobInfo);
-				}
-				// 如果是日切任务，那么需要检查每个依赖任务对应的bizDate的执行状态
 
 				// 检查依赖任务的执行日期是否一致
-				CuckooJobExecLogsCriteria depLogTxdateCrt = new CuckooJobExecLogsCriteria();
+				CuckooJobDetailCriteria depLogTxdateCrt = new CuckooJobDetailCriteria();
 				depLogTxdateCrt.createCriteria().andIdIn(depJobIds)
-				.andTxDateEqualTo(Integer.valueOf(String.valueOf(txdate)));
-				List<CuckooJobExecLogs> depLogTxJobs = cuckooJobExecLogsMapper.selectByExample(depLogTxdateCrt);
+				.andTxDateNotEqualTo(jobInfo.getTxDate());
+				List<CuckooJobDetail> depLogTxJobs = cuckooJobDetailMapper.selectByExample(depLogTxdateCrt);
 				if(CollectionUtils.isNotEmpty(depLogTxJobs)){
-					LOGGER.error("dependency has txdate not the same ,job:{}-{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), txdate, depLogTxJobs);
-					throw new JobDependencyException("dependency has not succed yet ,job:{}-{},txdate:{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), txdate, depLogTxJobs);
+					LOGGER.error("dependency has txdate not the same ,job:{}-{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), jobInfo.getTxDate(), depLogTxJobs);
+					throw new JobDependencyException("dependency has not succed yet ,job:{}-{},txdate:{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), jobInfo.getTxDate(), depLogTxJobs);
 				}
 				
 				// 检查当天任务执行状况
-				CuckooJobExecLogsCriteria depLogExecCrt = new CuckooJobExecLogsCriteria();
+				CuckooJobDetailCriteria depLogExecCrt = new CuckooJobDetailCriteria();
 				depLogExecCrt.createCriteria().andIdIn(depJobIds)
 				.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue())
-				.andTxDateEqualTo(Integer.valueOf(String.valueOf(txdate)));
-				List<CuckooJobExecLogs> depLogExecJobs = cuckooJobExecLogsMapper.selectByExample(depLogExecCrt);
+				.andTxDateEqualTo(jobInfo.getTxDate());
+				List<CuckooJobDetail> depLogExecJobs = cuckooJobDetailMapper.selectByExample(depLogExecCrt);
 				if(CollectionUtils.isNotEmpty(depLogExecJobs)){
-					LOGGER.info("dependency has not succed yet ,job:{}-{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), txdate, depLogExecJobs);
-					throw new BaseException("dependency has not succed yet ,job:{}-{},txdate:{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), txdate, depLogExecJobs);
+					LOGGER.info("dependency has not succed yet ,job:{}-{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), jobInfo.getTxDate(), depLogExecJobs);
+					throw new BaseException("dependency has not succed yet ,job:{}-{},txdate:{},txdate:{},depjobs:{}", jobInfo.getId(), jobInfo.getJobName(), jobInfo.getTxDate(), depLogExecJobs);
 				}
 			}
 			
-		}else{
-			
-			throw new BaseException("unknow triggle type in check depedency,jobInfo:{}", jobInfo);
 		}
 		
 		

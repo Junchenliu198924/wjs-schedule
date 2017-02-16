@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-import com.wjs.schedule.domain.exec.CuckooJobDetails;
 import com.wjs.schedule.web.util.JqueryDataTable;
 import com.wjs.schedule.web.util.JsonResult;
 import com.wjs.util.dao.PageDataList;

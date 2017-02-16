@@ -9,13 +9,13 @@ $(function() {
 			type:"post",
 	        data : function ( d ) {
 	        	var obj = {};
-	        	obj.jobGroupId = $('#jobGroup').val();
-	        	obj.jobClassApplication = $('#executorHandler').val();
+	        	obj.jobGroupId = $('#jobGroupId').val();
+	        	obj.jobClassApplication = $('#jobClassApplication').val();
 	        	obj.jobId = $('#jobId').val();
 	        	obj.jobStatus = $('#jobStatus').val();
 	        	obj.jobExecStatus = $('#jobExecStatus').val();
 	        	obj.start = d.start;
-	        	obj.length = d.length;
+	        	obj.limit = d.length;
                 return obj;
             }
 	    },
@@ -29,8 +29,8 @@ $(function() {
 	                	"data": 'groupId', 
 	                	"visible" : true,
 	                	"render": function ( data, type, row ) {
-	            			var groupMenu = $("#jobGroup").find("option");
-	            			for ( var index in $("#jobGroup").find("option")) {
+	            			var groupMenu = $("#jobGroupId").find("option");
+	            			for ( var index in $("#jobGroupId").find("option")) {
 	            				if ($(groupMenu[index]).attr('value') == data) {
 									return $(groupMenu[index]).html();
 								}
@@ -43,6 +43,8 @@ $(function() {
 	                { "data": 'jobDesc', "visible" : false},
 	                { "data": 'triggerType', "visible" : true},
 	                { "data": 'cronExpression', "visible" : true},
+	                { "data": 'typeDaily', "visible" : true},
+	                
 	                { "data": 'txDate', "visible" : false},
 	                { "data": 'offset', "visible" : false},
 	                { "data": 'jobStatus', "visible" : true},
@@ -92,9 +94,9 @@ $(function() {
 	                		return function(){
 	                			// status
 	                			var pause_resume = "";
-	                			if ('NORMAL' == row.jobStatus) {
+	                			if ('RUNNING' == row.jobStatus) {
 	                				pause_resume = '<button class="btn btn-primary btn-xs job_operate" type="job_pause" type="button">暂停</button>  ';
-								} else if ('PAUSED' == row.jobStatus){
+								} else if ('PAUSE' == row.jobStatus){
 									pause_resume = '<button class="btn btn-primary btn-xs job_operate" type="job_resume" type="button">恢复</button>  ';
 								}
 	                			// log url
@@ -106,27 +108,39 @@ $(function() {
 									var codeUrl = base_url +'/jobcode?jobGroup='+ row.jobGroup +'&jobName='+ row.jobName;
 									codeBtn = '<button class="btn btn-warning btn-xs" type="button" onclick="javascript:window.open(\'' + codeUrl + '\')" >GLUE</button>  '
 								}
-
+	                			
+	                			var groupName = "";
+	                			var groupMenu = $("#jobGroupId").find("option");
+		            			for ( var index in $("#jobGroupId").find("option")) {
+		            				if ($(groupMenu[index]).attr('value') == row.groupId) {
+		            					groupName = $(groupMenu[index]).html();
+		            					break;
+									}
+								}
 								// html
 								var html = '<p id="'+ row.id +'" '+
-									' jobGroup="'+ row.jobGroup +'" '+
-									' jobName="'+ row.jobName +'" '+
-									' jobCron="'+ row.jobCron +'" '+
-									' jobDesc="'+ row.jobDesc +'" '+
-									' author="'+ row.author +'" '+
-									' alarmEmail="'+ row.alarmEmail +'" '+
-									' executorHandler="'+row.executorHandler +'" '+
-									' executorParam="'+ row.executorParam +'" '+
-									' glueSwitch="'+ row.glueSwitch +'" '+
-                                    ' childJobKey="'+ row.childJobKey +'" '+
-									'>'+
-									'<button class="btn btn-primary btn-xs job_operate" type="job_trigger" type="button">执行</button>  '+
-									pause_resume +
-									'<button class="btn btn-primary btn-xs" type="job_del" type="button" onclick="javascript:window.open(\'' + logUrl + '\')" >日志</button><br>  '+
-									'<button class="btn btn-warning btn-xs update" type="button">编辑</button>  '+
-									codeBtn +
-									'<button class="btn btn-danger btn-xs job_operate" type="job_del" type="button">删除</button>  '+
-									'</p>';
+								' groupName="'+ groupName +'" '+
+								' groupId="'+ row.groupId +'" '+
+								' jobClassApplication="'+ row.jobClassApplication +'" '+
+								' jobDesc="'+ row.jobDesc +'" '+
+								' triggerType="'+ row.triggerType +'" '+
+								' cronExpression="'+ row.cronExpression +'" '+
+								' typeDaily="'+ row.typeDaily +'" '+
+								' txDate="'+ row.txDate +'" '+
+								' offset="'+ row.offset +'" '+
+								' jobStatus="'+ row.jobStatus +'" '+
+								' cuckooParallelJobArgs="'+ row.cuckooParallelJobArgs +'" '+
+								' execJobStatus="'+ row.execJobStatus +'" '+
+								' flowLastTime="'+ row.flowLastTime +'" '+
+								' flowCurTime="'+ row.flowCurTime +'" '+
+								'>'+
+								'<button class="btn btn-primary btn-xs trigger"  type="button">执行</button>  '+
+								pause_resume +
+								'<button class="btn btn-primary btn-xs" type="job_del" type="button" onclick="javascript:window.open(\'' + logUrl + '\')" >日志</button><br>  '+
+								'<button class="btn btn-warning btn-xs update" type="button">编辑</button>  '+
+								codeBtn +
+								'<button class="btn btn-danger btn-xs job_operate" type="job_del" type="button">删除</button>  '+
+								'</p>';
 
 	                			return html;
 							};
@@ -183,35 +197,37 @@ $(function() {
 			typeName = "删除";
 			url = base_url + "/jobinfo/remove";
 			needFresh = true;
-		} else if ("job_trigger" == type) {
-			typeName = "执行";
-			url = base_url + "/jobinfo/trigger";
+//		} else if ("job_trigger" == type) {
+//			typeName = "执行";
+//			url = base_url + "/jobinfo/trigger";
+//			return;
 		} else {
+			
 			return;
 		}
 		
-		var jobGroup = $(this).parent('p').attr("jobGroup");
+		var id = $(this).parent('p').attr("id");
+		var groupName = $(this).parent('p').attr("groupName");
 		var jobName = $(this).parent('p').attr("jobName");
 		
-		ComConfirm.show("确认" + typeName + "?", function(){
+		ComConfirm.show("确认" + typeName +" ["+ groupName +"]-[" +jobName+ "]?", function(){
 			$.ajax({
 				type : 'POST',
 				url : url,
 				data : {
-					"jobGroup" : jobGroup,
-					"jobName"  : jobName
+					"id" : id
 				},
 				dataType : "json",
 				success : function(data){
-					if (data.code == 200) {
-						ComAlert.show(1, typeName + "成功", function(){
+					if (data.resultCode == "success") {
+						ComAlert.show(1, typeName + data.resultMsg, function(){
 							if (needFresh) {
 								//window.location.reload();
 								jobTable.fnDraw();
 							}
 						});
 					} else {
-						ComAlert.show(1, typeName + "失败");
+						ComAlert.show(1, typeName + "失败," + data.resultMsg);
 					}
 				},
 			});
@@ -307,20 +323,20 @@ $(function() {
 		$("#addModal .form input[name='executorHandler']").removeAttr("readonly");
 	});
 
-	// GLUE模式开启
-	$(".ifGLUE").click(function(){
-		var ifGLUE = $(this).is(':checked');
-		var $executorHandler = $(this).parents("form").find("input[name='executorHandler']");
-		var $glueSwitch = $(this).parents("form").find("input[name='glueSwitch']");
-		if (ifGLUE) {
-			$executorHandler.val("");
-			$executorHandler.attr("readonly","readonly");
-			$glueSwitch.val(1);
-		} else {
-			$executorHandler.removeAttr("readonly");
-			$glueSwitch.val(0);
-		}
-	});
+//	// GLUE模式开启
+//	$(".ifGLUE").click(function(){
+//		var ifGLUE = $(this).is(':checked');
+//		var $executorHandler = $(this).parents("form").find("input[name='executorHandler']");
+//		var $glueSwitch = $(this).parents("form").find("input[name='glueSwitch']");
+//		if (ifGLUE) {
+//			$executorHandler.val("");
+//			$executorHandler.attr("readonly","readonly");
+//			$glueSwitch.val(1);
+//		} else {
+//			$executorHandler.removeAttr("readonly");
+//			$glueSwitch.val(0);
+//		}
+//	});
 	
 	// 更新
 	$("#job_list").on('click', '.update',function() {
@@ -448,5 +464,71 @@ $(function() {
 		});
 	});
 	*/
+	
+	
+	
+	
+	// 执行
+	$("#job_list").on('click', '.trigger',function() {
+		
+		// header - 
+		$("#triggerModal .form input[name='triggerHeader']").html($(this).parent('p').attr("typeDaily") + " 任务");
+		if("YES" == $(this).parent('p').attr("typeDaily")){
+			$("#triggerModal .form div[name='dailyParam']").removeClass("hide");
+			$("#triggerModal .form div[name='cronParam']").addClass("hide");
+		}else{
+			$("#triggerModal .form div[name='dailyParam']").addClass("hide");
+			$("#triggerModal .form div[name='cronParam']").removeClass("hide");
+		}
+		// base data
+		$("#triggerModal .form input[name='id']").val($(this).parent('p').attr("id"));
+		$("#triggerModal .form input[name='triggerType']").val($(this).parent('p').attr("triggertype"));
+		$("#triggerModal .form input[name='typeDaily']").val($(this).parent('p').attr("typeDaily"));
+		
+
+		// show
+		$('#triggerModal').modal({backdrop: false, keyboard: false}).modal('show');
+	});
+	var triggerModalValidate = $("#triggerModal .form").validate({
+		errorElement : 'span',  
+        errorClass : 'help-block',
+        focusInvalid : true,
+
+		
+		highlight : function(element) {
+            $(element).closest('.form-group').addClass('has-error');  
+        },
+        success : function(label) {  
+            label.closest('.form-group').removeClass('has-error');  
+            label.remove();  
+        },
+        errorPlacement : function(error, element) {  
+            element.parent('div').append(error);  
+        },
+        submitHandler : function(form) {
+			// post
+    		$.post(base_url + "/jobinfo/trigger", $("#triggerModal .form").serialize(), function(data, status) {
+    			if (data.resultCode == "success") {
+					$('#triggerModal').modal('hide');
+					setTimeout(function () {
+						ComAlert.show(1, "添加执行完成", function(){
+							//window.location.reload();
+							jobTable.fnDraw();
+						});
+					}, 315);
+    			} else {
+    				if (data.resultMsg) {
+    					ComAlert.show(2, data.resultMsg);
+					} else {
+						ComAlert.show(2, "更新失败");
+					}
+    			}
+    		});
+		}
+	});
+	$("#updateModal").on('hide.bs.modal', function () {
+		$("#updateModal .form")[0].reset()
+	});
+	
 
 });

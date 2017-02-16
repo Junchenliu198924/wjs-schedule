@@ -1,5 +1,6 @@
 package com.wjs.schedule.quartz;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -68,18 +69,26 @@ public class QuartzApiTest extends ServiceUnitBaseTest {
 	 */
 	@Test
 	public void testAddSimpleJob() {
+		
+		
 		TriggerKey triggerKey = TriggerKey.triggerKey(jobName1, jobGroup);
 		JobKey jobKey = new JobKey(jobName1, jobGroup);
 		Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
 		JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
 
-		SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder.repeatMinutelyForTotalCount(1)
+		SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
+				.repeatMinutelyForTotalCount(1) // 只触发一次
 				.withMisfireHandlingInstructionIgnoreMisfires();
 		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
-				.withSchedule(simpleScheduleBuilder).build();
+				.withSchedule(simpleScheduleBuilder)
+				.startAt(new Date(System.currentTimeMillis() + 10000)) //  设置其实时间
+				.build();
 		try {
+
+			System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			Date date = scheduler.scheduleJob(jobDetail, simpleTrigger);
-			System.out.println(date);
+			System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+			scheduler.deleteJob(jobKey);
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 		}
