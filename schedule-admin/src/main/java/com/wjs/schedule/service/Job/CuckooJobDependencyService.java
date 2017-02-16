@@ -2,8 +2,6 @@ package com.wjs.schedule.service.Job;
 
 import java.util.List;
 
-import org.quartz.JobDataMap;
-
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.exception.JobDependencyException;
 import com.wjs.schedule.vo.job.JobDependency;
