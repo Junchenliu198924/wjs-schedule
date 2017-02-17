@@ -39,7 +39,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 
 		JobKey jobKey = trigger.getJobKey();
 
-		LOGGER.info("quartz trigger job, jobGroup:{},jobName:{}", jobKey.getGroup(), jobKey.getName());
+		LOGGER.info("quartz trigger job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
 		String quartzJobGroup = jobKey.getGroup();
 		String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
 		if (quartzJobNameArr.length != 2) {

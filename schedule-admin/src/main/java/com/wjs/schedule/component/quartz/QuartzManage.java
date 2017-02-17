@@ -20,6 +20,7 @@ import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.enums.CuckooJobStatus;
@@ -33,7 +34,7 @@ public class QuartzManage {
 	@Resource(name = "quartzScheduler")
 	private Scheduler scheduler;
 
-	static final String quartzCronGroup = "quartz_group";
+	static final String quartzCronGroup = "quartz_cron";
 	static final String quartzSimpleGroup = "quartz_simple";
 	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus){
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
@@ -71,14 +72,13 @@ public class QuartzManage {
 	 * @param id
 	 * @param running
 	 */
+	@Transactional
 	public void addSimpleJob(String jobGroup, String jobName) {
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
 		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
 		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.deleteJob(jobKey);
-			}
+			
 			Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
 			JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
 	
@@ -87,9 +87,13 @@ public class QuartzManage {
 					.withMisfireHandlingInstructionIgnoreMisfires();
 			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
 					.withSchedule(simpleScheduleBuilder)
-					.startAt(new Date(System.currentTimeMillis() + 10000)) //  设置其实时间
+					.startAt(new Date(System.currentTimeMillis() + 30000)) //  设置起始时间
 					.build();
-			scheduler.scheduleJob(jobDetail, simpleTrigger);
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.rescheduleJob(triggerKey, simpleTrigger);
+			}else{
+				scheduler.scheduleJob(jobDetail, simpleTrigger);
+			}
 		} catch (SchedulerException e) {
 			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());

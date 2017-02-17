@@ -158,6 +158,7 @@ public class CuckooJobExecutor {
 		}else{
 			// 其他状态，加入到quartz待执行任务中，等待下次调度
 			LOGGER.error("job 【{}】 status 【{}】 error,can not running job,this job will trigger 1 minute later,jobInfo:{}",jobInfo.getId(), jobInfo.getExecJobStatus(), jobInfo);
+			quartzExec.addSimpleJob(String.valueOf(jobInfo.getGroupId()), String.valueOf(jobInfo.getId()));
 			return;
 		}
 		
