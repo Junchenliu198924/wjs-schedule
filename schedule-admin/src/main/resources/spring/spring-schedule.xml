@@ -10,6 +10,9 @@
         <property name="startupDelay" value="20" />		<!--延时启动 -->
 		<property name="applicationContextSchedulerContextKey"  value="applicationContextKey" /> 
         <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="jobFactory">
+            <bean class="com.wjs.schedule.component.quartz.QuartzBeanFactory" />
+        </property>
 	</bean>
 	
 	<!-- 协同-调度器

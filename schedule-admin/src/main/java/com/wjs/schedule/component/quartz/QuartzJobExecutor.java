@@ -1,6 +1,5 @@
 package com.wjs.schedule.component.quartz;
 
-import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,15 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
-import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 
+@Component("quartzJobExecutor")
 public class QuartzJobExecutor extends QuartzJobBean {
 
 
@@ -40,14 +39,14 @@ public class QuartzJobExecutor extends QuartzJobBean {
 
 		JobKey jobKey = trigger.getJobKey();
 
+		LOGGER.info("quartz trigger job, jobGroup:{},jobName:{}", jobKey.getGroup(), jobKey.getName());
 		String quartzJobGroup = jobKey.getGroup();
 		String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
 		if (quartzJobNameArr.length != 2) {
 			LOGGER.error("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 			throw new BaseException("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 		}
-		Long cuckooJobId = Long.valueOf(quartzJobNameArr[0]);
-		Long cuckooGroupId = Long.valueOf(quartzJobNameArr[1]);
+		Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
 
 		// 根据jobId找到任务信息
 		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);

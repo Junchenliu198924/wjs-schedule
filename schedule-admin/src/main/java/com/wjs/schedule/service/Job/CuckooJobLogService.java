@@ -9,8 +9,9 @@ public interface CuckooJobLogService {
 	/**
 	 * 新增日志
 	 * @param log
+	 * @return 
 	 */
-	public void insertSelective(CuckooJobExecLog log);
+	public Long insertSelective(CuckooJobExecLog log);
 
 	/**
 	 * 根据日志ID获取日志信息
@@ -32,6 +33,12 @@ public interface CuckooJobLogService {
 	 * @return
 	 */
 	public Boolean getJobNeedTriglerByJobInfo(CuckooJobDetail preJobInfo);
+
+	/**
+	 * 按主键修改日志
+	 * @param cuckooJobExecLogs
+	 */
+	public void updateJobLogByPk(CuckooJobExecLog cuckooJobExecLogs);
 
 	
 }

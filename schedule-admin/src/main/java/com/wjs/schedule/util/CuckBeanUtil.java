@@ -1,8 +1,12 @@
 package com.wjs.schedule.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.wjs.schedule.domain.exec.CuckooJobDependency;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobNextJob;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.vo.job.JobDependency;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.job.JobNext;
@@ -17,10 +21,12 @@ public class CuckBeanUtil {
 		job.setJobClassApplication(jobInfo.getJobClassApplication());
 		job.setJobDesc(jobInfo.getJobDesc());
 		job.setJobName(jobInfo.getJobName());
-		job.setJobStatus(jobInfo.getJobStatus());
+		
 		job.setTypeDaily(jobInfo.getTypeDaily());
 		job.setOffset(jobInfo.getOffset());
 		job.setTriggerType(jobInfo.getTriggerType());
+		job.setJobStatus(StringUtils.isEmpty(jobInfo.getJobStatus()) ? CuckooJobStatus.PAUSE.getValue(): jobInfo.getJobStatus() );
+		job.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
 		return job;
 	}
 

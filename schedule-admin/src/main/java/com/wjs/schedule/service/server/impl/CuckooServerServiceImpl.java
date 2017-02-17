@@ -10,16 +10,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
-import com.wjs.schedule.cache.JobClientCache;
+import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
-import com.wjs.schedule.dao.exec.CuckooClientJobDetailSubMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.enums.CuckooClientJobStatus;
+import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.net.client.ClientUtil;
+import com.wjs.schedule.net.server.ServerUtil;
+import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
 import com.wjs.schedule.vo.net.ClientInfo;
 
@@ -31,9 +36,10 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 	@Autowired
 	CuckooClientJobDetailMapper cuckooClientJobDetailMapper;
 	
-	@Autowired
-	CuckooClientJobDetailSubMapper cuckooClientJobDetailSubMapper;
 
+	@Autowired
+	CuckooJobService cuckooJobService;
+	
 	@Override
 	public CuckooClientJobDetail execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean) {
 		
@@ -45,7 +51,7 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		Object socket = null;
 		CuckooClientJobDetail socketClient = null;
 		for (CuckooClientJobDetail cuckooClientJobDetail : remoteJobExecs) {
-			socket = JobClientCache.get(cuckooClientJobDetail.getId());
+			socket = JobClientSessionCache.get(cuckooClientJobDetail.getId());
 			if(null != socket){
 				socketClient = cuckooClientJobDetail;
 				break;
@@ -55,15 +61,14 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		if(socket == null){
 			return null;
 		}
-
-		// 更改client状态为Running
-		socketClient.setCuckooClientStatus(CuckooClientJobStatus.RUNNING.getValue());
+		
+		// 更新远程服务器最新调用时间
+		socketClient.setModifyDate(System.currentTimeMillis());
 		cuckooClientJobDetailMapper.updateByPrimaryKeySelective(socketClient);
-		
-		// socket写数据,触发客户端任务调度 TODO
-//		socket.write(jobBean);
-		
-		LOGGER.info("调用远程任务开始,jobNname:{},bean:{}" ,jobBean.getJobName(), jobBean);
+		// socket写数据,触发客户端任务调度
+
+		LOGGER.info("调用远程任务开始,jobApp:{},jobName:{},bean:{}" , socketClient.getJobClassApplication() ,socketClient.getJobName(), jobBean);
+		ServerUtil.send(socketClient, CuckooMessageType.JOBDOING,  jobBean);
 		
 		return socketClient;
 	}
@@ -71,23 +76,20 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 	@Override
 	public List<CuckooClientJobDetail> getExecRemotesId(Long jobId) {
 		
-
-		//   服务器负载均衡控制
-		ClientInfo remoteInfo = cuckooClientJobDetailSubMapper.getLoadBalanceClient(jobId);
-		if(null == remoteInfo){
-			return null;
-		}
+		// 查看任务详细信息
+		CuckooJobDetail jobInfo = cuckooJobService.getJobById(jobId);
 		
 		// 查询可执行服务器详细信息，并返回
 		CuckooClientJobDetailCriteria clientCrt = new CuckooClientJobDetailCriteria();
-		clientCrt.createCriteria().andCuckooClientIpEqualTo(remoteInfo.getRemoteIp())
-		.andCuckooClientTagEqualTo(remoteInfo.getRemoteTag());
+		clientCrt.createCriteria().andJobClassApplicationEqualTo(jobInfo.getJobClassApplication())
+		.andJobNameEqualTo(jobInfo.getJobName());
 		List<CuckooClientJobDetail> result = cuckooClientJobDetailMapper.selectByExample(clientCrt);
 
 		return result;
 	}
 
 	@Override
+	@Transactional
 	public Long addRemote(IoSession session, ClientTaskInfoBean clientTaskInfoBean) {
 
 		// 数据库增加记录
@@ -115,22 +117,28 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 				cuckooClientJobDetail.setBeanName(clientTaskInfoBean.getBeanName());
 				cuckooClientJobDetail.setMethodName(clientTaskInfoBean.getMethodName());
 				cuckooClientJobDetail.setCuckooClientIp(ip);
+				cuckooClientJobDetail.setCreateDate(System.currentTimeMillis());
 				cuckooClientJobDetailMapper.insertSelective(cuckooClientJobDetail);
 				clientId =  cuckooClientJobDetailMapper.lastInsertId();
 			}else{
-				clientId = result.get(0).getId();
+				CuckooClientJobDetail cuckooClientJobDetail = result.get(0);
+				clientId = cuckooClientJobDetail.getId();
+				cuckooClientJobDetail.setCuckooClientStatus(CuckooClientJobStatus.RUNNING.getValue());
+				cuckooClientJobDetailMapper.updateByPrimaryKeySelective(cuckooClientJobDetail);
 			}
 		} catch (Exception e) {
 			
-			LOGGER.info("insert client job error:{},clientTaskInfoBean:{}", e.getMessage(),clientTaskInfoBean, e);
+			LOGGER.error("falied add client job :{},clientTaskInfoBean:{}", e.getMessage(),clientTaskInfoBean, e);
 		}
 		
 		// 链接缓存中增加缓存
 		ClientInfo socket = new ClientInfo();
-		socket.setRemoteIp(ip);
+		socket.setRemoteApp(clientTaskInfoBean.getAppName());
 		socket.setRemoteTag(clientTaskInfoBean.getClientTag());
 		socket.setSession(session);
-		JobClientCache.put(clientId, socket);
+		
+		JobClientSessionCache.put(clientId, socket);
+		LOGGER.info("succed add client job ,clientTaskInfoBean:{}",clientTaskInfoBean);
 		return clientId;
 	}
 

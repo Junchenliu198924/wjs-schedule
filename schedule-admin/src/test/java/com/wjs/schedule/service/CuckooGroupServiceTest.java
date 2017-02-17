@@ -16,7 +16,7 @@ public class CuckooGroupServiceTest extends ServiceUnitBaseTest {
 	public void testAddGroup(){
 
 		JobGroup group  = new JobGroup();
-		group.setGroupName("单测分组2");
+		group.setGroupName("单测分组");
 		group.setGroupDesc("单测分组说明");
 		Long id = cuckooGroupService.addGroup(group);
 		System.out.println(id);

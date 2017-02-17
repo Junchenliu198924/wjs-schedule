@@ -11,18 +11,14 @@
 	
 
 	<!-- part 1 :for datasource -->
-	<bean id="dataSource-schedule" class="com.mchange.v2.c3p0.ComboPooledDataSource"  destroy-method="close">  
-	    <property name="driverClass" value="${c3p0.driverClass}" />  
-	    <property name="jdbcUrl" value="${c3p0.url}" />  
-	    <property name="user" value="${c3p0.user}" />  
+	<bean id="dataSource-schedule" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+	    <property name="driverClassName" value="${c3p0.driverClass}" />  
+	    <property name="url" value="${c3p0.url}" />  
+	    <property name="username" value="${c3p0.user}" />  
 	    <property name="password" value="${c3p0.password}" />  
-	    <property name="initialPoolSize" value="3" />  
-	    <property name="minPoolSize" value="2" />  
-	    <property name="maxPoolSize" value="10" />  
-	    <property name="maxIdleTime" value="60" />
-	    <property name="acquireRetryDelay" value="1000" />
-	    <property name="acquireRetryAttempts" value="10" />
-	    <property name="preferredTestQuery" value="SELECT 1" />
+	    <property name="maxActive" value="100"></property> 
+		<property name="maxIdle" value="100"></property> 
+		<property name="validationQuery" value="select 1"></property> 
 	</bean>
 	
 	<bean id="sqlSessionFactory-schedule" class="org.mybatis.spring.SqlSessionFactoryBean">

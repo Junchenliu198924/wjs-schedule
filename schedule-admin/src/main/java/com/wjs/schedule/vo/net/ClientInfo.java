@@ -1,5 +1,8 @@
 package com.wjs.schedule.vo.net;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.mina.core.session.IoSession;
 
@@ -8,7 +11,7 @@ public class ClientInfo {
 	/**
 	 * IP
 	 */
-	private String remoteIp;
+	private String remoteApp;
 	
 	/**
 	 * tag
@@ -16,16 +19,17 @@ public class ClientInfo {
 	private String remoteTag;
 	
 	/**
-	 * 连接
+	 * 连接 -- 每一个APP和Tag只有一个连接和当前服务器连接
 	 */
-	private IoSession session;
+	private  IoSession session;
 
-	public String getRemoteIp() {
-		return remoteIp;
+
+	public String getRemoteApp() {
+		return remoteApp;
 	}
 
-	public void setRemoteIp(String remoteIp) {
-		this.remoteIp = remoteIp;
+	public void setRemoteApp(String remoteApp) {
+		this.remoteApp = remoteApp;
 	}
 
 	public String getRemoteTag() {
@@ -35,7 +39,9 @@ public class ClientInfo {
 	public void setRemoteTag(String remoteTag) {
 		this.remoteTag = remoteTag;
 	}
-	
+
+
+
 	public IoSession getSession() {
 		return session;
 	}
@@ -43,26 +49,36 @@ public class ClientInfo {
 	public void setSession(IoSession session) {
 		this.session = session;
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
-		
-		return remoteIp.hashCode() | remoteTag.hashCode() ;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((remoteApp == null) ? 0 : remoteApp.hashCode());
+		result = prime * result + ((remoteTag == null) ? 0 : remoteTag.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		
-		if(!(obj instanceof ClientInfo)){  
-            return false;  
-        }  
-     
-		ClientInfo c =(ClientInfo)obj;  
-   
-        // ip和tag是相同表示同一个应用  
-        return this.remoteIp.equals(c.remoteIp) && this.remoteTag.equals(c.remoteTag);  
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientInfo other = (ClientInfo) obj;
+		if (remoteApp == null) {
+			if (other.remoteApp != null)
+				return false;
+		} else if (!remoteApp.equals(other.remoteApp))
+			return false;
+		if (remoteTag == null) {
+			if (other.remoteTag != null)
+				return false;
+		} else if (!remoteTag.equals(other.remoteTag))
+			return false;
+		return true;
 	}
 
 	@Override
@@ -70,4 +86,5 @@ public class ClientInfo {
 		
 		return ReflectionToStringBuilder.toString(this);
 	}
+
 }

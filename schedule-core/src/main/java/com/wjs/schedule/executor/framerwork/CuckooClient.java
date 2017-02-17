@@ -2,17 +2,8 @@ package com.wjs.schedule.executor.framerwork;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.util.Iterator;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.filter.logging.LoggingFilter;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
@@ -23,17 +14,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.wjs.schedule.bean.ClientTaskInfoBean;
-import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.executor.aspectj.CuckooTaskAspect;
 import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
-import com.wjs.schedule.net.client.handle.CuckooClientHandler;
-import com.wjs.schedule.net.server.ServerUtil;
+import com.wjs.schedule.net.client.ClientUtil;
 import com.wjs.schedule.net.server.bean.IoServerBean;
 import com.wjs.schedule.net.server.cache.IoServerCollection;
 
@@ -142,7 +129,6 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 						
 						
 						LOGGER.info("init cuckooclient beanName:{},method:{},taskName:", beanName, method.getName(), task.value());
-						System.out.println("beanName:"+beanName+",method:"+method.getName()+",annotation:"+ann);
 					}
 					
 				}
@@ -176,24 +162,9 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 			IoServerCollection.add(bean);
 		}
 		
-		ServerUtil.retryConnect();
+		ClientUtil.retryConnect();
 		
-		// 发送客户端注册消息
-
-		// 连接创建后，需要将客户端的task（clienInfoBean）注解发送给服务器
-		if(CollectionUtils.isNotEmpty(CuckooTaskCache.getCache())){
-			for (Iterator<CuckooTaskBean> it = CuckooTaskCache.getCache().iterator(); it.hasNext() ;) {
-				CuckooTaskBean taskBean = it.next();
-				ClientTaskInfoBean taskInfo =  new ClientTaskInfoBean();
-				taskInfo.setAppName(ClientInfoBean.getAppName());
-				taskInfo.setClientTag(ClientInfoBean.getClientTag());
-				taskInfo.setBeanName(taskBean.getBeanName());
-				taskInfo.setMethodName(taskBean.getMethodName());
-				taskInfo.setTaskName(taskBean.getTaskName());
-				ServerUtil.send(CuckooMessageType.REGIST, taskInfo);
-			}
 		
-		}
 		
 	}
 	

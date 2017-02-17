@@ -93,8 +93,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		// 新增wjs_schedule_cockoo_job_details 数据，默认暂停
 		CuckooJobDetail cuckooJobDetail = CuckBeanUtil.parseJob(jobInfo);
-		cuckooJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
-		cuckooJobDetail.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
+		
 		cuckooJobDetailMapper.insertSelective(cuckooJobDetail);
 		Long jobId = cuckooJobDetailMapper.lastInsertId();
 		if(jobId == null){
@@ -260,7 +259,8 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		orginJobDetail.setTxDate(txDate);
 		orginJobDetail.setNeedTriggleNext(needTriggleNext);
 		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
-		
+
+		LOGGER.info("pending daily Job,{}", orginJobDetail);
 		// 使用Quartz.simpleJob进行触发 
 		quartzExec.addSimpleJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
 	}
@@ -287,7 +287,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		cuckooJobDetails.setNeedTriggleNext(needTriggleNext);
 		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
 		
-
+		LOGGER.info("pending UnDaily Job,{}", cuckooJobDetails);
 		// 使用Quartz.simpleJob进行触发 
 		quartzExec.addSimpleJob(String.valueOf(cuckooJobDetails.getGroupId()), String.valueOf(cuckooJobDetails.getId()));
 	}
@@ -300,7 +300,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		CuckooJobDetail cuckooJobDetails = new CuckooJobDetail();
 		cuckooJobDetails.setId(jobId);
 		cuckooJobDetails.setExecJobStatus(execStatus.getValue());
-		cuckooJobDetailMapper.updateByPrimaryKey(cuckooJobDetails);
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
 		
 	}
 

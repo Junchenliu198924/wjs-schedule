@@ -1,7 +1,5 @@
 package com.wjs.schedule.service;
 
-import javax.print.attribute.standard.JobState;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,18 +15,18 @@ public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 	@Autowired
 	CuckooJobService cuckooJobService;
 	
-	private static Long groupId = 1L;
+	private static Long groupId = 5L;
 	@Test
 	public void testAddCronJob(){
 
 		CuckooJobDetailVo jobInfo = new CuckooJobDetailVo();
 		jobInfo.setGroupId(groupId);
 		jobInfo.setCronExpression("0/5 * * * * ?");
-		jobInfo.setJobClassApplication("com.cif");
+		jobInfo.setJobClassApplication("member");
 		jobInfo.setJobDesc("描述：测试cron任务");
-		jobInfo.setJobName("jobName1");
+		jobInfo.setJobName("testJob");
 		jobInfo.setJobStatus(CuckooJobStatus.RUNNING.getValue());
-		jobInfo.setTypeDaily(CuckooIsTypeDaily.YES.getValue());
+		jobInfo.setTypeDaily(CuckooIsTypeDaily.NO.getValue());
 		jobInfo.setOffset(-1);
 		jobInfo.setTriggerType(CuckooJobTriggerType.CRON.getValue());
 		
@@ -42,9 +40,10 @@ public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 
 		CuckooJobDetailVo jobInfo = new CuckooJobDetailVo();
 		jobInfo.setGroupId(groupId);
-		jobInfo.setJobClassApplication("com.member");
+		jobInfo.setJobClassApplication("member");
 		jobInfo.setJobDesc("描述：测试flow任务");
-		jobInfo.setJobName("execSimpleJob1");
+		jobInfo.setJobName("testJob2");
+		jobInfo.setCronExpression("0 0 1 * * ?");
 		jobInfo.setTypeDaily(CuckooIsTypeDaily.YES.getValue());
 		jobInfo.setJobStatus(CuckooJobStatus.RUNNING.getValue());
 		jobInfo.setTriggerType(CuckooJobTriggerType.JOB.getValue());

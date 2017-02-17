@@ -8,6 +8,8 @@ CREATE TABLE cuckoo_client_job_detail
 	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
 	bean_name                      varchar(256)    DEFAULT ''         NOT NULL	COMMENT '实现类名称',
 	method_name                    varchar(100)    DEFAULT ''         NOT NULL	COMMENT '方法名称',
+	create_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '创建时间',
+	modify_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '修改时间',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB

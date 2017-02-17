@@ -27,9 +27,10 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void insertSelective(CuckooJobExecLog log) {
+	public Long insertSelective(CuckooJobExecLog log) {
 		
 		cuckooJobExecLogsMapper.insertSelective(log);
+		return cuckooJobExecLogsMapper.lastInsertId();
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		log.setId(id);
 		log.setExecJobStatus(jobStatus.getValue());
 		log.setJobEndTime(System.currentTimeMillis());
-		cuckooJobExecLogsMapper.updateByPrimaryKey(log);
+		cuckooJobExecLogsMapper.updateByPrimaryKeySelective(log);
 		
 	}
 
@@ -69,6 +70,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			return logs.get(0).getNeedTriggleNext();
 		}
 		return true;
+	}
+
+	@Override
+	public void updateJobLogByPk(CuckooJobExecLog cuckooJobExecLogs) {
+
+		cuckooJobExecLogsMapper.updateByPrimaryKeySelective(cuckooJobExecLogs);
 	}
 
 }

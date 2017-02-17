@@ -25,7 +25,7 @@ import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
-@Component("quartzExec")
+@Component("quartzManage")
 public class QuartzManage {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuartzManage.class);
@@ -91,7 +91,7 @@ public class QuartzManage {
 					.build();
 			scheduler.scheduleJob(jobDetail, simpleTrigger);
 		} catch (SchedulerException e) {
-			LOGGER.error("任务调度失败:{}", e.getMessage(), e);
+			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 		

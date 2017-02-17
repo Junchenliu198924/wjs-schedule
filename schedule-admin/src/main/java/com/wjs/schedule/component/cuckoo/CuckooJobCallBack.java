@@ -17,7 +17,7 @@ import com.wjs.schedule.service.Job.CuckooJobService;
  * @author Silver
  *
  */
-@Component("wjsCuckooJobCallBack")
+@Component("cuckooJobCallBack")
 public class CuckooJobCallBack  {
 
 
@@ -40,7 +40,9 @@ public class CuckooJobCallBack  {
 		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
-		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
+		if(null != jobLog){
+			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
+		}
 		// 更新日志
 		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED);
 		
@@ -58,7 +60,10 @@ public class CuckooJobCallBack  {
 		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 修改任务状态
-		cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);
+		if(null != jobLog){
+
+			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);
+		}
 		// 更新日志
 		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.FAILED);
 	}

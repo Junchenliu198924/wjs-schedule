@@ -1,12 +1,5 @@
 package com.wjs.schedule.executor.aspectj;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -14,13 +7,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
-import com.wjs.schedule.net.server.ServerUtil;
+import com.wjs.schedule.net.client.ClientUtil;
 
 /**
  * mysql的for update no wait 实现
@@ -55,14 +47,14 @@ public class CuckooTaskAspect {
 			
 			// 发送服务端，任务执行完成
 			
-			ServerUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
+			ClientUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
 
 			LOGGER.info("task exec succed taskName:{}, jobInfo:{}", task.value(), jobinfo);
 			return obj;
 		} catch (Exception e) {
 			LOGGER.error("task exec error taskName:{}", task.value(), e);
 			// 发送服务端，任务执行失败
-			ServerUtil.send(CuckooMessageType.JOBFAILED, jobinfo);
+			ClientUtil.send(CuckooMessageType.JOBFAILED, jobinfo);
 			throw e;
 		}
 

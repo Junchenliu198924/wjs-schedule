@@ -75,6 +75,12 @@
 			<version>0.9.1.2</version>
 		</dependency>
 		
+		<!-- dbcp -->
+		<dependency>
+		 	<groupId>commons-dbcp</groupId>
+		 	<artifactId>commons-dbcp</artifactId>
+		 	<version>1.4</version>
+  		</dependency>
 		<!-- mysql-connector -->
 		<dependency>
 			<groupId>mysql</groupId>

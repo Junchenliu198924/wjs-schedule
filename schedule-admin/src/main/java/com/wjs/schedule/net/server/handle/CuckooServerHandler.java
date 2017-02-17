@@ -1,5 +1,7 @@
 package com.wjs.schedule.net.server.handle;
 
+import java.net.SocketAddress;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
+import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.net.server.ServerUtil;
@@ -81,6 +84,19 @@ public class CuckooServerHandler extends IoHandlerAdapter {
 		
 		super.messageSent(session, message);
 	}
+
+	@Override
+	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+
+		SocketAddress clientAddr = session.getRemoteAddress();
+		LOGGER.error("client error:{}", clientAddr.toString(), cause);
+	
+		JobClientSessionCache.remove(session);
+		super.exceptionCaught(session, cause);
+	}
+	
+	
+	
     
     
 }

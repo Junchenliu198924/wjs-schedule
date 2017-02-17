@@ -38,12 +38,6 @@
         <property name="configLocation" value="classpath:quartz.properties"/>
 	</bean>
 	
-	<!-- 协同-调度器 
-	<bean id="dynamicSchedulerUtil" class="com.xxl.job.admin.core.util.DynamicSchedulerUtil" init-method="init" destroy-method="destroy" >
-        <property name="scheduler" ref="quartzScheduler"/>
-        <property name="callBackPort" value="8888"/>
-    </bean>
-    -->
     
     
 	<import resource="classpath*:spring/spring-dao.xml" />

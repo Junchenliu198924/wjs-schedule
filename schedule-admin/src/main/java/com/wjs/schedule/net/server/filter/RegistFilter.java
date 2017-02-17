@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.wjs.schedule.cache.JobClientCache;
+import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.enums.CuckooClientJobStatus;
@@ -35,15 +35,8 @@ public class RegistFilter extends IoFilterAdapter{
 		
 		SocketAddress clientAddr = session.getRemoteAddress();
 		LOGGER.error("客户端异常:{}", clientAddr.toString());
-		Long clientId = JobClientCache.getClientIdBySession(session);
-		if(null != clientId){
-			// 断线处理
-			CuckooClientJobDetail updRecord = new CuckooClientJobDetail();
-			updRecord.setId(clientId);
-			updRecord.setCuckooClientStatus(CuckooClientJobStatus.OFFLINE.getValue());
-			cuckooClientJobDetailMapper.updateByPrimaryKeySelective(updRecord);
-		}
-		JobClientCache.remove(clientId);
+	
+		JobClientSessionCache.remove(session);
 		
 		super.exceptionCaught(nextFilter, session, cause);
 		
@@ -102,15 +95,8 @@ public class RegistFilter extends IoFilterAdapter{
 
 		SocketAddress clientAddr = session.getRemoteAddress();
 		LOGGER.error("客户端异常:{}", clientAddr.toString());
-		Long clientId = JobClientCache.getClientIdBySession(session);
-		if(null != clientId){
-			// 断线处理
-			CuckooClientJobDetail updRecord = new CuckooClientJobDetail();
-			updRecord.setId(clientId);
-			updRecord.setCuckooClientStatus(CuckooClientJobStatus.OFFLINE.getValue());
-			cuckooClientJobDetailMapper.updateByPrimaryKeySelective(updRecord);
-		}
-		JobClientCache.remove(clientId);
+
+		JobClientSessionCache.remove(session);
 		super.sessionClosed(nextFilter, session);
 	}
 
