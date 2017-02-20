@@ -16,6 +16,7 @@ import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.service.Job.CuckooJobService;
 
 @Component("quartzJobExecutor")
 public class QuartzJobExecutor extends QuartzJobBean {
@@ -28,6 +29,9 @@ public class QuartzJobExecutor extends QuartzJobBean {
 	
 	@Autowired
 	CuckooJobExecutor cuckooJobExecutor;
+	
+	@Autowired
+	CuckooJobService cuckooJobService;
 	
 	@Autowired
 	QuartzManage quartzExec;
@@ -49,7 +53,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 		Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
 
 		// 根据jobId找到任务信息
-		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);
+		final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);
 		if (null == cuckooJobDetail) {
 			LOGGER.error("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}", jobKey.getGroup(),
 					jobKey.getName());
@@ -59,7 +63,16 @@ public class QuartzJobExecutor extends QuartzJobBean {
 
 		// if(trigger instanceof CronTrigger){
 		// cron or daily 任务触发
-		cuckooJobExecutor.executeQuartzJob(cuckooJobDetail);
+		if(!cuckooJobExecutor.executeQuartzJob(cuckooJobDetail)){
+			// 未执行成功的，需要放到pending中，等待执行
+//			new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+				cuckooJobService.pendingJob(cuckooJobDetail.getGroupId(), cuckooJobDetail.getId());
+//				}
+//			}).start();
+		};
 
 		// }
 	}

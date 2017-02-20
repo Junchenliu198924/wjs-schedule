@@ -40,12 +40,13 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	}
 
 	@Override
-	public void updateJobLogStatusById(Long id, CuckooJobExecStatus jobStatus) {
+	public void updateJobLogStatusById(Long id, CuckooJobExecStatus jobStatus, String message) {
 
 		CuckooJobExecLog log = new CuckooJobExecLog();
 		log.setId(id);
 		log.setExecJobStatus(jobStatus.getValue());
 		log.setJobEndTime(System.currentTimeMillis());
+		log.setRemark(message);
 		cuckooJobExecLogsMapper.updateByPrimaryKeySelective(log);
 		
 	}

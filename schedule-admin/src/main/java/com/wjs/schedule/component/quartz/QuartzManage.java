@@ -19,7 +19,9 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
@@ -72,7 +74,6 @@ public class QuartzManage {
 	 * @param id
 	 * @param running
 	 */
-	@Transactional
 	public void addSimpleJob(String jobGroup, String jobName) {
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
@@ -87,12 +88,19 @@ public class QuartzManage {
 					.withMisfireHandlingInstructionIgnoreMisfires();
 			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
 					.withSchedule(simpleScheduleBuilder)
-					.startAt(new Date(System.currentTimeMillis() + 30000)) //  设置起始时间
+					.startAt(new Date(System.currentTimeMillis() + 60000)) //  设置起始时间
 					.build();
 			if(scheduler.checkExists(jobKey) ){
-				scheduler.rescheduleJob(triggerKey, simpleTrigger);
-			}else{
+//				System.err.println("rescheduleJob"+ quartzJobName);
+//				scheduler.rescheduleJob(triggerKey, simpleTrigger);
+				scheduler.deleteJob(jobKey);
 				scheduler.scheduleJob(jobDetail, simpleTrigger);
+//				System.err.println("rescheduleJob——"+ quartzJobName);
+			}else{
+
+//				System.err.println("scheduleJob"+ quartzJobName);
+				scheduler.scheduleJob(jobDetail, simpleTrigger);
+//				System.err.println("scheduleJob——"+ quartzJobName);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);

@@ -24,8 +24,9 @@ public interface CuckooJobLogService {
 	 * 根据主键更新日志状态
 	 * @param id
 	 * @param succed
+	 * @param message 
 	 */
-	public void updateJobLogStatusById(Long id, CuckooJobExecStatus succed);
+	public void updateJobLogStatusById(Long id, CuckooJobExecStatus succed, String message);
 
 	/**
 	 * 从日志中查询是否触发下级任务

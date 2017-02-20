@@ -1,11 +1,14 @@
 package com.wjs.schedule.enums;
 
+import java.util.Arrays;
+
 public enum CuckooJobTriggerType {
 	
  
-	
-	CRON("CRON", "Cron任务")/*任务由Cron触发*/, 
-	JOB("JOB", "普通任务")/*任务由父任务触发*/; 
+
+	NULL("", "全部/无"),
+	CRON("CRON", "Cron定时触发")/*任务由Cron触发*/, 
+	JOB("JOB", "上级任务触发")/*任务由父任务触发*/; 
 	
 	private final String value;
 	
@@ -37,6 +40,18 @@ public enum CuckooJobTriggerType {
 		
 		return null;
 	}	
+	public static CuckooJobTriggerType[] valuesNoNull() {
 
+		CuckooJobTriggerType[] result = CuckooJobTriggerType.values();
+		for (int i = 0; i < result.length; i++) {
+			if(CuckooJobTriggerType.NULL.equals(result[i])){
+				// 提出null元素 --用最后一个元素替换，然后删除最后一个元素
+				result[i]= result[result.length-1];
+				//数组缩容
+				result = Arrays.copyOf(result, result.length-1);
+			}
+		}
+		return result;
+	}	
 }
 

@@ -243,9 +243,13 @@ $(function() {
 	
 	// 新增
 	$(".add").click(function(){
-		$('#addModal').modal({backdrop: false, keyboard: false}).modal('show');
+		
+		$('#editModal').modal({backdrop: false, keyboard: false}).modal('show');
+		// 修改标题
+		$("#editModal .modal-header h4[name='title']").html("新增任务");
+		$("#editModal .form input[name='id']").val("");
 	});
-	var addModalValidate = $("#addModal .form").validate({
+	var editModalValidate = $("#editModal .form").validate({
 		errorElement : 'span',  
         errorClass : 'help-block',
         focusInvalid : true,  
@@ -295,9 +299,9 @@ $(function() {
             element.parent('div').append(error);  
         },
         submitHandler : function(form) {
-        	$.post(base_url + "/jobinfo/add",  $("#addModal .form").serialize(), function(data, status) {
+        	$.post(base_url + "/jobinfo/add",  $("#editModal .form").serialize(), function(data, status) {
     			if (data.code == "200") {
-					$('#addModal').modal('hide');
+					$('#editModal').modal('hide');
 					setTimeout(function () {
 						ComAlert.show(1, "新增任务成功", function(){
 							jobTable.fnDraw();
@@ -314,156 +318,80 @@ $(function() {
     		});
 		}
 	});
-	$("#addModal").on('hide.bs.modal', function () {
-		$("#addModal .form")[0].reset();
-		addModalValidate.resetForm();
-		$("#addModal .form .form-group").removeClass("has-error");
+	$("#editModal").on('hide.bs.modal', function () {
+		$("#editModal .form")[0].reset();
+		editModalValidate.resetForm();
+		$("#editModal .form .form-group").removeClass("has-error");
 		$(".remote_panel").show();	// remote
 
-		$("#addModal .form input[name='executorHandler']").removeAttr("readonly");
+		$("#editModal .form input[name='executorHandler']").removeAttr("readonly");
 	});
 
-//	// GLUE模式开启
-//	$(".ifGLUE").click(function(){
-//		var ifGLUE = $(this).is(':checked');
-//		var $executorHandler = $(this).parents("form").find("input[name='executorHandler']");
-//		var $glueSwitch = $(this).parents("form").find("input[name='glueSwitch']");
-//		if (ifGLUE) {
-//			$executorHandler.val("");
-//			$executorHandler.attr("readonly","readonly");
-//			$glueSwitch.val(1);
-//		} else {
-//			$executorHandler.removeAttr("readonly");
-//			$glueSwitch.val(0);
-//		}
-//	});
 	
 	// 更新
 	$("#job_list").on('click', '.update',function() {
-
+		// 修改标题
+		$("#editModal .modal-header h4[name='title']").html("修改任务");
+		$("#editModal .form input[name='id']").val($(this).parent('p').attr("id"));
 		// base data
-		$("#updateModal .form input[name='jobGroup']").val($(this).parent('p').attr("jobGroup"));
-		$("#updateModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
-		$("#updateModal .form input[name='jobDesc']").val($(this).parent('p').attr("jobDesc"));
-		$("#updateModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
-		$("#updateModal .form input[name='author']").val($(this).parent('p').attr("author"));
-		$("#updateModal .form input[name='alarmEmail']").val($(this).parent('p').attr("alarmEmail"));
-		$("#updateModal .form input[name='executorHandler']").val($(this).parent('p').attr("executorHandler"));
-		$("#updateModal .form input[name='executorParam']").val($(this).parent('p').attr("executorParam"));
-        $("#updateModal .form input[name='childJobKey']").val($(this).parent('p').attr("childJobKey"));
+		$("#editModal .form select[name='groupId']").val($(this).parent('p').attr("groupId"));
+		$("#editModal .form select[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
+		
+		$("#editModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
+		$("#editModal .form input[name='cuckooParallelJobArgs']").val($(this).parent('p').attr("cuckooParallelJobArgs"));
+		
+		$("#editModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
+		$("#editModal .form input[name='author']").val($(this).parent('p').attr("author"));
+		
+		$("#editModal .form select[name='triggerType']").val($(this).parent('p').attr("triggerType"));
+		$("#editModal .form input[name='cronExpression']").val($(this).parent('p').attr("cronExpression"));
+		$("#editModal .form input[name='preJobId']").val($(this).parent('p').attr("preJobId")); // TODO
+		
+		
+		$("#editModal .form select[name='isTypeDaily']").val($(this).parent('p').attr("isTypeDaily"));
+		$("#editModal .form input[name='offset']").val($(this).parent('p').attr("offset")); 
+
+        $("#editModal .form input[name='dependencyIds']").val($(this).parent('p').attr("dependencyIds")); // TODO
+        $("#editModal .form input[name='jobDesc']").val($(this).parent('p').attr("jobDesc"));
 
 		// jobGroupTitle
-		var jobGroupTitle = $("#addModal .form select[name='jobGroup']").find("option[value='" + $(this).parent('p').attr("jobGroup") + "']").text();
-		$("#updateModal .form .jobGroupTitle").val(jobGroupTitle);
+		var jobGroupTitle = $("#editModal .form select[name='jobGroup']").find("option[value='" + $(this).parent('p').attr("jobGroup") + "']").text();
+		$("#editModal .form .jobGroupTitle").val(jobGroupTitle);
 
-        // glueSwitch
-		var glueSwitch = $(this).parent('p').attr("glueSwitch");
-		$("#updateModal .form input[name='glueSwitch']").val(glueSwitch);
-		var $ifGLUE = $("#updateModal .form .ifGLUE");
-		var $executorHandler = $("#updateModal .form input[name='executorHandler']");
-		if (glueSwitch == 1) {
-			$ifGLUE.attr("checked", true);
-			$executorHandler.val("");
-			$executorHandler.attr("readonly","readonly");
-		} else {
-			$ifGLUE.attr("checked", false);
-			$executorHandler.removeAttr("readonly");
-		}
 
 		// show
-		$('#updateModal').modal({backdrop: false, keyboard: false}).modal('show');
+		$('#editModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
-	var updateModalValidate = $("#updateModal .form").validate({
-		errorElement : 'span',  
-        errorClass : 'help-block',
-        focusInvalid : true,
-
-		rules : {
-			jobDesc : {
-				required : true,
-				maxlength: 50
-			},
-			jobCron : {
-				required : true
-			},
-			executorHandler : {
-				required : false
-			},
-			alarmEmail : {
-				required : true
-			},
-			author : {
-				required : true
-			}
-		},
-		messages : {
-			jobDesc : {
-				required :"请输入“描述”."
-			},
-			jobCron : {
-				required :"请输入“Cron”."
-			},
-			executorHandler : {
-				required : "请输入“jobHandler”."
-			},
-			alarmEmail : {
-				required : "请输入“报警邮件”."
-			},
-			author : {
-				required : "请输入“负责人”."
-			}
-		},
-		highlight : function(element) {
-            $(element).closest('.form-group').addClass('has-error');  
-        },
-        success : function(label) {  
-            label.closest('.form-group').removeClass('has-error');  
-            label.remove();  
-        },
-        errorPlacement : function(error, element) {  
-            element.parent('div').append(error);  
-        },
-        submitHandler : function(form) {
-			// post
-    		$.post(base_url + "/jobinfo/reschedule", $("#updateModal .form").serialize(), function(data, status) {
-    			if (data.code == "200") {
-					$('#updateModal').modal('hide');
-					setTimeout(function () {
-						ComAlert.show(1, "更新成功", function(){
-							//window.location.reload();
-							jobTable.fnDraw();
-						});
-					}, 315);
-    			} else {
-    				if (data.msg) {
-    					ComAlert.show(2, data.msg);
-					} else {
-						ComAlert.show(2, "更新失败");
-					}
-    			}
-    		});
+	
+	
+	// 编辑框触发类型监听
+	$("#editModal .form select[name='triggerType']").change(function(){
+		var triggerType = $("#editModal .form select[name='triggerType']").val();
+		if("CRON" == triggerType){
+			$("#editModal .form div[name='cronDiv']").removeClass("hide");
+			$("#editModal .form div[name='triggerJobDiv']").addClass("hide");
+		}else if("JOB" == triggerType){
+//			,triggerJobDiv
+			$("#editModal .form div[name='cronDiv']").addClass("hide");
+			$("#editModal .form div[name='triggerJobDiv']").removeClass("hide");
+		}else{
+			alert("unknow trigger type!!!");
 		}
 	});
-	$("#updateModal").on('hide.bs.modal', function () {
-		$("#updateModal .form")[0].reset()
-	});
+	
 
-
-	/*
-	// 新增-添加参数
-	$("#addModal .addParam").on('click', function () {
-		var html = '<div class="form-group newParam">'+
-				'<label for="lastname" class="col-sm-2 control-label">参数&nbsp;<button class="btn btn-danger btn-xs removeParam" type="button">移除</button></label>'+
-				'<div class="col-sm-4"><input type="text" class="form-control" name="key" placeholder="请输入参数key[将会强转为String]" maxlength="200" /></div>'+
-				'<div class="col-sm-6"><input type="text" class="form-control" name="value" placeholder="请输入参数value[将会强转为String]" maxlength="200" /></div>'+
-			'</div>';
-		$(this).parents('.form-group').parent().append(html);
-		
-		$("#addModal .removeParam").on('click', function () {
-			$(this).parents('.form-group').remove();
-		});
+	// 编辑框是否为日切任务监听
+	$("#editModal .form select[name='isTypeDaily']").change(function(){
+		var isTypeDaily = $("#editModal .form select[name='isTypeDaily']").val();
+		if("NO" == isTypeDaily){
+			$("#editModal .form div[name='offsetDiv']").addClass("hide");
+		}else if("YES" == isTypeDaily){
+//			,triggerJobDiv
+			$("#editModal .form div[name='offsetDiv']").removeClass("hide");
+		}else{
+			alert("unknow isTypeDaily!!!");
+		}
 	});
-	*/
 	
 	
 	
@@ -526,8 +454,8 @@ $(function() {
     		});
 		}
 	});
-	$("#updateModal").on('hide.bs.modal', function () {
-		$("#updateModal .form")[0].reset()
+	$("#triggerModal").on('hide.bs.modal', function () {
+		$("#triggerModal .form")[0].reset()
 	});
 	
 

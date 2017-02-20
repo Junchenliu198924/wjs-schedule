@@ -33,6 +33,7 @@ public class CuckooTaskAspect {
 
 		
 		JobInfoBean jobinfo = null;
+		Object rtn  = null;
 		try {
 			Signature sign = pjp.getSignature();
 			Object[] args = pjp.getArgs();
@@ -43,20 +44,20 @@ public class CuckooTaskAspect {
 			jobinfo = (JobInfoBean)args[0];
 			LOGGER.info("task exec start taskName:{} , exector:{} , params :{}", task.value(), sign, jobinfo);
 			
-			Object obj = pjp.proceed();
+			rtn = pjp.proceed();
 			
 			// 发送服务端，任务执行完成
 			
 			ClientUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
 
 			LOGGER.info("task exec succed taskName:{}, jobInfo:{}", task.value(), jobinfo);
-			return obj;
+			
 		} catch (Exception e) {
 			LOGGER.error("task exec error taskName:{}", task.value(), e);
 			// 发送服务端，任务执行失败
+			jobinfo.setErrMessage(e.getMessage());
 			ClientUtil.send(CuckooMessageType.JOBFAILED, jobinfo);
-			throw e;
 		}
-
+		return rtn;
 	}
 }

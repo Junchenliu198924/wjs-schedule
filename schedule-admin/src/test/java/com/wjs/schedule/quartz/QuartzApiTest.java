@@ -18,16 +18,23 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import com.wjs.schedule.ServiceUnitBaseTest;
 import com.wjs.schedule.component.quartz.QuartzJobExecutor;
+import com.wjs.schedule.component.quartz.QuartzManage;
 
 public class QuartzApiTest extends ServiceUnitBaseTest {
 
 	static String jobName1 = "testJobName";
 	static String jobGroup = "jobGroup";
 
+	
+
+	@Autowired
+	QuartzManage quartzExec;
+	
 	@Resource(name = "quartzScheduler")
 	private Scheduler scheduler;
 
@@ -81,7 +88,7 @@ public class QuartzApiTest extends ServiceUnitBaseTest {
 				.withMisfireHandlingInstructionIgnoreMisfires();
 		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
 				.withSchedule(simpleScheduleBuilder)
-				.startAt(new Date(System.currentTimeMillis() + 10000)) //  设置其实时间
+				.startAt(new Date(System.currentTimeMillis() + 1000)) //  设置其实时间
 				.build();
 		try {
 
@@ -94,5 +101,7 @@ public class QuartzApiTest extends ServiceUnitBaseTest {
 		}
 
 	}
+	
+	
 
 }

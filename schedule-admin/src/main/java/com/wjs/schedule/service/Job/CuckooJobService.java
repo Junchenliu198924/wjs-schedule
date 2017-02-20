@@ -70,7 +70,12 @@ public interface CuckooJobService {
 	 */
 	public void pendingUnDailyJob(Long id,Boolean needTrigglerNext,Long startTime,Long endTime);
 	
-	
+	/**
+	 * 将任务重置为PENDING状态
+	 * @param jobGroup
+	 * @param jobName
+	 */
+	public void pendingJob(Long jobGroupId, Long jobId);
 
 	/**
 	 * 修改任务执行状态

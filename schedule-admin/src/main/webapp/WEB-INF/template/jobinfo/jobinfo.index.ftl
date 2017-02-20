@@ -41,8 +41,8 @@
 	    		<div class="col-xs-4">
 	              	<div class="input-group">
 	                	<span class="input-group-addon">分组名称</span>
-                		<select class="form-control" id="jobGroupId" >
-                			<#list jobGroupList as group>
+                		<select class="form-control" id="groupId" >
+                			<#list jobGroupsWithNull as group>
                 				<option value="${group.id}" >${group.groupName}</option>
                 			</#list>
 	                  	</select>
@@ -53,8 +53,8 @@
 	                	<span class="input-group-addon">执行应用</span>
 	                	
                 		<select class="form-control" id="jobClassApplication" >
-                			<#list jobAppList?keys as app>
-                				<option value="${app}" >${jobAppList[app]}</option>
+                			<#list jobAppWithNull?keys as app>
+                				<option value="${app}" >${jobAppWithNull[app]}</option>
                 			</#list>
 	                  	</select>
                     </div>
@@ -83,7 +83,7 @@
                     <div class="input-group">
 	                	<span class="input-group-addon">执行状态</span>
                 		<select class="form-control" id="jobExecStatus" >
-                			<#list jobExecStatus as list>
+                			<#list jobExecStatusList as list>
                 				<option value="${list.value}" >${list.description}</option>
                 			</#list>
 	                  	</select>
@@ -142,77 +142,128 @@
 </div>
 
 <!-- job新增.模态框 -->
-<div class="modal fade" id="addModal" tabindex="-1" role="dialog"  aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog"  aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-            	<h4 class="modal-title" >新增任务</h4>
+            	<h4 class="modal-title" name="title" >新增任务</h4>
          	</div>
          	<div class="modal-body">
 				<form class="form-horizontal form" role="form" >
+				
+					
+				
+				
 					<div class="form-group">
-						<label for="firstname" class="col-sm-2 control-label">执行器<font color="red">*</font></label>
+						<!--
+						.分组下拉
+		            	.任务执行应用名称下拉
+		            	-->
+						<label for="firstname" class="col-sm-2 control-label">分组名称<font color="red">*</font></label>
 						<div class="col-sm-4">
-							<select class="form-control" name="jobGroup" >
-		            			<#list JobGroupList as group>
-		            				<option value="${group.id}" >${group.title}</option>
-		            			</#list>
+							<select class="form-control" name="groupId" >
+	                			<#list jobGroupList as group>
+	                				<option value="${group.id}" >${group.groupName}</option>
+	                			</#list>
 		                  	</select>
 						</div>
-                        <label for="lastname" class="col-sm-2 control-label">任务描述<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="jobDesc" placeholder="请输入“描述”" maxlength="50" ></div>
-					</div>
-					<div class="form-group">
-                        <label for="firstname" class="col-sm-2 control-label">JobHandler<font color="red">*</font></label>
+                        <label for="lastname" class="col-sm-2 control-label">执行应用<font color="red">*</font></label>
                         <div class="col-sm-4">
-                            <div class="input-group">
-								<input type="text" class="form-control" name="executorHandler" placeholder="请输入“JobHandler”" maxlength="100" >
-								<span class="input-group-addon"><b>GLUE</b>&nbsp;<input type="checkbox" class="ifGLUE" ></span>
-                                <input type="hidden" name="glueSwitch" value="0" >
-                            </div>
-						</div>
-						<label for="firstname" class="col-sm-2 control-label">执行参数<font color="black">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="executorParam" placeholder="请输入“执行参数”" maxlength="100" ></div>
+	                        <select class="form-control" name="jobClassApplication" >
+	                			<#list jobAppList?keys as app>
+	                				<option value="${app}" >${jobAppList[app]}</option>
+	                			</#list>
+		                  	</select>
+	                  	</div>
+					
 					</div>
-                    <div class="form-group">
-                        <label for="lastname" class="col-sm-2 control-label">Cron<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="jobCron" placeholder="请输入“Cron”" maxlength="20" ></div>
-                        <label for="lastname" class="col-sm-2 control-label">子任务Key<font color="black">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="childJobKey" placeholder="请输入子任务的任务Key,如存在多个逗号分隔" maxlength="100" ></div>
-                    </div>
 					<div class="form-group">
-						<label for="lastname" class="col-sm-2 control-label">报警邮件<font color="red">*</font></label>
-						<div class="col-sm-4"><input type="text" class="form-control" name="alarmEmail" placeholder="请输入“报警邮件”，多个邮件地址逗号分隔" maxlength="100" ></div>
-                        <label for="lastname" class="col-sm-2 control-label">负责人<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="author" placeholder="请输入“负责人”" maxlength="50" ></div>
+						<!--
+						.任务名称和任务执行应用名称唯一
+            			.并发参数设置  
+						-->
+                        <label for="firstname" class="col-sm-2 control-label">任务名称<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                          <input type="text" class="form-control" name="jobName" placeholder="与@CuckooTask(‘任务名称’)对应" maxlength="100" > 
+						</div>
+						
+						<label for="firstname" class="col-sm-2 control-label">执行参数<font color="black">*</font></label>
+                        <div class="col-sm-4">
+                        	<input type="text" class="form-control" name="cuckooParallelJobArgs" placeholder="请输入“执行参数”" maxlength="100" >
+                        </div>
+					</div>
+					
+					
+                    <div class="form-group">
+                       	<!--
+                       	.触发类型下拉【CRON触发/上级任务触发】
+            			.CRON表达式/上级任务名称（与4对应）
+                       	-->
+                    	<label for="firstname" class="col-sm-2 control-label">触发方式<font color="red">*</font></label>
+					    <div class="col-sm-4">
+							<select class="form-control" name="triggerType" >
+		                		<#list jobTriggerTypeNoNull as item>
+		                			<option value="${item.value}" >${item.description}</option>
+		                		</#list>
+			                </select>
+						</div>
+                       	
+                       	<div name="cronDiv"  class="">
+                       		<!-- 如果是cron触发，需要输入cron表达式 -->
+                       		<label for="lastname" class="col-sm-2 control-label">CRON表达式<font color="black">*</font></label>
+                        	<div class="col-sm-4"><input type="text" class="form-control" name="cronExpression" placeholder="请输入CRON表达式" maxlength="100" ></div>
+                       	</div>
+                       	
+                       	<div name="triggerJobDiv" class="hide">
+                       		<!-- 如果是上级任务触发，需要选择上级任务信息-->
+                       		<label for="lastname" class="col-sm-2 control-label">上级任务ID<font color="black">*</font></label>
+                        	<div class="col-sm-4"><input type="text" class="form-control" name="preJobId" placeholder="请输入上级触发任务的ID" maxlength="100" ></div>
+                       	</div>
+						
+                    </div>
+                    
+                    
+					<div class="form-group">
+						<!--
+						.是否日切任务
+            			.日切偏移量
+            			-->
+					
+						<label for="lastname" class="col-sm-2 control-label">日切任务<font color="red">*</font></label>
+						<div class="col-sm-4">
+							<select class="form-control" name="isTypeDaily" >
+		                		<#list jobIsTypeDailyNoNull as item>
+		                			<option value="${item.value}" >${item.description}</option>
+		                		</#list>
+			                </select>
+						</div>
+						
+						<div name="offsetDiv" class="hide">
+	                        <label for="lastname" class="col-sm-2 control-label">偏移量<font color="red">*</font></label>
+	                        <div class="col-sm-4"><input type="text" class="form-control" name="offset" placeholder="-1表示执行时间减1为业务日期(txDate)" maxlength="50" ></div>
+						</div>
+					</div>
+                    
+                    
+	            	<div class="form-group">
+	            		<!--
+		            	.设置依赖任务
+		            	.任务描述
+		            	-->
+                       	<label for="lastname" class="col-sm-2 control-label">依赖任务<font color="black">*</font></label>
+                        <div class="col-sm-4"><input type="text" class="form-control" name="dependencyIds" placeholder="依赖任务ID，以逗号分隔，例如【1,2】" maxlength="100" ></div>
+                       	<label for="lastname" class="col-sm-2 control-label">任务描述<font color="black">*</font></label>
+                        <div class="col-sm-4"><input type="text" class="form-control" name="jobDesc" placeholder="任务描述说明" maxlength="100" ></div>
 					</div>
                     <hr>
+                    
 					<div class="form-group">
 						<div class="col-sm-offset-3 col-sm-6">
 							<button type="submit" class="btn btn-primary"  >保存</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+							<input type="hidden" name="id" >
 						</div>
 					</div>
-
-<input type="hidden" name="glueRemark" value="GLUE代码初始化" >
-<textarea name="glueSource" style="display:none;" >
-package com.xxl.job.service.handler;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.xxl.job.core.handler.IJobHandler;
-
-public class DemoGlueJobHandler extends IJobHandler {
-	private static transient Logger logger = LoggerFactory.getLogger(DemoGlueJobHandler.class);
-
-	@Override
-	public void execute(String... params) throws Exception {
-		logger.info("XXL-JOB, Hello World.");
-	}
-
-}
-</textarea>
 					
 				</form>
          	</div>
@@ -220,61 +271,6 @@ public class DemoGlueJobHandler extends IJobHandler {
 	</div>
 </div>
 
-<!-- 更新.模态框 -->
-<div class="modal fade" id="updateModal" tabindex="-1" role="dialog"  aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-            	<h4 class="modal-title" >更新任务</h4>
-         	</div>
-         	<div class="modal-body">
-				<form class="form-horizontal form" role="form" >
-					<div class="form-group">
-                        <label for="firstname" class="col-sm-2 control-label">执行器<font color="red">*</font></label>
-                        <div class="col-sm-4">
-							<input type="text" class="form-control jobGroupTitle" maxlength="50" readonly >
-						</div>
-                        <label for="lastname" class="col-sm-2 control-label">任务描述<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="jobDesc" placeholder="请输入“描述”" maxlength="50" ></div>
-					</div>
-                    <div class="form-group">
-                        <label for="firstname" class="col-sm-2 control-label">JobHandler<font color="red">*</font></label>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="executorHandler" placeholder="请输入“JobHandler”" maxlength="100" >
-                                <span class="input-group-addon"><b>GLUE</b>&nbsp;<input type="checkbox" class="ifGLUE" ></span>
-                                <input type="hidden" name="glueSwitch" value="0" >
-                            </div>
-                        </div>
-                        <label for="firstname" class="col-sm-2 control-label">执行参数<font color="black">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="executorParam" placeholder="请输入“执行参数”" maxlength="100" ></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastname" class="col-sm-2 control-label">Cron<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="jobCron" placeholder="请输入“Cron”" maxlength="20" ></div>
-                        <label for="lastname" class="col-sm-2 control-label">子任务Key<font color="black">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="childJobKey" placeholder="请输入子任务的任务Key,如存在多个逗号分隔" maxlength="100" ></div>
-                    </div>
-					<div class="form-group">
-						<label for="lastname" class="col-sm-2 control-label">报警邮件<font color="red">*</font></label>
-						<div class="col-sm-4"><input type="text" class="form-control" name="alarmEmail" placeholder="请输入“报警邮件”，多个邮件地址逗号分隔" maxlength="100" ></div>
-                        <label for="lastname" class="col-sm-2 control-label">负责人<font color="red">*</font></label>
-                        <div class="col-sm-4"><input type="text" class="form-control" name="author" placeholder="请输入“负责人”" maxlength="50" ></div>
-					</div>
-					<hr>
-					<div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-6">
-							<button type="submit" class="btn btn-primary"  >保存</button>
-							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                            <input type="hidden" name="jobGroup" >
-                            <input type="hidden" name="jobName" >
-						</div>
-					</div>
-				</form>
-         	</div>
-		</div>
-	</div>
-</div>
 
 
 

@@ -1,5 +1,7 @@
 package com.wjs.schedule.controller.jobinfo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,7 @@ import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.Job.CuckooGroupService;
 import com.wjs.schedule.service.Job.CuckooJobService;
@@ -47,23 +50,49 @@ public class JobInfoController extends BaseController{
 	@RequestMapping(value = "/index")
 	public String index(HttpServletRequest request) {
 		// 任务类型
-		List<CuckooJobGroup> jobGroups = cuckooGroupService.selectAllGroup();
-		CuckooJobGroup all = new CuckooJobGroup();
-		all.setGroupName("全部/无");
-		jobGroups.add(0, all);
-		request.setAttribute("jobGroupList", jobGroups);
+		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
+		request.setAttribute("jobGroupList", jobGroupList);
+		
+		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();
+		CuckooJobGroup groupNull = new CuckooJobGroup();
+		groupNull.setGroupName("全部/无");
+		jobGroupsWithNull.add(0, groupNull);
+		jobGroupsWithNull.addAll(jobGroupList);
+		request.setAttribute("jobGroupsWithNull", jobGroupsWithNull);
 		
 		// APP应用
 		Map<String,String> jobAppList = cuckooJobService.findAllApps();
 		request.setAttribute("jobAppList", jobAppList);
+		Map<String,String> jobAppWithNull = new HashMap<>();
+		jobAppWithNull.put("", "全部/无");
+		jobAppWithNull.putAll(jobAppList);
+		request.setAttribute("jobAppWithNull", jobAppWithNull);
+		
+		
 		
 		// 任务状态
 		CuckooJobStatus[] jobStatusList = CuckooJobStatus.values();
 		request.setAttribute("jobStatusList", jobStatusList);
 		
+//		CuckooJobStatus[] jobStatusNoNull = CuckooJobStatus.valuesNoNull();
+//		request.setAttribute("jobStatusNoNull", jobStatusNoNull);
+		
 		// 任务执行状态
+
 		CuckooJobExecStatus[] jobExecStatus = CuckooJobExecStatus.values();
-		request.setAttribute("jobExecStatus", jobExecStatus);
+		request.setAttribute("jobExecStatusList", jobExecStatus);
+//		CuckooJobExecStatus[] jobExecStatus = CuckooJobExecStatus.valuesNoNull();
+//		request.setAttribute("jobExecStatusNoNull", jobExecStatus);
+		
+		// 任务触发方式
+		CuckooJobTriggerType[] jobTriggerType = CuckooJobTriggerType.valuesNoNull();
+		request.setAttribute("jobTriggerTypeNoNull", jobTriggerType);
+		
+		// 是否为日切任务
+		CuckooIsTypeDaily[] jobIsTypeDaily = CuckooIsTypeDaily.valuesNoNull();
+		request.setAttribute("jobIsTypeDailyNoNull", jobIsTypeDaily);
+		
+		
 		
 		return "jobinfo/jobinfo.index";
 	}

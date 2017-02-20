@@ -116,7 +116,12 @@
 
 
     <logger name="com.wjs" additivity="false">
+        
         <level value="INFO" />
+        <!-- 
+        <level value="DEBUG" />
+         -->
+         
         <appender-ref ref="lbcAppender" />
         <appender-ref ref="lbcErrorAppender" />
     </logger>

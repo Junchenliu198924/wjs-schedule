@@ -62,7 +62,7 @@ public class JobInfoBean implements Serializable{
 	 */
 //	private CuckooJobTriggerType triggerType;
 	
-	
+	private String errMessage;
 
 	public Long getJobLogId() {
 		return jobLogId;
@@ -157,11 +157,21 @@ public class JobInfoBean implements Serializable{
 //	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
 //		this.needTrigglerNext = needTrigglerNext;
 //	}
+	
+	public String getErrMessage() {
+		return errMessage;
+	}
+
+	public void setErrMessage(String errMessage) {
+		this.errMessage = errMessage;
+	}
+
 
 	@Override
 	public String toString() {
 		
 		return ReflectionToStringBuilder.toString(this);
 	}
+
 
 }

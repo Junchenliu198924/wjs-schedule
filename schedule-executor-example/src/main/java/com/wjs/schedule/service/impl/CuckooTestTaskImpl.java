@@ -19,6 +19,7 @@ public class CuckooTestTaskImpl implements CuckooTestTask {
 		// TODO Auto-generated method stub
 
 		LOGGER.info("Client exec done :testJob" );
+		throw new RuntimeException("AAAAA");
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class CuckooJobCallBack  {
 			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
 		}
 		// 更新日志
-		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED);
+		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED, "succed");
 		
 		// 触发下级任务
 		cuckooJobExecutor.executeNextJob(jobInfo);
@@ -65,7 +65,7 @@ public class CuckooJobCallBack  {
 			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);
 		}
 		// 更新日志
-		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.FAILED);
+		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.FAILED, jobInfo.getErrMessage());
 	}
 
 }
