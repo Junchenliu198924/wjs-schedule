@@ -21,6 +21,8 @@ import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.Job.CuckooGroupService;
+import com.wjs.schedule.service.Job.CuckooJobDependencyService;
+import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.dao.PageDataList;
@@ -39,6 +41,12 @@ public class JobInfoController extends BaseController{
 	
 	@Autowired
 	CuckooGroupService cuckooGroupService;
+	
+	@Autowired
+	CuckooJobNextService cuckooJobNextService;
+	
+	@Autowired
+	CuckooJobDependencyService cuckooJobDependencyService;
 	
 	@RequestMapping
 	public String index0(HttpServletRequest request) {
@@ -109,6 +117,32 @@ public class JobInfoController extends BaseController{
 	public Object pageList(JobInfoQry jobInfo, Integer start, Integer limit ){
 		PageDataList<CuckooJobDetail> page = cuckooJobService.pageList(jobInfo, start, limit);
 		return dataTable(page);
+	}
+
+	/**
+	 * 根据jobId获取触发任务的id
+	 * @param jobId
+	 * @return
+	 */
+	@RequestMapping(value="/getPreJobIdByJobId")
+	@ResponseBody
+	public Object getPreJobIdByJobId(Long jobId){
+		
+		return success(cuckooJobNextService.findJobIdByNextJobId(jobId));
+	}
+	
+	
+	
+	/**
+	 * 根据jobId获取任务依赖的任务IDs
+	 * @param jobId
+	 * @return
+	 */
+	@RequestMapping(value="/getDependencyIdsByJobId")
+	@ResponseBody
+	public Object getDependencyIdsByJobId(Long jobId){
+		
+		return success(cuckooJobDependencyService.listDependencyIdsByJobId(jobId));
 	}
 	
 	/**

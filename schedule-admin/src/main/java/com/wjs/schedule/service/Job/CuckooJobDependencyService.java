@@ -19,4 +19,11 @@ public interface CuckooJobDependencyService {
 	 * @param data
 	 */
 	public void checkDepedencyJobFinished(CuckooJobDetail jobInfo) throws JobDependencyException;
+
+	/**
+	 * 根据任务ID查找任务依赖的其他任务ID
+	 * @param jobId
+	 * @return
+	 */
+	public List<Long> listDependencyIdsByJobId(Long jobId);
 }

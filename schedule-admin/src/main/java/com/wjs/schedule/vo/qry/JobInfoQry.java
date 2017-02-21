@@ -4,22 +4,22 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 public class JobInfoQry {
 
-	private Long jobGroupId;
+	private Long groupId;
 	
 	private String jobClassApplication ;
 	private Long jobId ;
 	private String jobStatus ;
 	private String jobExecStatus ;
-	
-	public Long getJobGroupId() {
-		return jobGroupId;
-	}
 
 
-	public void setJobGroupId(Long jobGroupId) {
-		this.jobGroupId = jobGroupId;
+	public Long getGroupId() {
+		return groupId;
 	}
-	
+
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
+	}
+
 
 	public String getJobClassApplication() {
 		return jobClassApplication;

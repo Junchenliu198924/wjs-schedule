@@ -17,15 +17,17 @@ public class CuckBeanUtil {
 
 		CuckooJobDetail job = new CuckooJobDetail();
 		job.setId(jobInfo.getId());
+		job.setCronExpression(jobInfo.getCronExpression());
+		job.setCuckooParallelJobArgs(jobInfo.getCuckooParallelJobArgs());
 		job.setGroupId(jobInfo.getGroupId());
 		job.setJobClassApplication(jobInfo.getJobClassApplication());
 		job.setJobDesc(jobInfo.getJobDesc());
+		job.setJobStatus(StringUtils.isEmpty(jobInfo.getJobStatus()) ? CuckooJobStatus.PAUSE.getValue(): jobInfo.getJobStatus() );
 		job.setJobName(jobInfo.getJobName());
-		
+		job.setNeedTriggleNext(true);
 		job.setTypeDaily(jobInfo.getTypeDaily());
 		job.setOffset(jobInfo.getOffset());
 		job.setTriggerType(jobInfo.getTriggerType());
-		job.setJobStatus(StringUtils.isEmpty(jobInfo.getJobStatus()) ? CuckooJobStatus.PAUSE.getValue(): jobInfo.getJobStatus() );
 		job.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
 		return job;
 	}

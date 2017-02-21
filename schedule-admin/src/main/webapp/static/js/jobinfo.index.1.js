@@ -9,7 +9,7 @@ $(function() {
 			type:"post",
 	        data : function ( d ) {
 	        	var obj = {};
-	        	obj.jobGroupId = $('#jobGroupId').val();
+	        	obj.groupId = $('#groupId').val();
 	        	obj.jobClassApplication = $('#jobClassApplication').val();
 	        	obj.jobId = $('#jobId').val();
 	        	obj.jobStatus = $('#jobStatus').val();
@@ -26,11 +26,11 @@ $(function() {
 	                { "data": 'id', "bSortable": false, "visible" : true}, 
 	                { "data": 'groupId', "bSortable": false, "visible" : false},
 	                { 
-	                	"data": 'groupId', 
-	                	"visible" : true,
-	                	"render": function ( data, type, row ) {
-	            			var groupMenu = $("#jobGroupId").find("option");
-	            			for ( var index in $("#jobGroupId").find("option")) {
+	                	"data": 'groupId'
+	                	, "visible" : true 
+	                	,"render": function ( data, type, row ) {
+	            			var groupMenu = $("#groupId").find("option");
+	            			for ( var index in $("#groupId").find("option")) {
 	            				if ($(groupMenu[index]).attr('value') == data) {
 									return $(groupMenu[index]).html();
 								}
@@ -110,8 +110,8 @@ $(function() {
 								}
 	                			
 	                			var groupName = "";
-	                			var groupMenu = $("#jobGroupId").find("option");
-		            			for ( var index in $("#jobGroupId").find("option")) {
+	                			var groupMenu = $("#groupId").find("option");
+		            			for ( var index in $("#groupId").find("option")) {
 		            				if ($(groupMenu[index]).attr('value') == row.groupId) {
 		            					groupName = $(groupMenu[index]).html();
 		            					break;
@@ -121,6 +121,7 @@ $(function() {
 								var html = '<p id="'+ row.id +'" '+
 								' groupName="'+ groupName +'" '+
 								' groupId="'+ row.groupId +'" '+
+								' jobName="'+ row.jobName +'" '+
 								' jobClassApplication="'+ row.jobClassApplication +'" '+
 								' jobDesc="'+ row.jobDesc +'" '+
 								' triggerType="'+ row.triggerType +'" '+
@@ -248,6 +249,7 @@ $(function() {
 		// 修改标题
 		$("#editModal .modal-header h4[name='title']").html("新增任务");
 		$("#editModal .form input[name='id']").val("");
+		
 	});
 	var editModalValidate = $("#editModal .form").validate({
 		errorElement : 'span',  
@@ -328,42 +330,8 @@ $(function() {
 	});
 
 	
-	// 更新
-	$("#job_list").on('click', '.update',function() {
-		// 修改标题
-		$("#editModal .modal-header h4[name='title']").html("修改任务");
-		$("#editModal .form input[name='id']").val($(this).parent('p').attr("id"));
-		// base data
-		$("#editModal .form select[name='groupId']").val($(this).parent('p').attr("groupId"));
-		$("#editModal .form select[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
-		
-		$("#editModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
-		$("#editModal .form input[name='cuckooParallelJobArgs']").val($(this).parent('p').attr("cuckooParallelJobArgs"));
-		
-		$("#editModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
-		$("#editModal .form input[name='author']").val($(this).parent('p').attr("author"));
-		
-		$("#editModal .form select[name='triggerType']").val($(this).parent('p').attr("triggerType"));
-		$("#editModal .form input[name='cronExpression']").val($(this).parent('p').attr("cronExpression"));
-		$("#editModal .form input[name='preJobId']").val($(this).parent('p').attr("preJobId")); // TODO
-		
-		
-		$("#editModal .form select[name='isTypeDaily']").val($(this).parent('p').attr("isTypeDaily"));
-		$("#editModal .form input[name='offset']").val($(this).parent('p').attr("offset")); 
-
-        $("#editModal .form input[name='dependencyIds']").val($(this).parent('p').attr("dependencyIds")); // TODO
-        $("#editModal .form input[name='jobDesc']").val($(this).parent('p').attr("jobDesc"));
-
-		// jobGroupTitle
-		var jobGroupTitle = $("#editModal .form select[name='jobGroup']").find("option[value='" + $(this).parent('p').attr("jobGroup") + "']").text();
-		$("#editModal .form .jobGroupTitle").val(jobGroupTitle);
-
-
-		// show
-		$('#editModal').modal({backdrop: false, keyboard: false}).modal('show');
-	});
 	
-	
+
 	// 编辑框触发类型监听
 	$("#editModal .form select[name='triggerType']").change(function(){
 		var triggerType = $("#editModal .form select[name='triggerType']").val();
@@ -385,12 +353,64 @@ $(function() {
 		var isTypeDaily = $("#editModal .form select[name='isTypeDaily']").val();
 		if("NO" == isTypeDaily){
 			$("#editModal .form div[name='offsetDiv']").addClass("hide");
+			$("#editModal .form input[name='offset']").val("");
 		}else if("YES" == isTypeDaily){
 //			,triggerJobDiv
 			$("#editModal .form div[name='offsetDiv']").removeClass("hide");
 		}else{
 			alert("unknow isTypeDaily!!!");
 		}
+	});
+	
+	
+	
+	// 更新
+	$("#job_list").on('click', '.update',function() {
+		// 修改标题
+		$("#editModal .modal-header h4[name='title']").html("修改任务");
+		$("#editModal .form input[name='id']").val($(this).parent('p').attr("id"));
+		// base data
+		$("#editModal .form select[name='groupId']").val($(this).parent('p').attr("groupId"));
+		$("#editModal .form select[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
+		
+		$("#editModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
+		$("#editModal .form input[name='cuckooParallelJobArgs']").val($(this).parent('p').attr("cuckooParallelJobArgs"));
+		
+		$("#editModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
+		$("#editModal .form input[name='author']").val($(this).parent('p').attr("author"));
+
+		$("#editModal .form select[name='triggerType']").val($(this).parent('p').attr("triggerType")).trigger('change');
+//		$("#editModal .form select[name='triggerType']").find("option[value='"+$(this).parent('p').attr("triggerType")+"']").attr("selected",true);
+		
+		$("#editModal .form input[name='cronExpression']").val($(this).parent('p').attr("cronExpression"));
+		$.post(base_url + "/jobinfo/getPreJobIdByJobId", 
+			{"jobId" : $(this).parent('p').attr("id")}
+			, function(data, status) {
+				if (data.resultCode == "success") {
+					$("#editModal .form input[name='preJobId']").val(data.data); 
+				}  
+		});
+		
+		
+		$("#editModal .form select[name='isTypeDaily']").val($(this).parent('p').attr("typeDaily")).trigger('change');
+		$("#editModal .form input[name='offset']").val($(this).parent('p').attr("offset")); 
+
+        $.post(base_url + "/jobinfo/getDependencyIdsByJobId", 
+    			{"jobId" : $(this).parent('p').attr("id")}
+    			, function(data, status) {
+    				if (data.resultCode == "success") {
+    			        $("#editModal .form input[name='dependencyIds']").val(data.data); 
+    				}  
+    		});
+        $("#editModal .form input[name='jobDesc']").val($(this).parent('p').attr("jobDesc"));
+
+		// jobGroupTitle
+		var jobGroupTitle = $("#editModal .form select[name='jobGroup']").find("option[value='" + $(this).parent('p').attr("jobGroup") + "']").text();
+		$("#editModal .form .jobGroupTitle").val(jobGroupTitle);
+
+
+		// show
+		$('#editModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
 	
 	

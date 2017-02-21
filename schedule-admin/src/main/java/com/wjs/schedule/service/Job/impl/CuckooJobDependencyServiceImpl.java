@@ -1,5 +1,6 @@
 package com.wjs.schedule.service.Job.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -121,6 +122,19 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 		}
 		
 		
+	}
+
+	@Override
+	public List<Long> listDependencyIdsByJobId(Long jobId) {
+		
+		List<Long> rtn = new ArrayList<>(0);
+		CuckooJobDependencyCriteria crt = new CuckooJobDependencyCriteria();
+		crt.createCriteria().andJobIdEqualTo(jobId);
+		List<CuckooJobDependency> result = cuckooJobDependencyMapper.selectByExample(crt);
+		if(CollectionUtils.isNotEmpty(result)){
+			rtn = PropertyUtil.fetchFieldList(result, "dependencyJobId");
+		}
+		return rtn;
 	}
 
 }

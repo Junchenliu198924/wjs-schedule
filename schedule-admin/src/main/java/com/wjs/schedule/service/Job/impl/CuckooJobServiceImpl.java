@@ -410,8 +410,8 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
 		CuckooJobDetailCriteria.Criteria exp = crt.createCriteria();
-		if(null != jobInfo.getJobGroupId()){
-			exp.andGroupIdEqualTo(jobInfo.getJobGroupId());
+		if(null != jobInfo.getGroupId()){
+			exp.andGroupIdEqualTo(jobInfo.getGroupId());
 		}
 		if(null != jobInfo.getJobId()){
 			exp.andIdEqualTo(jobInfo.getJobId());
