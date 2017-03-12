@@ -202,17 +202,8 @@ public class CuckooJobExecutor {
 			
 			for (CuckooJobDetail cuckooJobDetail : jobInfoNexts) {
 				//  判断任务类型，修改任务状态为PENDING，放入到PENDING任务队列中
-				cuckooJobService.pendingJob(cuckooJobDetail, jobLog, data);
+				cuckooJobService.pendingJob(cuckooJobDetail, jobLog);
 				
-				
-//				if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobDetail.getTypeDaily())){
-//					cuckooJobService.pendingDailyJob(cuckooJobDetail.getId(), jobInfoFather.getNeedTriggleNext(), jobInfoFather.getTxDate());
-//				}else{
-//					cuckooJobService.pendingUnDailyJob(cuckooJobDetail.getId(), jobInfoFather.getNeedTriggleNext(), jobInfoFather.getFlowLastTime(), jobInfoFather.getFlowCurTime());
-//				}
-				
-			
-			
 			}
 		}
 	}
@@ -222,13 +213,16 @@ public class CuckooJobExecutor {
 		// 查询任务信息
 		CuckooJobDetail jobInfo = cuckooJobDetailMapper.selectByPrimaryKey(jobLog.getJobId());
 
-		// 任务状态如果为暂停，等待下次调度
-		if (CuckooJobStatus.PAUSE.getValue().equals(jobInfo.getJobStatus())) {
-			LOGGER.info("job is paush,triggle next time, jobInfo:{}", jobInfo);
-			jobLog.setRemark("job is paush,triggle next time");
-			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
-			return false;
+		if(!jobLog.getForceTriggle()){
+			// 如果任务不是手工调度的情况下，状态为暂停，等待下次调度（手工调度任务，不需要关注任务执行状态是否为暂停）
+			if (CuckooJobStatus.PAUSE.getValue().equals(jobInfo.getJobStatus())) {
+				LOGGER.info("job is paush,triggle next time, jobInfo:{}", jobInfo);
+				jobLog.setRemark("job is paush,triggle next time");
+				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+				return false;
+			}
 		}
+		
 
 		// 校验任务依赖状态
 		try {

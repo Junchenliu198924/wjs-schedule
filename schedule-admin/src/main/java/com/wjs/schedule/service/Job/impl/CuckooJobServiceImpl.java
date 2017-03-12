@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
-import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -363,7 +362,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 
 	@Override
-	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog, JobDataMap data){
+	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog){
 		
 		LOGGER.info("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail , fatherJobLog);
 		CuckooJobExecLog jobLog = new CuckooJobExecLog();
@@ -376,7 +375,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 		jobLog.setLatestCheckTime(curTime);
 		jobLog.setNeedTriggleNext(fatherJobLog.getNeedTriggleNext());
-		jobLog.setForceTriggle(false);
+		jobLog.setForceTriggle(fatherJobLog.getForceTriggle());
 		jobLog.setTxDate(fatherJobLog.getTxDate());
 		jobLog.setFlowLastTime(fatherJobLog.getFlowLastTime());
 		jobLog.setFlowCurTime(fatherJobLog.getFlowCurTime());

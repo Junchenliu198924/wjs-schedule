@@ -3,11 +3,8 @@ package com.wjs.schedule.service.Job;
 import java.util.List;
 import java.util.Map;
 
-import org.quartz.JobDataMap;
-
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.dao.PageDataList;
@@ -65,7 +62,7 @@ public interface CuckooJobService {
 	 * @param jobGroup
 	 * @param jobName
 	 */
-	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog, JobDataMap data);
+	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog);
 	
 
 	/**
