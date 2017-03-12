@@ -19,8 +19,10 @@ AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_client_job ON cuckoo_client_job_detail(job_class_application ASC ,cuckoo_client_tag ASC ,job_name ASC );
 
-
-
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_job_dependency(上级任务依赖表)的当前表
 CREATE TABLE cuckoo_job_dependency
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -35,6 +37,13 @@ AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
 
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_job_detail(任务表)的当前表
 CREATE TABLE cuckoo_job_detail
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -48,11 +57,6 @@ CREATE TABLE cuckoo_job_detail
 	offset                         int             DEFAULT 0          NOT NULL	COMMENT '偏移量',
 	job_status                     varchar(10)     DEFAULT ''         NOT NULL	COMMENT '任务状态',
 	cuckoo_parallel_job_args       varchar(256)    DEFAULT ''         NOT NULL	COMMENT '并发/集群任务参数',
-	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
-	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期',
-	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
-	flow_cur_time                  decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务当前时间参数',
-	need_triggle_next              boolean         DEFAULT 1          NOT NULL	COMMENT '是否触发下级任务',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -63,15 +67,22 @@ ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_cuckoo_job_detail ON cuckoo_job_detail(group_id ASC ,job_name ASC );
 
 
-
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_job_exec_log(任务执行流水表)的当前表
 CREATE TABLE cuckoo_job_exec_log
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	job_id                         bigint          DEFAULT 0          NOT NULL	COMMENT '任务ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
-	job_class_name                 varchar(128)    DEFAULT ''         NOT NULL	COMMENT '作业执行远程类名称',
+	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
 	trigger_type                   varchar(10)     DEFAULT ''         NOT NULL	COMMENT '触发类型',
+	type_daily                     varchar(6)      DEFAULT ''         NOT NULL	COMMENT '是否为日切任务',
 	cron_expression                varchar(20)     DEFAULT ''         NOT NULL	COMMENT 'cron任务表达式',
 	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期',
 	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
@@ -83,6 +94,7 @@ CREATE TABLE cuckoo_job_exec_log
 	cuckoo_client_tag              varchar(128)    DEFAULT ''         NOT NULL	COMMENT '客户端标识',
 	latest_check_time              decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '最近检查时间',
 	need_triggle_next              boolean         DEFAULT 1          NOT NULL	COMMENT '是否触发下级任务',
+	force_triggle                  boolean         DEFAULT 1          NOT NULL	COMMENT '是否强制触发',
 	remark                         varchar(500)    DEFAULT ''         NOT NULL	COMMENT '备注',
 PRIMARY KEY(id)
 )
@@ -91,9 +103,13 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='任务执行流水表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
-
-
-
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_job_group(任务分组表)的当前表
 CREATE TABLE cuckoo_job_group
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -108,7 +124,13 @@ AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
 
-
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_job_next_job(下级任务触发表)的当前表
 CREATE TABLE cuckoo_job_next_job
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -124,7 +146,13 @@ ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_cuckoo_next_job ON cuckoo_job_next_job(next_job_id ASC );
 
 
-
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 cuckoo_locks(任务执行锁存储表)的当前表
 CREATE TABLE cuckoo_locks
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -140,6 +168,13 @@ ROW_FORMAT=COMPACT;
 CREATE UNIQUE INDEX uk_cuckoo_locks ON cuckoo_locks(lock_name ASC );
 
 
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------
+-- -----------------------------------------------
+-- 全量脚本
+-- -----------------------------------------------
+-- 创建表 test_demo(测试用)的当前表
 CREATE TABLE test_demo
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
@@ -154,4 +189,6 @@ AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 
 
-
+-- -----------------------------------------------
+-- 升级脚本
+-- -----------------------------------------------

@@ -39,10 +39,6 @@ public class CuckooJobCallBack  {
 		
 		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
-		// 修改任务状态
-		if(null != jobLog){
-			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.SUCCED);
-		}
 		// 更新日志
 		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED, "succed");
 		
@@ -59,11 +55,6 @@ public class CuckooJobCallBack  {
 
 		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
-		// 修改任务状态
-		if(null != jobLog){
-
-			cuckooJobService.updateJobStatusById(jobLog.getJobId(), CuckooJobExecStatus.FAILED);
-		}
 		// 更新日志
 		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.FAILED, jobInfo.getErrMessage());
 	}

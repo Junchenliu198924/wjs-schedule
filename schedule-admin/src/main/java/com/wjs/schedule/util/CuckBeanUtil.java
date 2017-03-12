@@ -24,11 +24,9 @@ public class CuckBeanUtil {
 		job.setJobDesc(jobInfo.getJobDesc());
 		job.setJobStatus(StringUtils.isEmpty(jobInfo.getJobStatus()) ? CuckooJobStatus.PAUSE.getValue(): jobInfo.getJobStatus() );
 		job.setJobName(jobInfo.getJobName());
-		job.setNeedTriggleNext(true);
 		job.setTypeDaily(jobInfo.getTypeDaily());
 		job.setOffset(jobInfo.getOffset());
 		job.setTriggerType(jobInfo.getTriggerType());
-		job.setExecJobStatus(CuckooJobExecStatus.SUCCED.getValue());
 		return job;
 	}
 

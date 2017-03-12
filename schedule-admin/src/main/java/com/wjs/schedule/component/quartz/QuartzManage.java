@@ -19,12 +19,10 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
@@ -68,21 +66,60 @@ public class QuartzManage {
 		}
 	}
 	
-	/**
-	 * 简单触发器，用于触发手工执行任务，或者是由父任务触发的任务
-	 * @param groupId
-	 * @param id
-	 * @param running
-	 */
-	public void addSimpleJob(String jobGroup, String jobName) {
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+//	/**
+//	 * 简单触发器，用于触发手工执行任务，或者是由父任务触发的任务
+//	 * @param groupId
+//	 * @param id
+//	 * @param running
+//	 */
+//	public void addSimpleJob(String jobGroup, String jobName) {
+//		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+//		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
+//		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
+//		try {
+//			
+//			Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
+//			JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
+//	
+//			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
+//					.repeatMinutelyForTotalCount(1) // 只触发一次
+//					.withMisfireHandlingInstructionIgnoreMisfires();
+//			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
+//					.withSchedule(simpleScheduleBuilder)
+//					.startAt(new Date(System.currentTimeMillis() + 60000)) //  设置起始时间
+//					.build();
+//			if(scheduler.checkExists(jobKey) ){
+////				System.err.println("rescheduleJob"+ quartzJobName);
+////				scheduler.rescheduleJob(triggerKey, simpleTrigger);
+//				scheduler.deleteJob(jobKey);
+//				scheduler.scheduleJob(jobDetail, simpleTrigger);
+////				System.err.println("rescheduleJob——"+ quartzJobName);
+//			}else{
+//
+////				System.err.println("scheduleJob"+ quartzJobName);
+//				scheduler.scheduleJob(jobDetail, simpleTrigger);
+////				System.err.println("scheduleJob——"+ quartzJobName);
+//			}
+//		} catch (SchedulerException e) {
+//			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);
+//			throw new BaseException(e.getMessage());
+//		}
+//		
+//	}
+	
+	
+
+	public void addSimpleJob(CuckooJobExecLog jobLog) {
+		String quartzJobName = jobLog.getGroupId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getJobId();
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
 		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
 		try {
 			
 			Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
 			JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
-	
+			// 放入此次执行的日志参数
+			jobDetail.getJobDataMap().put(CuckooJobConstant.JOB_EXEC_ID, jobLog.getId());
+			
 			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
 					.repeatMinutelyForTotalCount(1) // 只触发一次
 					.withMisfireHandlingInstructionIgnoreMisfires();
@@ -90,6 +127,7 @@ public class QuartzManage {
 					.withSchedule(simpleScheduleBuilder)
 					.startAt(new Date(System.currentTimeMillis() + 60000)) //  设置起始时间
 					.build();
+			
 			if(scheduler.checkExists(jobKey) ){
 //				System.err.println("rescheduleJob"+ quartzJobName);
 //				scheduler.rescheduleJob(triggerKey, simpleTrigger);
@@ -215,6 +253,7 @@ public class QuartzManage {
 			throw new BaseException(e.getMessage());
 		}
 	}
+
 
 	
 	

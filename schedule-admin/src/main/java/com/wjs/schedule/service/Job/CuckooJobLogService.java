@@ -28,12 +28,6 @@ public interface CuckooJobLogService {
 	 */
 	public void updateJobLogStatusById(Long id, CuckooJobExecStatus succed, String message);
 
-	/**
-	 * 从日志中查询是否触发下级任务
-	 * @param preJobInfo
-	 * @return
-	 */
-	public Boolean getJobNeedTriglerByJobInfo(CuckooJobDetail preJobInfo);
 
 	/**
 	 * 按主键修改日志
@@ -41,5 +35,29 @@ public interface CuckooJobLogService {
 	 */
 	public void updateJobLogByPk(CuckooJobExecLog cuckooJobExecLogs);
 
-	
+	/**
+	 * 初始化Cron类型任务触日志(如果是依赖类型的任务，有上级任务触发下级任务的时候初始化执行日志)
+	 * @param cuckooJobDetail
+	 * @return
+	 */
+	public CuckooJobExecLog initFirstJobLog(CuckooJobDetail cuckooJobDetail) ;
+
+	/**
+	 * 控制台执行非日切任务，初始化日志
+	 * @param jobId
+	 * @param needTriggleNext
+	 * @param lastTime
+	 * @param curTime
+	 * @return
+	 */
+	public CuckooJobExecLog initUnDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Long flowLastTime, Long flowCurTime);
+
+	/**
+	 * 控制台执行日切任务，初始化日志
+	 * @param jobId
+	 * @param needTriggleNext
+	 * @param txDate
+	 * @return
+	 */
+	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate);
 }

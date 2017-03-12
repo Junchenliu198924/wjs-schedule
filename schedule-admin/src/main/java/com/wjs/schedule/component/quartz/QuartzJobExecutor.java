@@ -14,8 +14,11 @@ import org.springframework.stereotype.Component;
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 
 @Component("quartzJobExecutor")
@@ -28,10 +31,17 @@ public class QuartzJobExecutor extends QuartzJobBean {
 	CuckooJobDetailMapper cuckooJobDetailMapper;
 	
 	@Autowired
+	CuckooJobExecLogMapper cuckooJobExecLogMapper;
+	
+	@Autowired
 	CuckooJobExecutor cuckooJobExecutor;
 	
 	@Autowired
 	CuckooJobService cuckooJobService;
+	
+
+	@Autowired
+	CuckooJobLogService cuckooJobLogService;
 	
 	@Autowired
 	QuartzManage quartzExec;
@@ -39,44 +49,54 @@ public class QuartzJobExecutor extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
+		
+		
 		Trigger trigger = context.getTrigger();
-
-		JobKey jobKey = trigger.getJobKey();
-
+		JobKey jobKey = trigger.getJobKey();	
 		LOGGER.info("quartz trigger job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
-		String quartzJobGroup = jobKey.getGroup();
-		String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
-		if (quartzJobNameArr.length != 2) {
-			LOGGER.error("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
-			throw new BaseException("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
-		}
-		Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
+		
+		JobDataMap data = context.getMergedJobDataMap();
+		Object execIdObj = data.get(CuckooJobConstant.JOB_EXEC_ID);
+		CuckooJobExecLog cuckooJobExecLog= null;
+		
+		if(null == execIdObj){
+			// 如果日志ID为空，表示当前任务为CRON触发，新增执行日志(一般情况为任务调度节点的第一个任务)
+			
+			String quartzJobGroup = jobKey.getGroup();
+			String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
+			if (quartzJobNameArr.length != 2) {
+				LOGGER.error("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
+				throw new BaseException("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
+			}
+			Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
 
-		// 根据jobId找到任务信息
-		final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);
-		if (null == cuckooJobDetail) {
-			LOGGER.error("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}", jobKey.getGroup(),
-					jobKey.getName());
-			throw new BaseException("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}",
-					jobKey.getGroup(), jobKey.getName());
+			// 根据jobId找到任务信息
+			final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);
+			if (null == cuckooJobDetail) {
+				LOGGER.error("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}", jobKey.getGroup(),
+						jobKey.getName());
+				throw new BaseException("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}",
+						jobKey.getGroup(), jobKey.getName());
+			}
+			cuckooJobExecLog = cuckooJobLogService.initFirstJobLog(cuckooJobDetail);
+			
+		}else{
+			Long execId = Long.valueOf(String.valueOf(execIdObj));
+			// 如果日志ID不为空，表示当前日志是通过上级任务触发或者是有等待执行的任务
+			cuckooJobExecLog = cuckooJobExecLogMapper.selectByPrimaryKey(execId);
 		}
+		 
 
-		// if(trigger instanceof CronTrigger){
-		// cron or daily 任务触发
-		if(!cuckooJobExecutor.executeQuartzJob(cuckooJobDetail)){
-			// 未执行成功的，需要放到pending中，等待执行
-//			new Thread(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-				cuckooJobService.pendingJob(cuckooJobDetail.getGroupId(), cuckooJobDetail.getId());
-//				}
-//			}).start();
+		
+
+		if(!cuckooJobExecutor.executeQuartzJob(cuckooJobExecLog)){
+			
+			cuckooJobService.rependingJob(cuckooJobExecLog);
 		};
 
-		// }
 	}
 	
+
 	public static void main(String[] args) {
 		JobDataMap data = new JobDataMap();
 		

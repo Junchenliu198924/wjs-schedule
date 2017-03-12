@@ -43,4 +43,13 @@ public class DateUtil {
 		return dayFormat.format(date);
 	}
 
+	public static Long getLongTime(String strDate, String format) {
+		
+		try {
+			return new SimpleDateFormat(format).parse(strDate).getTime();
+		} catch (ParseException e) {
+			return 0L;
+		}
+	}
+
 }

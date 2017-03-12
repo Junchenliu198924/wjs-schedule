@@ -8,20 +8,21 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
+import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.component.quartz.QuartzManage;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
-import com.wjs.schedule.dao.exec.CuckooLocksMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
@@ -49,7 +50,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	CuckooJobDetailMapper cuckooJobDetailMapper;
 	
 	@Autowired
-	CuckooLocksMapper cuckooLocksMapper;
+	CuckooJobExecLogMapper cuckooJobExecLogMapper;
 	
 	@Autowired
 	CuckooJobExecutor cuckooJobExecutor;
@@ -240,91 +241,62 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		quartzManage.resumeAll();
 	}
 
-	@Override
-	public void pendingDailyJob(Long id, Boolean needTriggleNext, Integer txDate) {
-
-		// 根据ID查询Cuckoo
-		if (null == id) {
-			throw new BaseException("id should not be null");
-		}
-
-		// 根据ID查询任务信息
-		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
-		if(null == orginJobDetail){
-			throw new BaseException("can not find job by id:" + id);
-		}
-		
-		// 日切任务 -- 放到PENDING任务队列中
-		orginJobDetail.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-		orginJobDetail.setTxDate(txDate);
-		orginJobDetail.setNeedTriggleNext(needTriggleNext);
-		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
-
-		LOGGER.info("pending daily Job,{}", orginJobDetail);
-		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
-	}
+//	@Override
+//	public void pendingDailyJob(Long id, Boolean needTriggleNext, Integer txDate) {
+//
+//		// 根据ID查询Cuckoo
+//		if (null == id) {
+//			throw new BaseException("id should not be null");
+//		}
+//
+//		// 根据ID查询任务信息
+//		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
+//		if(null == orginJobDetail){
+//			throw new BaseException("can not find job by id:" + id);
+//		}
+//		
+//		// 日切任务 -- 放到PENDING任务队列中
+//		orginJobDetail.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
+//		orginJobDetail.setTxDate(txDate);
+//		orginJobDetail.setNeedTriggleNext(needTriggleNext);
+//		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
+//
+//		LOGGER.info("pending daily Job,{}", orginJobDetail);
+//		// 使用Quartz.simpleJob进行触发 
+//		quartzManage.addSimpleJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
+//	}
 	
 
 	
-	@Override
-	public void pendingUnDailyJob(Long id, Boolean needTriggleNext, Long startTime, Long endTime) {
-		
-		if (null == id) {
-			throw new BaseException("id should not be null");
-		}
-
-		// 根据ID查询任务信息
-		CuckooJobDetail cuckooJobDetails = cuckooJobDetailMapper.selectByPrimaryKey(id);
-		if(null == cuckooJobDetails){
-
-			throw new BaseException("can not find job by id:" + id);
-		}
-		// 非日切任务 -- 放到PENDING任务队列中
-		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-		cuckooJobDetails.setFlowLastTime(startTime);
-		cuckooJobDetails.setFlowCurTime(endTime);
-		cuckooJobDetails.setNeedTriggleNext(needTriggleNext);
-		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
-		
-		LOGGER.info("pending UnDaily Job,{}", cuckooJobDetails);
-		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(String.valueOf(cuckooJobDetails.getGroupId()), String.valueOf(cuckooJobDetails.getId()));
-	}
+//	@Override
+//	public void pendingUnDailyJob(Long id, Boolean needTriggleNext, Long startTime, Long endTime) {
+//		
+//		if (null == id) {
+//			throw new BaseException("id should not be null");
+//		}
+//
+//		// 根据ID查询任务信息
+//		CuckooJobDetail cuckooJobDetails = cuckooJobDetailMapper.selectByPrimaryKey(id);
+//		if(null == cuckooJobDetails){
+//
+//			throw new BaseException("can not find job by id:" + id);
+//		}
+//		// 非日切任务 -- 放到PENDING任务队列中
+//		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
+//		cuckooJobDetails.setFlowLastTime(startTime);
+//		cuckooJobDetails.setFlowCurTime(endTime);
+//		cuckooJobDetails.setNeedTriggleNext(needTriggleNext);
+//		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
+//		
+//		LOGGER.info("pending UnDaily Job,{}", cuckooJobDetails);
+//		// 使用Quartz.simpleJob进行触发 
+//		quartzManage.addSimpleJob(String.valueOf(cuckooJobDetails.getGroupId()), String.valueOf(cuckooJobDetails.getId()));
+//	}
 
 	
 
-	@Override
-	public void pendingJob(Long jobGroupId, Long jobId){
-		
-		LOGGER.info("add pending job ,jobGroupId:{} , jobId:{}", jobGroupId , jobId);
-		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
-		crt.createCriteria().andIdEqualTo(jobId).andGroupIdEqualTo(jobGroupId);
-		
-		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(crt);
-		if(CollectionUtils.isEmpty(jobs)){
-			LOGGER.error("can not find jobinfo by groupId:{},jobId:{}",jobGroupId ,jobId);
-			return;
-		}
-		CuckooJobDetail cuckooJobDetail = jobs.get(0);
-		cuckooJobDetail.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetail);
-		
-		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(String.valueOf(cuckooJobDetail.getGroupId()), String.valueOf(cuckooJobDetail.getId()));
 
-	}
 	
-
-	@Override
-	public void updateJobStatusById(Long jobId, CuckooJobExecStatus execStatus) {
-
-		CuckooJobDetail cuckooJobDetails = new CuckooJobDetail();
-		cuckooJobDetails.setId(jobId);
-		cuckooJobDetails.setExecJobStatus(execStatus.getValue());
-		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
-		
-	}
 
 	@Override
 	public CuckooJobDetail getJobById(Long jobId) {
@@ -332,65 +304,8 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		return cuckooJobDetailMapper.selectByPrimaryKey(jobId);
 	}
 
-//	@Override
-//	public void tryTrigglePendingJob() {
-//		
-////		1.通过Lock表进行加锁pending任务锁，
-//		CuckooLocksCriteria lockCrt = new CuckooLocksCriteria();
-//		lockCrt.createCriteria().andLockNameEqualTo(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
-//		CuckooLocks locks = cuckooLocksMapper.lockByExample(lockCrt);
-//		if(null == locks){
-////			如果没有锁，那么insert一条记录，如果是异常的话（唯一索引造成），需要catch
-//			CuckooLocks newLock = new CuckooLocks();
-//			try {
-//				newLock.setCuckooServerIp(InetAddress.getLocalHost().getHostAddress());
-//				newLock.setLockName(CuckooJobConstant.LOCK_NAME_PENDING_JOB);
-//				cuckooLocksMapper.insertSelective(newLock);
-//			} catch (Exception e) {
-//				LOGGER.error("add new pending lock error:{}",e.getMessage() ,e);
-//			}
-//		}
-////		存在锁记录继续
-//		
-////		4.查询任务表中状态为pending的任务，获取任务执行
-//		CuckooJobDetailCriteria jobCrt = new CuckooJobDetailCriteria();
-//		jobCrt.createCriteria().andExecJobStatusEqualTo(CuckooJobExecStatus.PENDING.getValue());
-//		List<CuckooJobDetail> pendingJobs = cuckooJobDetailMapper.selectByExample(jobCrt);
-//		if(CollectionUtils.isNotEmpty(pendingJobs)){
-//			for (CuckooJobDetail cuckooJobDetails : pendingJobs) {
-//				// 当前任务pending的任务为被触发的任务，查询依赖任务执行情况，参数取自触发任务的参数
-//				JobInfoBean jobInfoBean = extractJobparam(cuckooJobDetails);
-//				cuckooJobExecutor.executeCurJob(jobInfoBean);
-//			}
-//		}
-//	}
-
-	/**
-	 * 当前任务pending的任务为被触发的任务，参数取自触发任务的参数
-	 * @param cuckooJobDetails
-	 * @return
-	 */
-	private JobInfoBean extractJobparam(CuckooJobDetail cuckooJobDetails) {
-		JobInfoBean jobInfo = new JobInfoBean();
-		
-		jobInfo.setCuckooParallelJobArgs(cuckooJobDetails.getCuckooParallelJobArgs());
-		jobInfo.setJobId(cuckooJobDetails.getId());
-		jobInfo.setJobName(cuckooJobDetails.getJobName());
-		
-		// 查询被触发任务信息
-		Long preJobId = cuckooJobNextService.findJobIdByNextJobId(cuckooJobDetails.getId());
-		if(null ==  preJobId){
-			return null;
-		}
-		CuckooJobDetail preJobInfo = getJobById(preJobId);
-		jobInfo.setFlowCurrTime(preJobInfo.getFlowCurTime());
-		jobInfo.setFlowLastTime(preJobInfo.getFlowLastTime());
-		jobInfo.setTxDate(preJobInfo.getTxDate());
-		
-		
-		return jobInfo;
-	}
-
+	
+	 
 	@Override
 	public List<CuckooJobDetail> getNextJobById(Long jobId) {
 
@@ -419,9 +334,6 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		if(StringUtils.isNotEmpty(jobInfo.getJobClassApplication())){
 			exp.andJobClassApplicationEqualTo(jobInfo.getJobClassApplication());
 		}
-		if(StringUtils.isNotEmpty(jobInfo.getJobExecStatus())){
-			exp.andExecJobStatusEqualTo(jobInfo.getJobExecStatus());
-		}
 		if(StringUtils.isNotEmpty(jobInfo.getJobStatus())){
 			exp.andJobStatusEqualTo(jobInfo.getJobStatus());
 		}
@@ -445,6 +357,75 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		return rtn;
 	}
+	
+	
+	
+	
+
+	@Override
+	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog, JobDataMap data){
+		
+		LOGGER.info("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail , fatherJobLog);
+		CuckooJobExecLog jobLog = new CuckooJobExecLog();
+		Long curTime =  System.currentTimeMillis();
+		// 初始化任务日志信息
+		PropertyUtil.copyProperties(jobLog, jobDetail);
+		jobLog.setId(null);
+		jobLog.setJobId(jobDetail.getId());
+		jobLog.setJobStartTime(curTime);
+		jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
+		jobLog.setLatestCheckTime(curTime);
+		jobLog.setNeedTriggleNext(fatherJobLog.getNeedTriggleNext());
+		jobLog.setForceTriggle(false);
+		jobLog.setTxDate(fatherJobLog.getTxDate());
+		jobLog.setFlowLastTime(fatherJobLog.getFlowLastTime());
+		jobLog.setFlowCurTime(fatherJobLog.getFlowCurTime());
+		
+		cuckooJobExecLogMapper.insertSelective(jobLog);
+		jobLog.setId(cuckooJobExecLogMapper.lastInsertId());
+		// 使用Quartz.simpleJob进行触发 
+		quartzManage.addSimpleJob(jobLog);
+
+	}
+	
+	
+
+	@Override
+	public void rependingJob(CuckooJobExecLog jobLog) {
+		LOGGER.info("repending job ,jobLog:{} ", jobLog);
+		// 使用Quartz.simpleJob进行触发 
+		quartzManage.addSimpleJob(jobLog);
+
+	}
+	
+
+	@Override
+	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime) {
+
+		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobId);
+		
+		if(null ==  cuckooJobDetail){
+			throw new BaseException("can not get jobinfo by id:{}", jobId);
+		}
+		CuckooJobExecLog jobLog = cuckooJobLogService.initUnDailyJobLog(cuckooJobDetail,  needTriggleNext, lastTime, curTime);
+		quartzManage.addSimpleJob(jobLog);
+
+		
+	}
+
+	@Override
+	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate) {
+		
+
+		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobId);
+		if(null ==  cuckooJobDetail){
+			throw new BaseException("can not get jobinfo by id:{}", jobId);
+		}
+		
+		CuckooJobExecLog jobLog = cuckooJobLogService.initDailyJobLog(cuckooJobDetail, needTriggleNext, txDate);
+		quartzManage.addSimpleJob(jobLog);
+	}
+
 
 
 

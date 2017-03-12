@@ -3,6 +3,11 @@ package com.wjs.schedule.constant;
 public class CuckooJobConstant {
 	
 	/**
+	 * 执行日志ID，用于quartz中的执行参数
+	 */
+	public static final String JOB_EXEC_ID = "job_exec_id";
+	
+	/**
 	 * 是否强制启动任务
 	 */
 //	public static final String FORCE_JOB = "forceJob";

@@ -25,6 +25,7 @@ import com.wjs.schedule.service.Job.CuckooJobDependencyService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.vo.qry.JobInfoQry;
+import com.wjs.util.DateUtil;
 import com.wjs.util.dao.PageDataList;
 
 
@@ -152,14 +153,16 @@ public class JobInfoController extends BaseController{
 	 */
 	@RequestMapping(value="/trigger")
 	@ResponseBody
-	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, Long flowLastTime, Long flowCurTime ){
+	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, String flowLastTime, String flowCurTime ){
+		
+		
 		
 		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
 			
-			cuckooJobService.pendingUnDailyJob(id, needTriggleNext, flowLastTime, flowCurTime);
+			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyyMMddHHmmss"), DateUtil.getLongTime(flowCurTime, "yyyyMMddHHmmss"));
 		}else if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
 
-			cuckooJobService.pendingDailyJob(id, needTriggleNext, txDate);
+			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate);
 		}else{
 			throw new BaseException("Unknow triggerType:{}", typeDaily);
 		}
@@ -176,7 +179,7 @@ public class JobInfoController extends BaseController{
 	@ResponseBody
 	public Object pause(Long id){
 		
-		System.err.println(id);
+		cuckooJobService.pauseOnejob(id);
 		return success();
 	}
 	
@@ -189,7 +192,7 @@ public class JobInfoController extends BaseController{
 	@ResponseBody
 	public Object resume(Long id){
 		
-		System.err.println(id);
+		cuckooJobService.resumeOnejob(id);
 		return success();
 	}
 

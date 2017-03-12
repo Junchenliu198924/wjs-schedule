@@ -3,7 +3,10 @@ package com.wjs.schedule.service.Job;
 import java.util.List;
 import java.util.Map;
 
+import org.quartz.JobDataMap;
+
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
@@ -57,32 +60,19 @@ public interface CuckooJobService {
 	public void resumeAllJob();
 	
 	/**
-	 * 将一个日切任务加入到待执行队列中
-	 * @param id
-	 * @param triggleNext
-	 */
-	public void pendingDailyJob(Long id,Boolean needTrigglerNext,Integer txDate);
-	 
-	/**
-	 * 将一个非日切任务加入到待执行队列中
-	 * @param id
-	 * @param triggleNext
-	 */
-	public void pendingUnDailyJob(Long id,Boolean needTrigglerNext,Long startTime,Long endTime);
-	
-	/**
 	 * 将任务重置为PENDING状态
+	 * @param data 
 	 * @param jobGroup
 	 * @param jobName
 	 */
-	public void pendingJob(Long jobGroupId, Long jobId);
+	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog, JobDataMap data);
+	
 
 	/**
-	 * 修改任务执行状态
-	 * @param jobId
-	 * @param succed
+	 * Pending任务执行的时候，发现还不具备执行任务的条件，因此重新放回pending队列
+	 * @param cuckooJobExecLog
 	 */
-	public void updateJobStatusById(Long jobId, CuckooJobExecStatus succed);
+	public void rependingJob(CuckooJobExecLog jobLog);
 
 
 	/**
@@ -121,6 +111,27 @@ public interface CuckooJobService {
 	 * @return
 	 */
 	public Map<String,String> findAllApps();
+
+	
+	/**
+	 * 手工触发非日切任务
+	 * @param id
+	 * @param needTriggleNext
+	 * @param longTime
+	 * @param longTime2
+	 */
+	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime);
+
+
+	/**
+	 * 手工触发日切任务
+	 * @param id
+	 * @param needTriggleNext
+	 * @param txDate
+	 */
+	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate);
+
+
 	 
 	
 }
