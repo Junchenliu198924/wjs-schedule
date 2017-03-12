@@ -74,4 +74,20 @@ public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 		return null;
 	}
 
+	@Override
+	public void add(Long jobId, Long nextJobId) {
+		
+		CuckooJobNextJobCriteria preJobCrt = new CuckooJobNextJobCriteria();
+		preJobCrt.createCriteria().andNextJobIdEqualTo(nextJobId);
+		
+		List<CuckooJobNextJob> preJobs = cuckooJobNextJobMapper.selectByExample(preJobCrt);
+		if(CollectionUtils.isNotEmpty(preJobs)){
+			throw new BaseException("job have pre trigger job aready, prejob:{}",preJobs.get(0));
+		}
+		CuckooJobNextJob cuckooJobNextJob = new CuckooJobNextJob();
+		cuckooJobNextJob.setJobId(jobId);
+		cuckooJobNextJob.setNextJobId(nextJobId);
+		cuckooJobNextJobMapper.insert(cuckooJobNextJob);
+	}
+
 }

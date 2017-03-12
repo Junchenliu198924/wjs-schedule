@@ -79,6 +79,7 @@
 	                  	</select>
 	              	</div>
 	            </div>
+	            <!--
                 <div class="col-xs-4">
                     <div class="input-group">
 	                	<span class="input-group-addon">执行状态</span>
@@ -89,6 +90,7 @@
 	                  	</select>
                     </div>
                 </div>
+                -->
 	            <div class="col-xs-2">
 	            	<button class="btn btn-block btn-info" id="searchBtn">搜索</button>
 	            </div>
@@ -231,7 +233,7 @@
 					
 						<label for="lastname" class="col-sm-2 control-label">日切任务<font color="red">*</font></label>
 						<div class="col-sm-4">
-							<select class="form-control" name="isTypeDaily" >
+							<select class="form-control" name="typeDaily" >
 		                		<#list jobIsTypeDailyNoNull as item>
 		                			<option value="${item.value}" >${item.description}</option>
 		                		</#list>

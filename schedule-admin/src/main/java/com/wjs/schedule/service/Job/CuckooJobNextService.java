@@ -25,4 +25,11 @@ public interface CuckooJobNextService {
 	 * @return
 	 */
 	public Long findJobIdByNextJobId(Long id);
+
+	/**
+	 * 新增触发任务关系
+	 * @param preJobId
+	 * @param jobId
+	 */
+	public void add(Long jobId, Long nextJobId);
 }

@@ -128,7 +128,6 @@ public interface CuckooJobService {
 	 */
 	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate);
 
-
-	 
+	
 	
 }

@@ -104,6 +104,16 @@ public class CuckooJobDetailVo {
      * 
      */
     private Long flowCurTime;
+    
+    /**
+     * 触发任务ID
+     */
+    private Long preJobId;
+    
+    /**
+     * 依赖任务ID
+     */
+	private String  dependencyIds;
 
     /**
      * cuckoo_job_details表的操作属性:serialVersionUID
@@ -346,6 +356,25 @@ public class CuckooJobDetailVo {
 
 	public void setTypeDaily(String typeDaily) {
 		this.typeDaily = typeDaily;
+	}
+	
+	
+	
+
+	public Long getPreJobId() {
+		return preJobId;
+	}
+
+	public void setPreJobId(Long preJobId) {
+		this.preJobId = preJobId;
+	}
+
+	public String getDependencyIds() {
+		return dependencyIds;
+	}
+
+	public void setDependencyIds(String dependencyIds) {
+		this.dependencyIds = dependencyIds;
 	}
 
 	public String toString() {

@@ -349,16 +349,16 @@ $(function() {
 	
 
 	// 编辑框是否为日切任务监听
-	$("#editModal .form select[name='isTypeDaily']").change(function(){
-		var isTypeDaily = $("#editModal .form select[name='isTypeDaily']").val();
-		if("NO" == isTypeDaily){
+	$("#editModal .form select[name='typeDaily']").change(function(){
+		var typeDaily = $("#editModal .form select[name='typeDaily']").val();
+		if("NO" == typeDaily){
 			$("#editModal .form div[name='offsetDiv']").addClass("hide");
 			$("#editModal .form input[name='offset']").val("");
-		}else if("YES" == isTypeDaily){
+		}else if("YES" == typeDaily){
 //			,triggerJobDiv
 			$("#editModal .form div[name='offsetDiv']").removeClass("hide");
 		}else{
-			alert("unknow isTypeDaily!!!");
+			alert("unknow typeDaily!!!");
 		}
 	});
 	
@@ -392,7 +392,7 @@ $(function() {
 		});
 		
 		
-		$("#editModal .form select[name='isTypeDaily']").val($(this).parent('p').attr("typeDaily")).trigger('change');
+		$("#editModal .form select[name='typeDaily']").val($(this).parent('p').attr("typeDaily")).trigger('change');
 		$("#editModal .form input[name='offset']").val($(this).parent('p').attr("offset")); 
 
         $.post(base_url + "/jobinfo/getDependencyIdsByJobId", 

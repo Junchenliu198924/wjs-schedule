@@ -127,9 +127,10 @@ public class CuckooJobExecutor {
 				// 执行器断线等特殊情况,放入待执行队列中 
 				LOGGER.error("no executor fund, add job into todo queue,jobLog:{}", jobLog);
 				rtn = false;
-			} 
-			cuckooClientIp = remoteExecutor.getCuckooClientIp();
-			cuckooClientTag = remoteExecutor.getCuckooClientTag();
+			}else{ 
+				cuckooClientIp = remoteExecutor.getCuckooClientIp();
+				cuckooClientTag = remoteExecutor.getCuckooClientTag();
+			}
 			 
 		} catch (Exception e) {
 			// 未知异常，报错处理

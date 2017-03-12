@@ -13,22 +13,6 @@ import com.wjs.schedule.vo.job.JobNext;
 
 public class CuckBeanUtil {
 
-	public static CuckooJobDetail parseJob(CuckooJobDetailVo jobInfo) {
-
-		CuckooJobDetail job = new CuckooJobDetail();
-		job.setId(jobInfo.getId());
-		job.setCronExpression(jobInfo.getCronExpression());
-		job.setCuckooParallelJobArgs(jobInfo.getCuckooParallelJobArgs());
-		job.setGroupId(jobInfo.getGroupId());
-		job.setJobClassApplication(jobInfo.getJobClassApplication());
-		job.setJobDesc(jobInfo.getJobDesc());
-		job.setJobStatus(StringUtils.isEmpty(jobInfo.getJobStatus()) ? CuckooJobStatus.PAUSE.getValue(): jobInfo.getJobStatus() );
-		job.setJobName(jobInfo.getJobName());
-		job.setTypeDaily(jobInfo.getTypeDaily());
-		job.setOffset(jobInfo.getOffset());
-		job.setTriggerType(jobInfo.getTriggerType());
-		return job;
-	}
 
 	public static CuckooJobNextJob parseJobNext(JobNext jobNext) {
 

@@ -129,16 +129,10 @@ public class QuartzManage {
 					.build();
 			
 			if(scheduler.checkExists(jobKey) ){
-//				System.err.println("rescheduleJob"+ quartzJobName);
-//				scheduler.rescheduleJob(triggerKey, simpleTrigger);
 				scheduler.deleteJob(jobKey);
 				scheduler.scheduleJob(jobDetail, simpleTrigger);
-//				System.err.println("rescheduleJob——"+ quartzJobName);
 			}else{
-
-//				System.err.println("scheduleJob"+ quartzJobName);
 				scheduler.scheduleJob(jobDetail, simpleTrigger);
-//				System.err.println("scheduleJob——"+ quartzJobName);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);

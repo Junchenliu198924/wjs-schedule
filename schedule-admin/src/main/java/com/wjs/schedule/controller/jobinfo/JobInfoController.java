@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +25,10 @@ import com.wjs.schedule.service.Job.CuckooGroupService;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.DateUtil;
+import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
 
 
@@ -206,6 +209,30 @@ public class JobInfoController extends BaseController{
 	public Object remove(Long id){
 		
 		System.err.println(id);
+		return success();
+	}
+	
+	/**
+	 * 删除
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/add")
+	@ResponseBody
+	public Object add(HttpServletRequest request, CuckooJobDetailVo jobDetail){
+		
+
+		
+		
+		if(null == jobDetail.getId()){
+
+
+			cuckooJobService.addJob(jobDetail);
+		}else{
+			cuckooJobService.modifyJob(jobDetail);
+		}
+		
+		
 		return success();
 	}
 	
