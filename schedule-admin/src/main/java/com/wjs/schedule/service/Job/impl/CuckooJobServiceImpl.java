@@ -210,11 +210,14 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			// 根据任务信息删除quartz信息
 			quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getGroupId()), String.valueOf(cuckooJobDetail.getId()));
 		}
+		
+		// 日志删除（暂时保留日志）
 			
 	}
 
 
 	@Override
+	@Transactional
 	public void pauseOnejob(Long id) {
 		
 		// 根据ID查询Cuckoo
@@ -236,18 +239,30 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	}
 
 	@Override
+	@Transactional
 	public void pauseAllJob() {
-
-		// 更新cuckoo状态
-		CuckooJobDetail orginJobDetail = new CuckooJobDetail();
-		orginJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
-		cuckooJobDetailMapper.updateByExampleSelective(orginJobDetail, new CuckooJobDetailCriteria());
 		
-		// 更新quartz任务状态
-		quartzManage.pauseAll();
+		// 不能使用quartzManage.pauseAll()，该方法会将后续增加的任务或者强制执行的SimpleTrigger也锁住，此处对任务循环进行锁定
+		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		crt.createCriteria().andJobStatusEqualTo(CuckooJobStatus.RUNNING.getValue());
+		crt.setOrderByClause("id asc ");
+		
+		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(crt);
+		if(CollectionUtils.isNotEmpty(jobs)){
+			for (CuckooJobDetail cuckooJobDetail : jobs) {
+				// 更新cuckoo状态
+				cuckooJobDetail.setJobStatus(CuckooJobStatus.PAUSE.getValue());
+				cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetail);
+				// 更新quartz任务状态
+				if(CuckooJobTriggerType.CRON.getValue().equals(cuckooJobDetail.getTriggerType())){
+					quartzManage.pauseJob(String.valueOf(cuckooJobDetail.getGroupId()),String.valueOf(cuckooJobDetail.getId()));
+				}
+			}
+		}
 	}
 
 	@Override
+	@Transactional
 	public void resumeOnejob(Long id) {
 
 		// 根据ID查询Cuckoo
@@ -270,68 +285,18 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	}
 
 	@Override
+	@Transactional
 	public void resumeAllJob() {
 		
+		// 更新cuckoo状态
+		CuckooJobDetail orginJobDetail = new CuckooJobDetail();
+		orginJobDetail.setJobStatus(CuckooJobStatus.RUNNING.getValue());
+		cuckooJobDetailMapper.updateByExampleSelective(orginJobDetail, new CuckooJobDetailCriteria());
+
 		quartzManage.resumeAll();
 	}
 
-//	@Override
-//	public void pendingDailyJob(Long id, Boolean needTriggleNext, Integer txDate) {
-//
-//		// 根据ID查询Cuckoo
-//		if (null == id) {
-//			throw new BaseException("id should not be null");
-//		}
-//
-//		// 根据ID查询任务信息
-//		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(id);
-//		if(null == orginJobDetail){
-//			throw new BaseException("can not find job by id:" + id);
-//		}
-//		
-//		// 日切任务 -- 放到PENDING任务队列中
-//		orginJobDetail.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-//		orginJobDetail.setTxDate(txDate);
-//		orginJobDetail.setNeedTriggleNext(needTriggleNext);
-//		cuckooJobDetailMapper.updateByPrimaryKeySelective(orginJobDetail);
-//
-//		LOGGER.info("pending daily Job,{}", orginJobDetail);
-//		// 使用Quartz.simpleJob进行触发 
-//		quartzManage.addSimpleJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
-//	}
 	
-
-	
-//	@Override
-//	public void pendingUnDailyJob(Long id, Boolean needTriggleNext, Long startTime, Long endTime) {
-//		
-//		if (null == id) {
-//			throw new BaseException("id should not be null");
-//		}
-//
-//		// 根据ID查询任务信息
-//		CuckooJobDetail cuckooJobDetails = cuckooJobDetailMapper.selectByPrimaryKey(id);
-//		if(null == cuckooJobDetails){
-//
-//			throw new BaseException("can not find job by id:" + id);
-//		}
-//		// 非日切任务 -- 放到PENDING任务队列中
-//		cuckooJobDetails.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-//		cuckooJobDetails.setFlowLastTime(startTime);
-//		cuckooJobDetails.setFlowCurTime(endTime);
-//		cuckooJobDetails.setNeedTriggleNext(needTriggleNext);
-//		cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetails);
-//		
-//		LOGGER.info("pending UnDaily Job,{}", cuckooJobDetails);
-//		// 使用Quartz.simpleJob进行触发 
-//		quartzManage.addSimpleJob(String.valueOf(cuckooJobDetails.getGroupId()), String.valueOf(cuckooJobDetails.getId()));
-//	}
-
-	
-
-
-	
-
 	@Override
 	public CuckooJobDetail getJobById(Long jobId) {
 

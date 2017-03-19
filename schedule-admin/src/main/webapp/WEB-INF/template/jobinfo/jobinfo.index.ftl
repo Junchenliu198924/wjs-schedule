@@ -105,6 +105,8 @@
 					<div class="box">
 			            <div class="box-header">
 			            	<h3 class="box-title">调度列表</h3>
+			            	<button class="btn btn-primary btn-xs job_pause_all" type="job_pause_all"  type="button">全部暂停</button>  
+			            	<button class="btn btn-primary btn-xs job_resume_all" type="job_resume_all" type="button">全部恢复</button>  
 			            </div>
 			            <div class="box-body">
 			              	<table id="job_list" class="table table-bordered table-striped">
@@ -119,13 +121,16 @@
 					                  	<th name="triggerType" >触发类型</th>
 					                  	<th name="cronExpression" >Cron</th> 
 					                  	<th name="typeDaily" >是否日切任务</th> 
-					                  	<th name="txDate" >业务日期</th> 
 					                  	<th name="offset" >业务偏移日期</th> 
 					                  	<th name="jobStatus" >任务状态</th> 
 					                  	<th name="cuckooParallelJobArgs" >任务参数</th> 
+					                  	
+					                  	<!--
 					                  	<th name="execJobStatus" >执行状态</th>
+					                  	<th name="txDate" >业务执行日期</th> 
 					                  	<th name="flowLastTime" >流式任务上一次时间参数</th>
 					                  	<th name="flowCurTime" >流式任务当前时间参数</th> 
+					                  	-->
 					                  	<th>操作</th>
 					                </tr>
 				                </thead>

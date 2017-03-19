@@ -45,7 +45,7 @@ $(function() {
 	                { "data": 'cronExpression', "visible" : true},
 	                { "data": 'typeDaily', "visible" : true},
 	                
-	                { "data": 'txDate', "visible" : false},
+//	                { "data": 'txDate', "visible" : false},
 	                { "data": 'offset', "visible" : false},
 	                { "data": 'jobStatus', "visible" : true},
 	               
@@ -73,21 +73,21 @@ $(function() {
 //	                	}
 //	                },
 	                { "data": 'cuckooParallelJobArgs', "visible" : true},
-	                { "data": 'execJobStatus', "visible" : true},
-	                { 
-	                	"data": 'flowLastTime', 
-	                	"visible" : false ,
-	                	"render": function ( data, type, row ){
-	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-	                	}
-	                },
-	                { 
-	                	"data": 'flowCurTime', 
-	                	"visible" : false ,
-	                	"render": function ( data, type, row ){
-	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-	                	}
-	                },
+//	                { "data": 'execJobStatus', "visible" : true},
+//	                { 
+//	                	"data": 'flowLastTime', 
+//	                	"visible" : false ,
+//	                	"render": function ( data, type, row ){
+//	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+//	                	}
+//	                },
+//	                { 
+//	                	"data": 'flowCurTime', 
+//	                	"visible" : false ,
+//	                	"render": function ( data, type, row ){
+//	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+//	                	}
+//	                },
 	                
 	                { "data": '操作' ,
 	                	"render": function ( data, type, row ) {
@@ -127,13 +127,13 @@ $(function() {
 								' triggerType="'+ row.triggerType +'" '+
 								' cronExpression="'+ row.cronExpression +'" '+
 								' typeDaily="'+ row.typeDaily +'" '+
-								' txDate="'+ row.txDate +'" '+
 								' offset="'+ row.offset +'" '+
 								' jobStatus="'+ row.jobStatus +'" '+
 								' cuckooParallelJobArgs="'+ row.cuckooParallelJobArgs +'" '+
-								' execJobStatus="'+ row.execJobStatus +'" '+
-								' flowLastTime="'+ row.flowLastTime +'" '+
-								' flowCurTime="'+ row.flowCurTime +'" '+
+//								' txDate="'+ row.txDate +'" '+
+//								' execJobStatus="'+ row.execJobStatus +'" '+
+//								' flowLastTime="'+ row.flowLastTime +'" '+
+//								' flowCurTime="'+ row.flowCurTime +'" '+
 								'>'+
 								'<button class="btn btn-primary btn-xs trigger"  type="button">执行</button>  '+
 								pause_resume +
@@ -179,6 +179,39 @@ $(function() {
 		jobTable.fnDraw();
 	});
 	
+	$(".box-header :button").on('click', function(){
+		
+		var url;
+		var type = $(this).attr("type");
+		if ("job_pause_all" == type) {
+			typeName = "暂停全部";
+			url = base_url + "/jobinfo/paushAll";
+		} else if ("job_resume_all" == type) {
+			typeName = "回复全部";
+			url = base_url + "/jobinfo/resumeAll";
+		}
+		
+		ComConfirm.show("确认" + typeName, function(){
+			$.ajax({
+				type : 'POST',
+				url : url,
+				dataType : "json",
+				success : function(data){
+					if (data.resultCode == "success") {
+						ComAlert.show(1, typeName + data.resultMsg, function(){
+							jobTable.fnDraw();
+						});
+					} else {
+						ComAlert.show(1, typeName + "失败," + data.resultMsg);
+					}
+				},
+			});
+		});
+	});
+	
+  
+	
+	
 	// job operate
 	$("#job_list").on('click', '.job_operate',function() {
 		var typeName;
@@ -186,6 +219,7 @@ $(function() {
 		var needFresh = false;
 
 		var type = $(this).attr("type");
+		
 		if ("job_pause" == type) {
 			typeName = "暂停";
 			url = base_url + "/jobinfo/pause";
@@ -302,7 +336,7 @@ $(function() {
         },
         submitHandler : function(form) {
         	$.post(base_url + "/jobinfo/add",  $("#editModal .form").serialize(), function(data, status) {
-    			if (data.code == "200") {
+        		if (data.resultCode == "success") {
 					$('#editModal').modal('hide');
 					setTimeout(function () {
 						ComAlert.show(1, "新增任务成功", function(){
@@ -311,11 +345,7 @@ $(function() {
 						});
 					}, 315);
     			} else {
-    				if (data.msg) {
-    					ComAlert.show(2, data.msg);
-    				} else {
-    					ComAlert.show(2, "新增失败");
-    				}
+    				ComAlert.show(2, "新增失败"+ data.resultMsg);
     			}
     		});
 		}
