@@ -28,4 +28,22 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 		throw new RuntimeException("client throw a exception");
 	}
 
+	@Override
+	public void testFlowUnDailySucced(JobInfoBean jobInfo) {
+		// TODO 待测试
+		
+	}
+
+	@Override
+	public void testFlowUnDailyFailed(JobInfoBean jobInfo) {
+		// TODO 待测试
+		
+	}
+
+	@Override
+	public void testFlowUnDailyDependencySucced(JobInfoBean jobInfo) {
+		// TODO 待测试
+		
+	}
+
 }
