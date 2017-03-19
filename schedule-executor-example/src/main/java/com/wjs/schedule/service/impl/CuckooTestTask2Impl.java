@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.executor.annotation.CuckooTask;
-import com.wjs.schedule.net.client.handle.CuckooClientHandler;
 import com.wjs.schedule.service.CuckooTestTask2;
 
 @Service
@@ -19,7 +18,7 @@ public class CuckooTestTask2Impl implements CuckooTestTask2 {
 	public void testJob(JobInfoBean jobInfo) {
 
 		
-		LOGGER.info("Client exec done :testJob2" );
+		LOGGER.info("Client exec done ,testJob2:{}" + jobInfo );
 	}
 
 }

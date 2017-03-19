@@ -18,7 +18,7 @@ public class CuckooTestTaskImpl implements CuckooTestTask {
 	public void testJob(JobInfoBean jobInfo) {
 		// TODO Auto-generated method stub
 
-		LOGGER.info("Client exec done :testJob" );
+		LOGGER.info("Client exec done ,testJob:{}" , jobInfo );
 		throw new RuntimeException("AAAAA");
 	}
 
@@ -26,7 +26,7 @@ public class CuckooTestTaskImpl implements CuckooTestTask {
 	public void testJobTmp(JobInfoBean jobInfo) {
 		// TODO Auto-generated method stub
 
-		LOGGER.info("Client exec done :none" );
+		LOGGER.info("Client exec done ,testJobTmp:{}",  jobInfo);
 	}
 
 }

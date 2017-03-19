@@ -82,6 +82,16 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		if(null == cuckooJobGroup){
 			throw new BaseException("can not find jobgroup by groupId:"+jobDetail.getGroupId());
 		}
+		
+		// 检查唯一性索引 groupid,jobName
+		CuckooJobDetailCriteria jobUkCrt = new CuckooJobDetailCriteria();
+		jobUkCrt.createCriteria().andGroupIdEqualTo(jobDetail.getGroupId())
+		.andJobNameEqualTo(jobDetail.getJobName());
+		List<CuckooJobDetail> jobUkCheck = cuckooJobDetailMapper.selectByExample(jobUkCrt);
+		if(CollectionUtils.isNotEmpty(jobUkCheck)){
+			throw new BaseException("job has aready added ,groupId:{},jobName:{}", jobDetail.getGroupId() , jobDetail.getJobName());
+		}
+		
 		// 如果是cron，校验cron是否正确
 		if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
 			jobDetail.setCronExpression(StringUtils.trim(jobDetail.getCronExpression()));
@@ -424,21 +434,21 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 
 	@Override
-	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime) {
+	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime, boolean foreTriggle) {
 
 		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobId);
 		
 		if(null ==  cuckooJobDetail){
 			throw new BaseException("can not get jobinfo by id:{}", jobId);
 		}
-		CuckooJobExecLog jobLog = cuckooJobLogService.initUnDailyJobLog(cuckooJobDetail,  needTriggleNext, lastTime, curTime);
+		CuckooJobExecLog jobLog = cuckooJobLogService.initUnDailyJobLog(cuckooJobDetail,  needTriggleNext, lastTime, curTime, foreTriggle);
 		quartzManage.addSimpleJob(jobLog);
 
 		
 	}
 
 	@Override
-	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate) {
+	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate, boolean foreTriggle) {
 		
 
 		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobId);
@@ -446,7 +456,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			throw new BaseException("can not get jobinfo by id:{}", jobId);
 		}
 		
-		CuckooJobExecLog jobLog = cuckooJobLogService.initDailyJobLog(cuckooJobDetail, needTriggleNext, txDate);
+		CuckooJobExecLog jobLog = cuckooJobLogService.initDailyJobLog(cuckooJobDetail, needTriggleNext, txDate, foreTriggle);
 		quartzManage.addSimpleJob(jobLog);
 	}
 

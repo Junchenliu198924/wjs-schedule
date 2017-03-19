@@ -22,10 +22,10 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.enums.CuckooClientJobStatus;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.net.client.ClientUtil;
 import com.wjs.schedule.net.server.ServerUtil;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
+import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 import com.wjs.schedule.vo.net.ClientInfo;
 
 @Service("cuckooServerService")
@@ -41,11 +41,13 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 	CuckooJobService cuckooJobService;
 	
 	@Override
-	public CuckooClientJobDetail execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean) {
+	public CuckooClientJobExecResult execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean) {
 		
-		
+		CuckooClientJobExecResult result = new CuckooClientJobExecResult();
 		if(CollectionUtils.isEmpty(remoteJobExecs)){
-			return null;
+			result.setSuccess(false);
+			result.setRemark("remoteJobExecs is null");
+			return result;
 		}
 		// 根据remoteJobExec 获取socket,
 		Object socket = null;
@@ -57,20 +59,30 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 				break;
 			}
 		}
+		result.setClientJobInfo(socketClient);
 		// 意外情况获取不到socket
 		if(socket == null){
-			return null;
+			result.setSuccess(false);
+			result.setRemark("remoteJobExecs can not get socket");
+			return result;
 		}
 		
 		// 更新远程服务器最新调用时间
-		socketClient.setModifyDate(System.currentTimeMillis());
-		cuckooClientJobDetailMapper.updateByPrimaryKeySelective(socketClient);
-		// socket写数据,触发客户端任务调度
-
-		LOGGER.info("调用远程任务开始,jobApp:{},jobName:{},bean:{}" , socketClient.getJobClassApplication() ,socketClient.getJobName(), jobBean);
-		ServerUtil.send(socketClient, CuckooMessageType.JOBDOING,  jobBean);
+		try {
+			socketClient.setModifyDate(System.currentTimeMillis());
+			cuckooClientJobDetailMapper.updateByPrimaryKeySelective(socketClient);
+			// socket写数据,触发客户端任务调度
+			LOGGER.info("调用远程任务开始,jobApp:{},jobName:{},bean:{}" , socketClient.getJobClassApplication() ,socketClient.getJobName(), jobBean);
+			ServerUtil.send(socketClient, CuckooMessageType.JOBDOING,  jobBean);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setSuccess(false);
+			LOGGER.error("job exec error:{}",e.getMessage() ,e);
+			result.setRemark(e.getMessage());
+		}
 		
-		return socketClient;
+		
+		return result;
 	}
 
 	@Override

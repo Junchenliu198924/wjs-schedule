@@ -18,7 +18,7 @@ public interface CuckooJobDependencyService {
 	 * @param jobInfo
 	 * @param data
 	 */
-	public void checkDepedencyJobFinished(CuckooJobExecLog jobInfo) throws JobCanNotRunningException;
+	public boolean checkDepedencyJobFinished(CuckooJobExecLog jobInfo);
 
 	/**
 	 * 根据任务ID查找任务依赖的其他任务ID

@@ -63,14 +63,14 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 	}
 
 	@Override
-	public void checkDepedencyJobFinished(CuckooJobExecLog jobLog) throws JobCanNotRunningException {
+	public boolean checkDepedencyJobFinished(CuckooJobExecLog jobLog){
 
 		CuckooJobDependencyCriteria depJobMapCrt = new CuckooJobDependencyCriteria();
 		depJobMapCrt.createCriteria().andJobIdEqualTo(jobLog.getJobId());
 		List<CuckooJobDependency> depJobMaps = cuckooJobDependencyMapper.selectByExample(depJobMapCrt);
 		List<Long> depJobIds = PropertyUtil.fetchFieldList(depJobMaps, "dependencyJobId");
 		if (CollectionUtils.isEmpty(depJobIds)) {
-			return;
+			return true;
 		}
 
 		// 依赖执行任务完成条件： 1.依赖的任务状态都为成功；2.日切任务的txdate需要一致、非日切任务的latestTime一致
@@ -104,9 +104,11 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 			
 
 			LOGGER.info("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
-			throw new JobCanNotRunningException("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
+//			throw new JobCanNotRunningException("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
+			return false;
 		}
 
+		return true;
 	}
 
 	@Override

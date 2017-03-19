@@ -40,7 +40,7 @@ public interface CuckooJobLogService {
 	 * @param cuckooJobDetail
 	 * @return
 	 */
-	public CuckooJobExecLog initFirstJobLog(CuckooJobDetail cuckooJobDetail) ;
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) ;
 
 	/**
 	 * 控制台执行非日切任务，初始化日志
@@ -50,7 +50,7 @@ public interface CuckooJobLogService {
 	 * @param curTime
 	 * @return
 	 */
-	public CuckooJobExecLog initUnDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Long flowLastTime, Long flowCurTime);
+	public CuckooJobExecLog initUnDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Long flowLastTime, Long flowCurTime, boolean foreTriggle);
 
 	/**
 	 * 控制台执行日切任务，初始化日志
@@ -59,5 +59,5 @@ public interface CuckooJobLogService {
 	 * @param txDate
 	 * @return
 	 */
-	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate);
+	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate, boolean foreTriggle);
 }

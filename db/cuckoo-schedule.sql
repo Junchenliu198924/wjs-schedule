@@ -87,6 +87,7 @@ CREATE TABLE cuckoo_job_exec_log
 	tx_date                        int             DEFAULT 0          NOT NULL	COMMENT '任务执行业务日期',
 	flow_last_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务上一次时间参数',
 	flow_cur_time                  decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '流式任务当前时间参数',
+	cuckoo_parallel_job_args       varchar(256)    DEFAULT ''         NOT NULL	COMMENT '并发/集群任务参数',
 	job_start_time                 decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '任务开始时间',
 	job_end_time                   decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '任务结束时间',
 	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',

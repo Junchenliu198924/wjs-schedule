@@ -7,6 +7,7 @@ import org.apache.mina.core.session.IoSession;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
+import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 
 public interface CuckooServerService {
 
@@ -14,7 +15,7 @@ public interface CuckooServerService {
 	 * 调用远程任务
 	 * @param jobBean
 	 */
-	CuckooClientJobDetail execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean);
+	CuckooClientJobExecResult execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean);
 	
 	/**
 	 * 查询可执行远程执行器列表 -- 考虑负载均衡 

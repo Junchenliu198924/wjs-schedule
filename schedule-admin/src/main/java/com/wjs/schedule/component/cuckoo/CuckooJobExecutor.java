@@ -1,6 +1,5 @@
 package com.wjs.schedule.component.cuckoo;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -20,17 +19,16 @@ import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
-import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobCanNotRunningException;
+import com.wjs.schedule.exception.JobRunningErrorException;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
-import com.wjs.util.DateUtil;
+import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 
 @Component("cuckooJobExecutor")
 public class CuckooJobExecutor {
@@ -69,31 +67,31 @@ public class CuckooJobExecutor {
 	 * @param forceJob
 	 * @param needTrigglerNext
 	 * @param txdate
-	 * @return 任务是否执行成功
+	 * @return 任务是否执行完成，如果是依赖关系没有结束（持续pending），返回false，否则不论成功失败，都返回true
+	 * @throws JobCanNotRunningException 
 	 */
 	@Transactional
-	public Boolean executeQuartzJob(CuckooJobExecLog jobLog) {
+	public boolean executeQuartzJob(CuckooJobExecLog jobLog) {
 
 		if (!CuckooJobExecStatus.PENDING.getValue().equals(jobLog.getExecJobStatus())) {
 
 			LOGGER.error("invalid job exec status:{},jobLogInfo:{}", jobLog.getExecJobStatus(), jobLog);
 		}
 
-		if (checkJobCanRunning(jobLog)) {
+		if(checkJobCanRunning(jobLog)){
 
-			return executeJob(jobLog);
-		} else {
-			return false;
-		}
+			executeJob(jobLog);
+			return true;
+		};
+		return false;
 	}
 
 
 	// 执行任务
-	private Boolean executeJob(CuckooJobExecLog jobLog) {
+	private void executeJob(CuckooJobExecLog jobLog) {
 		
 		LOGGER.info("job start execjob,jobLog:{}", jobLog);
 		
-		boolean rtn = true;
 
 		cuckooJobExecLogsMapper.lockByPrimaryKey(jobLog.getId());
 
@@ -104,12 +102,13 @@ public class CuckooJobExecutor {
 		String cuckooClientIp = null;
 		String cuckooClientTag = null;
 		
+		
 		try {
 			// 查询远程执行器-- 考虑负载均衡 ,如果可执行客户端没有的话，放到数据库队列里面去。用于客户端重连等操作完成后操作
 			List<CuckooClientJobDetail>  remoteExecutors = cuckooServerService.getExecRemotesId(jobLog.getJobId());
 			if(CollectionUtils.isEmpty(remoteExecutors)){
-				LOGGER.error("no executor fund, add job into todo queue,jobLog:{}", jobLog);
-				rtn = false;
+				LOGGER.error("no remoteExecutors fund, add job into todo queue,jobLog:{}", jobLog);
+				throw new JobRunningErrorException("no executor fund, add job into todo queue,jobLog:{}", jobLog);
 			}
 			
 
@@ -121,32 +120,31 @@ public class CuckooJobExecutor {
 			jobBean.setJobName(jobLog.getJobName());
 			jobBean.setTxDate(jobLog.getTxDate());
 			jobBean.setJobLogId(jobLog.getId());
+			jobBean.setCuckooParallelJobArgs(jobLog.getCuckooParallelJobArgs());
 			
-			CuckooClientJobDetail remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
-			if(null == remoteExecutor){
-				// 执行器断线等特殊情况,放入待执行队列中 
-				LOGGER.error("no executor fund, add job into todo queue,jobLog:{}", jobLog);
-				rtn = false;
-			}else{ 
-				cuckooClientIp = remoteExecutor.getCuckooClientIp();
-				cuckooClientTag = remoteExecutor.getCuckooClientTag();
+			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
+			if(!remoteExecutor.isSuccess()){
+				throw new JobRunningErrorException("job exec error:{},jobLog:{}",remoteExecutor.getRemark(), jobLog);
 			}
-			 
-		} catch (Exception e) {
+			if(null != remoteExecutor.getClientJobInfo()){
+				cuckooClientIp = remoteExecutor.getClientJobInfo().getCuckooClientIp();
+				cuckooClientTag = remoteExecutor.getClientJobInfo().getCuckooClientTag();
+			}
+			
+		} catch (JobRunningErrorException e) {
 			// 未知异常，报错处理
 			execJobStatus = CuckooJobExecStatus.FAILED.getValue();
 			remark = e.getMessage();
 			LOGGER.error("failed job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
-			rtn = false;
+		}finally{
+			LOGGER.info("failed job exec,succes:{},jobInfo:{}", remark, jobLog);
+			// 插入执行日志
+			jobLog.setCuckooClientIp(cuckooClientIp);
+			jobLog.setCuckooClientTag(cuckooClientTag);
+			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
+			jobLog.setExecJobStatus(execJobStatus);
+			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 		}
-		
-		// 插入执行日志
-		jobLog.setCuckooClientIp(cuckooClientIp);
-		jobLog.setCuckooClientTag(cuckooClientTag);
-		jobLog.setRemark(remark);
-		jobLog.setExecJobStatus(execJobStatus);
-		cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
-		return rtn;
 
 	}
 
@@ -226,15 +224,7 @@ public class CuckooJobExecutor {
 		
 
 		// 校验任务依赖状态
-		try {
-			cuckooJobDependencyService.checkDepedencyJobFinished(jobLog);
-			return true;
-		} catch (JobCanNotRunningException e) {
-			// 依赖任务未完成，放入待执行队列里面，等待调度
-			jobLog.setRemark(e.getMessage());
-			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
-			return false;
-		}
+		return cuckooJobDependencyService.checkDepedencyJobFinished(jobLog);
 	}
 
 

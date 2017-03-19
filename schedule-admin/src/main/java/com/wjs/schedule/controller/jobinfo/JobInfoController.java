@@ -156,16 +156,16 @@ public class JobInfoController extends BaseController{
 	 */
 	@RequestMapping(value="/trigger")
 	@ResponseBody
-	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, String flowLastTime, String flowCurTime ){
+	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, String flowLastTime, String flowCurTime){
 		
 		
 		
 		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
 			
-			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyyMMddHHmmss"), DateUtil.getLongTime(flowCurTime, "yyyyMMddHHmmss"));
+			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyyMMddHHmmss"), DateUtil.getLongTime(flowCurTime, "yyyyMMddHHmmss"), true);
 		}else if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
 
-			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate);
+			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate, true);
 		}else{
 			throw new BaseException("Unknow triggerType:{}", typeDaily);
 		}

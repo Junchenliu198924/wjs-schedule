@@ -117,7 +117,7 @@ public interface CuckooJobService {
 	 * @param longTime
 	 * @param longTime2
 	 */
-	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime);
+	public void triggerUnDailyJob(Long jobId, Boolean needTriggleNext, Long lastTime, Long curTime, boolean foreTriggle);
 
 
 	/**
@@ -126,7 +126,7 @@ public interface CuckooJobService {
 	 * @param needTriggleNext
 	 * @param txDate
 	 */
-	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate);
+	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate, boolean foreTriggle);
 
 	
 	

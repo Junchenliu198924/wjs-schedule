@@ -78,7 +78,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 				throw new BaseException("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}",
 						jobKey.getGroup(), jobKey.getName());
 			}
-			cuckooJobExecLog = cuckooJobLogService.initFirstJobLog(cuckooJobDetail);
+			cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail);
 			
 		}else{
 			Long execId = Long.valueOf(String.valueOf(execIdObj));

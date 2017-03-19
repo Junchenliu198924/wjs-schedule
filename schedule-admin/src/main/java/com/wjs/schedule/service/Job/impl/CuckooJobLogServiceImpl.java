@@ -1,7 +1,9 @@
 package com.wjs.schedule.service.Job.impl;
 
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
@@ -61,9 +64,18 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CuckooJobExecLog initFirstJobLog(CuckooJobDetail cuckooJobDetail) {
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) {
 
-		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
+		CuckooJobExecLog cuckooJobExecLog = null;
+		if(null != cuckooJobId){
+			cuckooJobExecLog = cuckooJobExecLogMapper.selectByPrimaryKey(cuckooJobId);
+		}
+		if(null != cuckooJobExecLog){
+			return cuckooJobExecLog;
+		}
+
+		cuckooJobExecLog = new CuckooJobExecLog();
+		 
 		Long curTime =  System.currentTimeMillis();
 		
 		// 写入初始化任务执行信息
@@ -82,7 +94,22 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			cuckooJobExecLog.setTxDate(DateUtil.addIntDate(DateUtil.getIntDay(new Date()), cuckooJobDetail.getOffset()));
 		}else{
 			// 非日切任务,则认为是流式任务
-			cuckooJobExecLog.setFlowLastTime(0L);
+//			cuckooJobExecLog.setFlowLastTime(0L);
+			// 获得上一次任务执行时间最大的截止时间为当前任务的开始时间
+			CuckooJobExecLogCriteria crt = new CuckooJobExecLogCriteria();
+			crt.createCriteria().andJobIdEqualTo(cuckooJobExecLog.getJobId())
+			.andGroupIdEqualTo(cuckooJobExecLog.getGroupId());
+			crt.setOrderByClause(" flow_cur_time desc ");
+			crt.setStart(0);
+			crt.setLimit(1);
+			List<CuckooJobExecLog> latestJobLog = cuckooJobExecLogMapper.selectByExample(crt);
+			if(CollectionUtils.isEmpty(latestJobLog)){
+
+				cuckooJobExecLog.setFlowLastTime(0L);
+			}else{
+				cuckooJobExecLog.setFlowLastTime(latestJobLog.get(0).getFlowCurTime());
+			}
+			
 			cuckooJobExecLog.setFlowCurTime(curTime);
 		}
 		
@@ -94,8 +121,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	}
 
 	@Override
-	public CuckooJobExecLog initUnDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Long flowLastTime, Long flowCurTime) {
-		
+	public CuckooJobExecLog initUnDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Long flowLastTime, Long flowCurTime, boolean foreTriggle) { 
 		
 		
 		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
@@ -109,7 +135,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 		cuckooJobExecLog.setLatestCheckTime(curTime);
 		cuckooJobExecLog.setNeedTriggleNext(needTriggleNext);
-		cuckooJobExecLog.setForceTriggle(false);
+		cuckooJobExecLog.setForceTriggle(foreTriggle);
 		
 		cuckooJobExecLog.setFlowLastTime(flowLastTime);
 		cuckooJobExecLog.setFlowCurTime(flowCurTime);
@@ -121,7 +147,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	}
 
 	@Override
-	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate) {
+	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate, boolean foreTriggle) {
 		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
 		Long curTime = System.currentTimeMillis();
 
@@ -133,7 +159,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 		cuckooJobExecLog.setLatestCheckTime(curTime);
 		cuckooJobExecLog.setNeedTriggleNext(needTriggleNext);
-		cuckooJobExecLog.setForceTriggle(false);
+		cuckooJobExecLog.setForceTriggle(foreTriggle);
 
 		cuckooJobExecLog.setTxDate(txDate);
 		cuckooJobExecLogMapper.insertSelective(cuckooJobExecLog);
