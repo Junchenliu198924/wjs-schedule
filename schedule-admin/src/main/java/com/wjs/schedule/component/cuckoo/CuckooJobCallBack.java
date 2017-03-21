@@ -43,7 +43,10 @@ public class CuckooJobCallBack  {
 		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED, "succed");
 		
 		// 触发下级任务
-		cuckooJobExecutor.executeNextJob(jobInfo);
+		if(jobInfo.getNeedTrigglerNext()){
+
+			cuckooJobExecutor.executeNextJob(jobInfo);
+		}
 	}
 	
 	/**

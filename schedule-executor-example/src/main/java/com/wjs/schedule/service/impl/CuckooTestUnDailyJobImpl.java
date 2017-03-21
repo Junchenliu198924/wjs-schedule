@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.wjs.schedule.bean.JobInfoBean;
+import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.service.CuckooTestUnDailyJob;
 
@@ -29,21 +30,19 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 	}
 
 	@Override
+	@CuckooTask("testFlowUnDailySucced")
 	public void testFlowUnDailySucced(JobInfoBean jobInfo) {
-		// TODO 待测试
-		
+		// 测试完成
+		LOGGER.info("Client exec done ,testFlowUnDailySucced:{}",  jobInfo);
 	}
 
 	@Override
+	@CuckooTask("testFlowUnDailyFailed")
 	public void testFlowUnDailyFailed(JobInfoBean jobInfo) {
-		// TODO 待测试
-		
-	}
+		// 测试完成
 
-	@Override
-	public void testFlowUnDailyDependencySucced(JobInfoBean jobInfo) {
-		// TODO 待测试
-		
+		LOGGER.info("Client exec done ,testFlowUnDailyFailed:{}",  jobInfo);
+		throw new BaseException("Client exec done ,testFlowUnDailyFailed:{}",  jobInfo);
 	}
 
 }

@@ -41,4 +41,10 @@ public class CuckooGroupServiceImpl implements CuckooGroupService {
 		return cuckooJobGroupMapper.selectByExample(new CuckooJobGroupCriteria());
 	}
 
+	@Override
+	public CuckooJobGroup getGroupById(Long groupId) {
+		
+		return cuckooJobGroupMapper.selectByPrimaryKey(groupId);
+	}
+
 }

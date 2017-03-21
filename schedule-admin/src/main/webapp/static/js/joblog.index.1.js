@@ -2,34 +2,37 @@ $(function() {
 
 	// 任务组列表选中, 任务列表初始化和选中
     var ifParam = true;
-	$("#jobGroup").on("change", function () {
-		var jobGroup = $(this).children('option:selected').val();
+	$("#groupId").on("change", function () {
+		var groupId = $(this).children('option:selected').val();
+		if(!groupId){
+			return;
+		}
 		$.ajax({
 			type : 'POST',
             async: false,   // async, avoid js invoke pagelist before jobName data init
 			url : base_url + '/joblog/getJobsByGroup',
-			data : {"jobGroup":jobGroup},
+			data : {"groupId":groupId},
 			dataType : "json",
 			success : function(data){
-				if (data.code == 200) {
-					$("#jobName").html('<option value="" >请选择</option>');
-                        $.each(data.content, function (n, value) {
-                        $("#jobName").append('<option value="' + value.jobName + '" >' + value.jobDesc + '</option>');
+				if (data.resultCode == "success") {
+					$("#jobId").html('<option value="" >请选择</option>');
+                        $.each(data.data, function (n, value) {
+                        $("#jobId").append('<option value="' + value.id + '" >' +value.jobName +"【"+ value.jobDesc + '】</option>');
                     });
-                    if ($("#jobName").attr("paramVal")){
-                        $("#jobName").find("option[value='" + $("#jobName").attr("paramVal") + "']").attr("selected",true);
-                        $("#jobName").attr("paramVal")
+                    if ($("#jobId").attr("paramVal")){
+                        $("#jobId").find("option[value='" + $("#jobId").attr("paramVal") + "']").attr("selected",true);
+                        $("#jobId").attr("paramVal")
                     }
 				} else {
-					ComAlertTec.show(data.msg);
+					ComAlertTec.show(data.resultMsg);
 				}
 			},
 		});
 	});
-	if ($("#jobGroup").attr("paramVal")){
-		$("#jobGroup").find("option[value='" + $("#jobGroup").attr("paramVal") + "']").attr("selected",true);
-        $("#jobGroup").change();
-        $("#jobGroup").attr("")
+	if ($("#groupId").attr("paramVal")){
+		$("#groupId").find("option[value='" + $("#groupId").attr("paramVal") + "']").attr("selected",true);
+        $("#groupId").change();
+        $("#groupId").attr("")
 	}
 
 	// 过滤时间
@@ -69,11 +72,11 @@ $(function() {
 	        url: base_url + "/joblog/pageList" ,
 	        data : function ( d ) {
 	        	var obj = {};
-	        	obj.jobGroup = $('#jobGroup').val();
-	        	obj.jobName = $('#jobName').val();
+	        	obj.groupId = $('#groupId').val();
+	        	obj.jobId = $('#jobId').val();
 				obj.filterTime = $('#filterTime').val();
 	        	obj.start = d.start;
-	        	obj.length = d.length;
+	        	obj.limit = d.length;
                 return obj;
             }
 	    },
@@ -81,69 +84,100 @@ $(function() {
 	    "ordering": false,
 	    //"scrollX": false,
 	    "columns": [
-	                { "data": 'id', "bSortable": false, "visible" : false},
+	                { "data": 'id', "bSortable": false, "visible" : true},
+	                { "data": 'groupId', "bSortable": false, "visible" : false},
+	                { "data": 'jobId', "bSortable": false, "visible" : false},	                 
+	                { "data": 'jobName', "visible" : true},
+	                { "data": 'jobClassApplication', "visible" : false},
+	                { "data": 'triggerType', "visible" : true},
+					
+
+	                { "data": 'cronExpression', "visible" : true},
+	                { "data": 'execJobStatus', "visible" : true},
 	                { 
-	                	"data": 'jobGroup', 
-	                	"visible" : false, 
-	                	"bSortable": false, 
+	                	"data": 'jobStartTime', 
 	                	"render": function ( data, type, row ) {
-	            			var groupMenu = $("#jobGroup").find("option");
-	            			for ( var index in $("#jobGroup").find("option")) {
-	            				if ($(groupMenu[index]).attr('value') == data) {
-									return $(groupMenu[index]).html();
-								}
-							}
-	            			return data;
-	            		}
-            		},
-	                { "data": 'jobName', "visible" : false},
-	                { "data": 'executorAddress', "visible" : true},
-					{
-						"data": 'executorHandler',
-						"visible" : true,
-						"render": function ( data, type, row ) {
-							return (row.executorHandler)?row.executorHandler:"GLUE模式";
-						}
-					},
-	                { "data": 'executorParam', "visible" : true},
-	                { 
-	                	"data": 'triggerTime', 
-	                	"render": function ( data, type, row ) {
-	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-	                	}
-	                },
-	                { "data": 'triggerStatus'},
-	                { 
-	                	"data": 'triggerMsg',
-	                	"render": function ( data, type, row ) {
-	                		return data?'<a class="logTips" href="javascript:;" >查看<span style="display:none;">'+ data +'</span></a>':"无";
+	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
 	                	}
 	                },
 	                { 
-	                	"data": 'handleTime',
+	                	"data": 'jobEndTime', 
 	                	"render": function ( data, type, row ) {
-	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                		return data!= 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
 	                	}
 	                },
-	                { "data": 'handleStatus',"bSortable": false},
+	                { "data": 'needTriggleNext'},
+	                { "data": 'forceTriggle'},
+	                { "data": 'remark', "visible" : false},
+	                
+	                
+//	                { 
+//	                	"data": 'triggerMsg',
+//	                	"render": function ( data, type, row ) {
+//	                		return data?'<a class="logTips" href="javascript:;" >查看<span style="display:none;">'+ data +'</span></a>':"无";
+//	                	}
+//	                },
+	                
+	                
+	                
+
+
+	                { "data": 'cuckooClientIp'},
+	                { "data": 'cuckooClientTag', "visible" : false},
+	                { "data": 'typeDaily', "visible" : true},
+	                { "data": 'txDate',
+	                	"render": function ( data, type, row ) {
+	                		return data == 0 ? "" : data;
+	                	}, 
+	                	"visible" : true
+	                },
 	                { 
-	                	"data": 'handleMsg',
+	                	"data": 'flowLastTime',
 	                	"render": function ( data, type, row ) {
-	                		return data?'<a class="logTips" href="javascript:;" >查看<span style="display:none;">'+ data +'</span></a>':"无";
-	                	}
+	                		return data!=0?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                	}, 
+	                	"visible" : true
 	                },
+	                { 
+	                	"data": 'flowCurTime',
+	                	"render": function ( data, type, row ) {
+	                		return data!=0?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                	},
+	                	"visible" : true
+	                },
+
+	                { "data": 'cuckooParallelJobArgs',"bSortable": false, "visible" : false},
+	                
+//	                { 
+//	                	"data": 'handleMsg',
+//	                	"render": function ( data, type, row ) {
+//	                		return data?'<a class="logTips" href="javascript:;" >查看<span style="display:none;">'+ data +'</span></a>':"无";
+//	                	}
+//	                },
 	                { "data": 'handleMsg' , "bSortable": false,
 	                	"render": function ( data, type, row ) {
 	                		// better support expression or string, not function
 	                		return function () {
-		                		if (row.triggerStatus == 'SUCCESS' || row.handleStatus){
-		                			var temp = '<a href="javascript:;" class="logDetail" _id="'+ row.id +'">执行日志</a>';
-		                			if(!row.handleStatus){
-		                				temp += '<br><a href="javascript:;" class="logKill" _id="'+ row.id +'">终止任务</a>';
-		                			}
-		                			return temp;
+
+//	                			PENDING("PENDING", "等待执行"), 
+//	                			RUNNING("RUNNING", "正在执行"), 
+//	                			FAILED("FAILED", "执行失败"),
+//	                			SUCCED("SUCCED", "执行成功"),
+//	                			BREAK("BREAK", "断线");
+	                			var temp = '<button class="btn btn-primary btn-xs detail"  type="button"  _id="'+ row.id +'" _execJobStatus="'+ row.execJobStatus+'"">详情</button> &nbsp; &nbsp;';
+
+	                				temp += '<button class="btn btn-primary btn-xs redo"  type="button"  _id="'+ row.id +'" _execJobStatus="'+ row.execJobStatus+'">再次执行</button>';	
+	                			if (row.execJobStatus != 'SUCCED'){	                			
+//		                			if (row.execJobStatus == 'RUNNING'){
+//		                				
+//		                				temp += '<button class="btn btn-primary btn-xs redo"  type="button"   _id="'+ row.id +'">强制结束</button>';		                			
+//		                			}else{
+		                				
+		                				temp += '<button class="btn btn-primary btn-xs reset"  type="button"   _id="'+ row.id +'" _execJobStatus="'+ row.execJobStatus+'">修改为成功</button>';		                			
+//		                			}
 		                		}
-		                		return null;	
+		                		
+		                		return temp;	
 	                		}
 	                	}
 	                }
@@ -174,65 +208,90 @@ $(function() {
 		}
 	});
 	
-	// 任务数据
-	$('#joblog_list').on('click', '.logMsg', function(){
-		var msg = $(this).find('span').html();
-		ComAlert.show(2, msg);
-	});
-	
-	// 日志弹框提示
-	$('#joblog_list').on('click', '.logTips', function(){
-		var msg = $(this).find('span').html();
-		ComAlertTec.show(msg);
-	});
-	
+
 	// 搜索按钮
 	$('#searchBtn').on('click', function(){
 		logTable.fnDraw();
 	});
 	
-	// 查看执行器详细执行日志
-	$('#joblog_list').on('click', '.logDetail', function(){
-		var _id = $(this).attr('_id');
-		
-		window.open(base_url + '/joblog/logDetailPage?id=' + _id);
-		return;
-		
-		/*
-		$.ajax({
-			type : 'POST',
-			url : base_url + '/joblog/logDetail',
-			data : {"id":_id},
-			dataType : "json",
-			success : function(data){
-				if (data.code == 200) {
-					ComAlertTec.show('<pre style="color: white;background-color: black;width2:'+ $(window).width()*2/3 +'px;" >'+ data.content +'</pre>');
-				} else {
-					ComAlertTec.show(data.msg);
-				}
-			},
-		});
-		*/
-	});
 	
-	$('#joblog_list').on('click', '.logKill', function(){
+	 
+	$('#joblog_list').on('click', '.redo', function(){
+//		var msg = $(this).find('span').html();
+//		ComAlert.show(2, msg);
+		// 再次执行
 		var _id = $(this).attr('_id');
-		ComConfirm.show("确认主动终止任务?", function(){
+		var _execJobStatus = $(this).attr('_execJobStatus');
+		ComConfirm.show("确认将任务"+_id+"【"+_execJobStatus+"】重新执行吗？确认后会新增一条执行信息", function(){
 			$.ajax({
 				type : 'POST',
-				url : base_url + '/joblog/logKill',
-				data : {"id":_id},
+				url : base_url + '/joblog/redo',
+				data : {"logId":_id},
 				dataType : "json",
 				success : function(data){
-					if (data.code == 200) {
+					if (data.resultCode = "success") {
 						ComAlert.show(1, '操作成功');
 						logTable.fnDraw();
 					} else {
-						ComAlert.show(2, data.msg);
+						ComAlert.show(2, data.resultMsg);
 					}
 				},
 			});
 		});
 	});
+	 
+	$('#joblog_list').on('click', '.reset', function(){
+//		var msg = $(this).find('span').html();
+//		ComAlertTec.show(msg);
+		// 修改为成功
+		var _id = $(this).attr('_id');
+		var _execJobStatus = $(this).attr('_execJobStatus');
+		ComConfirm.show("确认将任务"+_id+"【"+_execJobStatus+"】状态重置成功吗？", function(){
+			$.ajax({
+				type : 'POST',
+				url : base_url + '/joblog/reset',
+				data : {"logId":_id},
+				dataType : "json",
+				success : function(data){
+					if (data.resultCode = "success") {
+						ComAlert.show(1, '操作成功');
+						logTable.fnDraw();
+					} else {
+						ComAlert.show(2, data.resultMsg);
+					}
+				},
+			});
+		});
+	});
+	
+	// 查看执行器详细执行日志
+	$('#joblog_list').on('click', '.detail', function(){
+		var _id = $(this).attr('_id');
+		
+		window.open(base_url + '/joblog/logdetail?logId=' + _id);
+		return;
+		
+		
+	});
+	
+//	$('#joblog_list').on('click', '.logKill', function(){
+//		var _id = $(this).attr('_id');
+//		ComConfirm.show("确认主动终止任务?", function(){
+//			$.ajax({
+//				type : 'POST',
+//				url : base_url + '/joblog/logKill',
+//				data : {"id":_id},
+//				dataType : "json",
+//				success : function(data){
+//					if (data.code == 200) {
+//						ComAlert.show(1, '操作成功');
+//						logTable.fnDraw();
+//					} else {
+//						ComAlert.show(2, data.msg);
+//					}
+//				},
+//			});
+//		});
+//	});
 	
 });

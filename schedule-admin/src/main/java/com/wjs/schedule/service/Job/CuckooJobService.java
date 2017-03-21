@@ -128,6 +128,14 @@ public interface CuckooJobService {
 	 */
 	public void triggerDailyJob(Long jobId, Boolean needTriggleNext, Integer txDate, boolean foreTriggle);
 
+
+	/**
+	 * 根据GroupId查询出任务信息
+	 * @param groupId
+	 * @return
+	 */
+	public List<CuckooJobDetail> getJobsByGroupId(Long groupId);
+
 	
 	
 }

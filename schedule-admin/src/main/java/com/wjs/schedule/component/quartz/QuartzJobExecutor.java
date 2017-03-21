@@ -53,7 +53,6 @@ public class QuartzJobExecutor extends QuartzJobBean {
 		
 		Trigger trigger = context.getTrigger();
 		JobKey jobKey = trigger.getJobKey();	
-		LOGGER.info("quartz trigger job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
 		
 		JobDataMap data = context.getMergedJobDataMap();
 		Object execIdObj = data.get(CuckooJobConstant.JOB_EXEC_ID);
@@ -61,10 +60,11 @@ public class QuartzJobExecutor extends QuartzJobBean {
 		
 		if(null == execIdObj){
 			// 如果日志ID为空，表示当前任务为CRON触发，新增执行日志(一般情况为任务调度节点的第一个任务)
+			LOGGER.info("quartz trigger cron job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
 			
 			String quartzJobGroup = jobKey.getGroup();
 			String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
-			if (quartzJobNameArr.length != 2) {
+			if (quartzJobNameArr.length < 2) {
 				LOGGER.error("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 				throw new BaseException("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 			}
@@ -81,6 +81,8 @@ public class QuartzJobExecutor extends QuartzJobBean {
 			cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail);
 			
 		}else{
+			LOGGER.info("quartz trigger flow job, jobGroup:{},jobName:{},execIdObj:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(), execIdObj,trigger.getClass());
+			
 			Long execId = Long.valueOf(String.valueOf(execIdObj));
 			// 如果日志ID不为空，表示当前日志是通过上级任务触发或者是有等待执行的任务
 			cuckooJobExecLog = cuckooJobExecLogMapper.selectByPrimaryKey(execId);

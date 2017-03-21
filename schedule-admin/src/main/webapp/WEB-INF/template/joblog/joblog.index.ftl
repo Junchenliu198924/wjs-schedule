@@ -20,7 +20,7 @@
 	<div class="content-wrapper">
 		<!-- Content Header (Page header) -->
 		<section class="content-header">
-			<h1>调度日志<small>任务调度中心</small></h1>
+			<h1>调度日志<small>日志中心</small></h1>
 			<!--
 			<ol class="breadcrumb">
 				<li><a><i class="fa fa-dashboard"></i>调度日志</a></li>
@@ -34,23 +34,28 @@
 	    	<div class="row">
 	    		<div class="col-xs-3">
  					<div class="input-group">
-	                	<span class="input-group-addon">执行器</span>
-                		<select class="form-control" id="jobGroup"  paramVal="${jobGroup}" >
+	                	<span class="input-group-addon">分组</span>
+                		<select class="form-control" id="groupId"  paramVal="${groupId}" >
+                			<!--
                             <option value="0" selected>请选择</option>
-                			<#list JobGroupList as group>
-                				<option value="${group.id}" <#if jobGroup == group.appName && false>selected</#if> >${group.title}</option>
+                            -->
+                			<#list jobGroupsWithNull as group>
+                				<option value="${group.id}" <#if groupId == group.id>selected</#if> >${group.groupName}</option>
                 			</#list>
 	                  	</select>
+	                  	
 	              	</div>
 	            </div>
 	            <div class="col-xs-3">
 	              	<div class="input-group">
 	                	<span class="input-group-addon">描述</span>
-                        <select class="form-control" id="jobName" paramVal="${jobName}" >
-                            <option value="" >请选择</option>
+                        <select class="form-control" id="jobId" paramVal="${jobId}" >
 						</select>
 	              	</div>
 	            </div>
+	    </div>
+	            
+		<div class="row">	            
 	            <div class="col-xs-4">
               		<div class="input-group">
                 		<span class="input-group-addon">
@@ -76,17 +81,28 @@
 				                <thead>
 					            	<tr>
 					                	<th name="id" >id</th>
-					                	<th name="jobGroup" >任务组</th>
-					                  	<th name="jobName" >任务名</th>
-					                  	<th name="executorAddress" >执行器地址</th>
-                                        <th name="executorHandler" >JobHandler</th>
-					                  	<th name="executorParam" >任务参数</th>
-					                  	<th name="triggerTime" >调度时间</th>
-					                  	<th name="triggerStatus" >调度结果</th>
-					                  	<th name="triggerMsg" >调度备注</th>
-					                  	<th name="handleTime" >执行时间</th>
-					                  	<th name="handleStatus" >执行结果</th>
-					                  	<th name="handleMsg" >执行备注</th>
+					                	<th name="groupId" >分组ID</th>
+					                	<th name="jobId" >任务ID</th>
+					                  	<th name="jobName" >任务名称</th>
+					                  	<th name="jobClassApplication" >作业执行应用名</th>
+                                        <th name="triggerType" >触发类型</th>
+                                        
+					                  	<th name="cronExpression" >cron任务表达式</th>
+					                  	<th name="execJobStatus" >执行状态</th>
+					                  	<th name="jobStartTime" >任务开始时间</th>
+					                  	<th name="jobEndTime" >任务结束时间</th>
+					                  	<th name="needTriggleNext" >触发下级</th>
+					                  	<th name="forceTriggle" >强制触发</th>
+					                  	<th name="remark" >执行结果</th>
+					                  	
+										
+					                  	<th name="cuckooClientIp" >执行器IP</th>
+					                  	<th name="cuckooClientTag" >客户端标识</th>
+					                  	<th name="typeDaily" >是否日切</th>
+					                  	<th name="txDate" >业务日期</th>
+					                  	<th name="flowLastTime" >开始时间参数 </th>
+					                  	<th name="flowCurTime" >结束时间参数 </th>
+					                  	<th name="cuckooParallelJobArgs" >并发/集群任务参数</th>
 					                  	<th name="handleMsg" >操作</th>
 					                </tr>
 				                </thead>

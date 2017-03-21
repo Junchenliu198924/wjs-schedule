@@ -45,10 +45,27 @@ public class DateUtil {
 
 	public static Long getLongTime(String strDate, String format) {
 		
+		return parseDate(strDate, format).getTime();
+	}
+
+	public static Date parseDate(String strDate, String format) {
 		try {
-			return new SimpleDateFormat(format).parse(strDate).getTime();
+			return new SimpleDateFormat(format).parse(strDate);
 		} catch (ParseException e) {
-			return 0L;
+			return new Date();
+		}
+	}
+
+	public static String getStringDay(Long time, String format) {
+		
+		try {
+			if(time == null || time == 0L){
+				return "";
+			}
+			return new SimpleDateFormat(format).format(new Date(time));
+		} catch (Exception e) {
+
+			return "";
 		}
 	}
 

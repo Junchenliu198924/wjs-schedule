@@ -50,7 +50,7 @@ public class JobInfoBean implements Serializable{
 	/**
 	 * 是否需要触发下次任务，默认是。在手工调用的时候，可以设置否 
 	 */
-//	private Boolean needTrigglerNext = true;
+	private Boolean needTrigglerNext = true;
 	
 	/**
 	 * 任务执行分片参数
@@ -123,13 +123,13 @@ public class JobInfoBean implements Serializable{
 //		this.forceJob = forceJob;
 //	}
 
-//	public Boolean getNeedTrigglerNext() {
-//		return needTrigglerNext;
-//	}
-//
-//	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
-//		this.needTrigglerNext = needTrigglerNext;
-//	}
+	public Boolean getNeedTrigglerNext() {
+		return needTrigglerNext;
+	}
+
+	public void setNeedTrigglerNext(Boolean needTrigglerNext) {
+		this.needTrigglerNext = needTrigglerNext;
+	}
 	
 
 	public String getCuckooParallelJobArgs() {

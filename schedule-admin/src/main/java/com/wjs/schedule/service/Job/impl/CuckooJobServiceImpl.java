@@ -30,10 +30,10 @@ import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.service.Job.CuckooJobDependencyService;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobNextService;
 import com.wjs.schedule.service.Job.CuckooJobService;
-import com.wjs.schedule.util.CuckBeanUtil;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.bean.PropertyUtil;
@@ -60,14 +60,19 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	@Autowired
 	QuartzManage quartzManage;
 	
-	@Autowired
-	CuckooJobNextService cuckooJobNextService;
 	
 	@Autowired
 	CuckooJobLogService cuckooJobLogService;
 	
 	@Autowired
 	CuckooClientJobDetailMapper cuckooClientJobDetailMapper;
+	
+
+	@Autowired
+	CuckooJobNextService cuckooJobNextService;
+	
+	@Autowired
+	CuckooJobDependencyService cuckooJobDependencyService;
 	
 	@Override
 	@Transactional
@@ -100,11 +105,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 				throw new BaseException("cronexpression is not valid:"+jobDetail.getCronExpression());
 			}
 		}
-		// 新增wjs_schedule_cockoo_job_details 数据，默认暂停
-
-		
-		
-
+		// 新增wjs_schedule_cockoo_job_details 数据，默认启动
 		CuckooJobDetail cuckooJobDetail = new CuckooJobDetail();
 		PropertyUtil.copyProperties(cuckooJobDetail, jobDetail);
 		// 默认执行
@@ -121,11 +122,12 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			if(null == jobPreTriggle){
 				throw new BaseException("can not find pre trigger job by preJobId:{}", jobDetail.getPreJobId());
 			}
-			cuckooJobNextService.add(jobDetail.getPreJobId(), jobId);
-		}
-		
+			cuckooJobNextService.addOrUpdate(jobDetail.getPreJobId(), jobId);
+		}		
 		if(StringUtils.isNotEmpty(jobDetail.getDependencyIds())){
-			// 依赖任务 TODO
+			// 依赖任务  
+			String[] dependencyIds = jobDetail.getDependencyIds().split(",");
+			cuckooJobDependencyService.addOrUpdateJobDependency(jobId, dependencyIds);
 		}
 		
 		
@@ -159,10 +161,11 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		if(orginJobDetail.getGroupId().equals(targetJobDetail.getGroupId())){
 			// 如果原始任务组编号与目前任务组编号相同
 			cuckooJobDetailMapper.updateByPrimaryKeySelective(targetJobDetail);
-			if(CuckooJobTriggerType.JOB.getValue().equals(orginJobDetail.getTriggerType()) && CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
+			if(CuckooJobTriggerType.JOB.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 原来任务类型为job触发 且新任务为Cron，那么需要新增quartz。否则不做处理
-				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
-				
+				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
+					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+				}
 			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 如果原来任务类型为Cron，那么修改一条任务
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
@@ -187,9 +190,19 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		
 		
-		// 任务触发关系修改 TODO
-		
-		// 任务依赖关系修改 TODO
+		if(null != jobInfo.getPreJobId()){
+			// 触发任务
+			CuckooJobDetail jobPreTriggle = getJobById(jobInfo.getPreJobId());
+			if(null == jobPreTriggle){
+				throw new BaseException("can not find pre trigger job by preJobId:{}", jobInfo.getPreJobId());
+			}
+			cuckooJobNextService.addOrUpdate(jobInfo.getPreJobId(), jobInfo.getId());
+		}		
+		if(StringUtils.isNotEmpty(jobInfo.getDependencyIds())){
+			// 依赖任务  
+			String[] dependencyIds = jobInfo.getDependencyIds().split(",");
+			cuckooJobDependencyService.addOrUpdateJobDependency(jobInfo.getId() , dependencyIds);
+		}
 		
 	}
 
@@ -362,6 +375,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 
 	@Override
+	@Transactional
 	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog){
 		
 		LOGGER.info("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail , fatherJobLog);
@@ -383,7 +397,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		cuckooJobExecLogMapper.insertSelective(jobLog);
 		jobLog.setId(cuckooJobExecLogMapper.lastInsertId());
 		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(jobLog);
+		quartzManage.addSimpleJob(jobLog, 0L);
 
 	}
 	
@@ -393,7 +407,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	public void rependingJob(CuckooJobExecLog jobLog) {
 		LOGGER.info("repending job ,jobLog:{} ", jobLog);
 		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(jobLog);
+		quartzManage.addSimpleJob(jobLog, 60000L);
 
 	}
 	
@@ -407,7 +421,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			throw new BaseException("can not get jobinfo by id:{}", jobId);
 		}
 		CuckooJobExecLog jobLog = cuckooJobLogService.initUnDailyJobLog(cuckooJobDetail,  needTriggleNext, lastTime, curTime, foreTriggle);
-		quartzManage.addSimpleJob(jobLog);
+		quartzManage.addSimpleJob(jobLog, 0L);
 
 		
 	}
@@ -422,7 +436,17 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		
 		CuckooJobExecLog jobLog = cuckooJobLogService.initDailyJobLog(cuckooJobDetail, needTriggleNext, txDate, foreTriggle);
-		quartzManage.addSimpleJob(jobLog);
+		quartzManage.addSimpleJob(jobLog, 0L);
+	}
+
+	@Override
+	public List<CuckooJobDetail>  getJobsByGroupId(Long groupId) {
+
+		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		crt.createCriteria().andGroupIdEqualTo(groupId);
+		
+		
+		return cuckooJobDetailMapper.selectByExample(crt);
 	}
 
 

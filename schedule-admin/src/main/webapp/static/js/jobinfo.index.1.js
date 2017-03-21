@@ -100,7 +100,7 @@ $(function() {
 									pause_resume = '<button class="btn btn-primary btn-xs job_operate" type="job_resume" type="button">恢复</button>  ';
 								}
 	                			// log url
-	                			var logUrl = base_url +'/joblog?jobGroup='+ row.jobGroup +'&jobName='+ row.jobName;
+	                			var logUrl = base_url +'/joblog?groupId='+row.groupId+'&jobId='+ row.id;
 	                			
 	                			// log url
 	                			var codeBtn = "";

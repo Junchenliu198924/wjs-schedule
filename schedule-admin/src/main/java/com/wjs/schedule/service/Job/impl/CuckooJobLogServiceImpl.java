@@ -12,14 +12,18 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExecLogSubMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
+import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
+import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.dao.PageDataList;
 
 @Service("cuckooJobLogService")
 public class CuckooJobLogServiceImpl implements CuckooJobLogService {
@@ -27,6 +31,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooJobLogServiceImpl.class);
 	@Autowired
 	CuckooJobExecLogMapper cuckooJobExecLogMapper;
+	
+	@Autowired
+	CuckooJobExecLogSubMapper cuckooJobExecLogSubMapper;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -166,6 +173,58 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setId(cuckooJobExecLogMapper.lastInsertId());
 
 		return cuckooJobExecLog;
+	}
+
+	@Override
+	public PageDataList<CuckooJobExecLog> pageByQry(JobLogQry qry) {
+		
+		
+		CuckooJobExecLogCriteria crtPi = new CuckooJobExecLogCriteria();
+		crtPi.setStart(qry.getStart());
+		crtPi.setLimit(qry.getLimit());
+		
+		CuckooJobExecLogCriteria.Criteria crt = crtPi.createCriteria();
+	  
+		if(null != qry.getGroupId()){
+			crt.andGroupIdEqualTo(qry.getGroupId());
+		}
+		if(null != qry.getJobId()){
+			crt.andJobIdEqualTo(qry.getJobId());
+		}
+		
+		if(null != qry.getStartDateTime()){
+			crt.andJobStartTimeGreaterThanOrEqualTo(qry.getStartDateTime());
+		}
+		if(null != qry.getEndDateTime()){
+			crt.andJobStartTimeLessThanOrEqualTo(qry.getEndDateTime());
+		}
+		
+		if(null != qry.getJobStatus()){
+			crt.andExecJobStatusIn(qry.getJobStatus());
+		}
+		
+		return cuckooJobExecLogMapper.pageByExample(crtPi);
+	}
+
+	@Override
+	public void resetLogStatus(Long logId, CuckooJobExecStatus status) {
+
+		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
+		cuckooJobExecLog.setId(logId);
+		cuckooJobExecLog.setExecJobStatus(status.getValue());
+		cuckooJobExecLogMapper.updateByPrimaryKeySelective(cuckooJobExecLog);
+	}
+
+	@Override
+	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(JobLogOverTimeQry qry) {
+		
+		PageDataList<CuckooJobExecLog> page = new PageDataList<>();
+		page.setPage(qry.getStart() / qry.getLimit()  + 1);
+		page.setPageSize(qry.getLimit());
+		page.setRows(cuckooJobExecLogSubMapper.pageOverTimeJobs(qry));
+		page.setTotal(cuckooJobExecLogSubMapper.countOverTimeJobs(qry));
+		
+		return page;
 	}
 
 }

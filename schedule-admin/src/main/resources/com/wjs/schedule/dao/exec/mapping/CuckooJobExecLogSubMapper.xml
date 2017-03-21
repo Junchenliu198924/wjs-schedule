@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wjs.schedule.dao.exec.CuckooJobExecLogSubMapper" >
+   
+  <sql id="Base_Column_List" >
+    <!--
+     WARNING -  该映射文件为自动生成, 请勿修改.
+    -->
+    id, job_id, group_id, job_class_application, job_name, trigger_type, type_daily, 
+    cron_expression, tx_date, flow_last_time, flow_cur_time, cuckoo_parallel_job_args, 
+    job_start_time, job_end_time, exec_job_status, cuckoo_client_ip, cuckoo_client_tag, 
+    latest_check_time, need_triggle_next, force_triggle, remark
+  </sql>
+   
+  <select id="pageOverTimeJobs" resultMap="com.wjs.schedule.dao.exec.CuckooJobExecLogMapper.BaseResultMap" parameterType="com.wjs.schedule.vo.qry.JobLogOverTimeQry" >
+    select
+    <include refid="com.wjs.schedule.dao.exec.CuckooJobExecLogMapper.Base_Column_List" />
+    from cuckoo_job_exec_log
+    <if test="overTime != null" >
+      where exec_job_status = 'RUNNING'
+      and (job_end_time - job_start_time &gt; ${overTime})
+    </if>
+    <if test="limit != 0 " >
+       limit ${start} , ${limit}
+    </if>
+  </select>
+   
+  <select id="countOverTimeJobs" parameterType="com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria" resultType="java.lang.Integer" >
+    select count(*)  
+   	from cuckoo_job_exec_log
+    <if test="overTime != null" >
+      where exec_job_status = 'RUNNING'
+      and (job_end_time - job_start_time &gt; ${overTime})
+    </if>
+  </select>
+   
+</mapper>

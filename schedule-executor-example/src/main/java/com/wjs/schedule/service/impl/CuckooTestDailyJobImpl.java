@@ -33,26 +33,34 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	}
 
 	@Override
+	@CuckooTask("testCronDailyDependencySucced")
 	public void testCronDailyDependencySucced(JobInfoBean jobInfo) {
-		// TODO 待测试
-		
+
+		LOGGER.info("Client exec done ,testCronDailyDependencySucced:{}",  jobInfo);
 	}
 
 	@Override
+	@CuckooTask("testFlowDailySucced")
 	public void testFlowDailySucced(JobInfoBean jobInfo) {
-		// TODO 待测试
+
+		LOGGER.info("Client exec done ,testFlowDailySucced:{}",  jobInfo);
 		
 	}
 
 	@Override
+	@CuckooTask("testFlowDailyFailed")
 	public void testFlowDailyFailed(JobInfoBean jobInfo) {
-		// TODO 待测试
+		
+		LOGGER.info("Client exec done ,testFlowDailyFailed:{}",  jobInfo);
+		throw new BaseException();
 		
 	}
 
 	@Override
+	@CuckooTask("testFlowDailyDependencySucced")
 	public void testFlowDailyDependencySucced(JobInfoBean jobInfo) {
-		// TODO 待测试
+
+		LOGGER.info("Client exec done ,testFlowDailyDependencySucced:{}",  jobInfo);
 		
 	}
 

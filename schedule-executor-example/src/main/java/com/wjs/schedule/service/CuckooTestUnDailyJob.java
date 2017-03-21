@@ -20,7 +20,7 @@ public interface CuckooTestUnDailyJob {
 	public void testFlowUnDailyFailed(JobInfoBean jobInfo);
 	
 
-	// 测试上级任务触发非日切有依赖任务 
-	public void testFlowUnDailyDependencySucced(JobInfoBean jobInfo);
+	// 测试上级任务触发非日切有依赖任务  -- （非日切任务如果依赖过多，会造成不稳定，此处暂时不做支持）
+//	public void testFlowUnDailyDependencySucced(JobInfoBean jobInfo);
 
 }

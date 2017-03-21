@@ -116,11 +116,12 @@ public class CuckooJobExecutor {
 			JobInfoBean jobBean = new JobInfoBean();
 			jobBean.setFlowCurrTime(jobLog.getFlowCurTime());
 			jobBean.setFlowLastTime(jobLog.getFlowLastTime());
-			jobBean.setJobId(jobLog.getId());
+			jobBean.setJobId(jobLog.getJobId());
 			jobBean.setJobName(jobLog.getJobName());
 			jobBean.setTxDate(jobLog.getTxDate());
 			jobBean.setJobLogId(jobLog.getId());
 			jobBean.setCuckooParallelJobArgs(jobLog.getCuckooParallelJobArgs());
+			jobBean.setNeedTrigglerNext(jobLog.getNeedTriggleNext());
 			
 			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
 			if(!remoteExecutor.isSuccess()){
@@ -212,19 +213,22 @@ public class CuckooJobExecutor {
 		// 查询任务信息
 		CuckooJobDetail jobInfo = cuckooJobDetailMapper.selectByPrimaryKey(jobLog.getJobId());
 
-		if(!jobLog.getForceTriggle()){
-			// 如果任务不是手工调度的情况下，状态为暂停，等待下次调度（手工调度任务，不需要关注任务执行状态是否为暂停）
+		if(jobLog.getForceTriggle()){
+			// 强制执行的任务（手工调度），不需要校验
+			return true;
+		}else{
+			// 非强制执行的任务（手工调度），状态为暂停，等待下次调度
 			if (CuckooJobStatus.PAUSE.getValue().equals(jobInfo.getJobStatus())) {
 				LOGGER.info("job is paush,triggle next time, jobInfo:{}", jobInfo);
 				jobLog.setRemark("job is paush,triggle next time");
 				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 				return false;
 			}
+
+			// 校验任务依赖状态
+			return cuckooJobDependencyService.checkDepedencyJobFinished(jobLog);
 		}
 		
-
-		// 校验任务依赖状态
-		return cuckooJobDependencyService.checkDepedencyJobFinished(jobLog);
 	}
 
 

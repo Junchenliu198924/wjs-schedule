@@ -1,7 +1,9 @@
 package com.wjs.schedule.service.Job.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -15,12 +17,12 @@ import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDependency;
 import com.wjs.schedule.domain.exec.CuckooJobDependencyCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.exception.JobCanNotRunningException;
 import com.wjs.schedule.service.Job.CuckooJobDependencyService;
 import com.wjs.schedule.util.CuckBeanUtil;
 import com.wjs.schedule.vo.job.JobDependency;
@@ -41,6 +43,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 	
 	@Autowired
 	CuckooJobExecLogMapper cuckooJobExecLogMapper;
+	
 	
 	@Override
 	@Transactional
@@ -78,9 +81,10 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 		if (CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())) {
 
 			CuckooJobExecLogCriteria depJobCrt = new CuckooJobExecLogCriteria();
-			depJobCrt.createCriteria().andIdIn(depJobIds)
+//			depJobCrt.setDistinct(true);
+			depJobCrt.createCriteria().andJobIdIn(depJobIds)
 					// 1.依赖的任务状态都为成功
-					.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue())
+					.andExecJobStatusEqualTo(CuckooJobExecStatus.SUCCED.getValue())
 					// 非日切任务的latestTime一致
 					.andFlowLastTimeEqualTo(jobLog.getFlowLastTime());
 			readyDepJobs = cuckooJobExecLogMapper.selectByExample(depJobCrt);
@@ -89,18 +93,25 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 
 			// 2.日切任务的txdate需要一致
 			CuckooJobExecLogCriteria depLogTxdateCrt = new CuckooJobExecLogCriteria();
-			depLogTxdateCrt.createCriteria().andIdIn(depJobIds)
+//			depLogTxdateCrt.setDistinct(true);
+			depLogTxdateCrt.createCriteria().andJobIdIn(depJobIds)
 					// 1.依赖的任务状态都为成功
-					.andExecJobStatusNotEqualTo(CuckooJobExecStatus.SUCCED.getValue())
+					.andExecJobStatusEqualTo(CuckooJobExecStatus.SUCCED.getValue())
 					// 日切任务的txdate需要一致
 					.andTxDateEqualTo(jobLog.getTxDate());
 			readyDepJobs = cuckooJobExecLogMapper.selectByExample(depLogTxdateCrt);
 
 		}
-
-		if (CollectionUtils.isNotEmpty(readyDepJobs) && readyDepJobs.size() != depJobIds.size()) {
+		
+		Set<Long> readydepJobs = new HashSet<>();
+		
+		if(CollectionUtils.isNotEmpty(readyDepJobs)){
+			for (CuckooJobExecLog log : readyDepJobs) {
+				readydepJobs.add(log.getJobId());
+			}
+		}
+		if (readydepJobs.size() != depJobIds.size()) {
 			
-			List<Long> readydepJobs = PropertyUtil.fetchFieldList(readyDepJobs, "dependencyJobId");
 			
 
 			LOGGER.info("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
@@ -122,6 +133,28 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 			rtn = PropertyUtil.fetchFieldList(result, "dependencyJobId");
 		}
 		return rtn;
+	}
+
+	@Override
+	public void addOrUpdateJobDependency(Long jobId, String[] dependencyIds) {
+		// 1.先删除
+		
+		CuckooJobDependencyCriteria crtDel = new CuckooJobDependencyCriteria();
+		crtDel.createCriteria().andJobIdEqualTo(jobId);
+		cuckooJobDependencyMapper.deleteByExample(crtDel);
+		
+		// 2.再增加
+		for (String dependencyId : dependencyIds) {
+			CuckooJobDependency jobDependency = new CuckooJobDependency();
+			jobDependency.setJobId(jobId);
+			CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(Long.valueOf(dependencyId));
+			if(null == cuckooJobDetail){
+				throw new BaseException("can not find dependency job ,jobId:{}", dependencyId);
+			}
+			jobDependency.setDependencyJobId(Long.valueOf(dependencyId));
+			cuckooJobDependencyMapper.insertSelective(jobDependency);
+		}
+		
 	}
 
 }

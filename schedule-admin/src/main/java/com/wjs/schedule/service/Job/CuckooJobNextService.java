@@ -31,5 +31,5 @@ public interface CuckooJobNextService {
 	 * @param preJobId
 	 * @param jobId
 	 */
-	public void add(Long jobId, Long nextJobId);
+	public void addOrUpdate(Long jobId, Long nextJobId);
 }

@@ -26,4 +26,11 @@ public interface CuckooJobDependencyService {
 	 * @return
 	 */
 	public List<Long> listDependencyIdsByJobId(Long jobId);
+
+	/**
+	 * 先删除后增加
+	 * @param jobId
+	 * @param dependencyIds
+	 */
+	public void addOrUpdateJobDependency(Long jobId, String[] dependencyIds);
 }

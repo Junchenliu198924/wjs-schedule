@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -243,7 +244,24 @@ public class JobInfoController extends BaseController{
 	@ResponseBody
 	public Object add(HttpServletRequest request, CuckooJobDetailVo jobDetail){
 		
+		if(CuckooJobTriggerType.JOB.getValue().equals(jobDetail.getTriggerType())){
+			// 任务触发的任务，需要配置触发任务和依赖任务
+			if(null == jobDetail.getPreJobId()){
+				throw new BaseException("the job Triggered by another should have a preJob");
+			}
+			if(StringUtils.isEmpty(jobDetail.getDependencyIds()) ){
+				throw new BaseException("the job Triggered by another should have more then one dependency job(the prejob can be dependencyjob)");
+			}
+		}
+		
 
+		if(CuckooIsTypeDaily.NO.getValue().equals(jobDetail.getTypeDaily())){
+			// 非日切任务，不建议有太多的依赖
+			if(StringUtils.isNotEmpty(jobDetail.getDependencyIds()) && jobDetail.getDependencyIds().contains(",")){
+
+				throw new BaseException("undaily job should not have too many dependency jobs.");
+			}
+		}
 		
 		
 		if(null == jobDetail.getId()){

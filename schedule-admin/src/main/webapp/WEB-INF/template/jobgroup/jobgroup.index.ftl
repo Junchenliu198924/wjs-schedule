@@ -20,7 +20,7 @@
 	<div class="content-wrapper">
 		<!-- Content Header (Page header) -->
 		<section class="content-header">
-			<h1>任务分组管理<small>任务调度中心</small></h1>
+			<h1>调度管理<small>分组管理</small></h1>
 		</section>
 
 		<!-- Main content -->

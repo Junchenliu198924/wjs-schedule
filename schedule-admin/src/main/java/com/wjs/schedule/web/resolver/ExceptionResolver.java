@@ -58,7 +58,7 @@ public class ExceptionResolver extends SimpleMappingExceptionResolver {
 			return null;
 		} else {
 			ModelAndView modelAndView = new ModelAndView(CuckooAdminPages.ERROR.getValue());
-			modelAndView.addObject(CuckooAdminPages.ERROR.getDescription(), StringUtils.trimToNull(message));
+			modelAndView.addObject("message", StringUtils.trimToNull(message));
 			return modelAndView;
 		}
 

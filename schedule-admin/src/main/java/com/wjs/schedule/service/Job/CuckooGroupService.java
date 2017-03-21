@@ -19,5 +19,12 @@ public interface CuckooGroupService {
 	 * @return
 	 */
 	public List<CuckooJobGroup> selectAllGroup();
+
+	/**
+	 * 根据分组ID查询分组
+	 * @param groupId
+	 * @return
+	 */
+	public CuckooJobGroup getGroupById(Long groupId);
 	
 }

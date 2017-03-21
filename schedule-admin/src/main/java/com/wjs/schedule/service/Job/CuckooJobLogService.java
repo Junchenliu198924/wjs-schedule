@@ -3,6 +3,10 @@ package com.wjs.schedule.service.Job;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
+import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
+import com.wjs.schedule.vo.qry.JobLogQry;
+import com.wjs.util.dao.PageDataList;
 
 public interface CuckooJobLogService {
 	
@@ -60,4 +64,27 @@ public interface CuckooJobLogService {
 	 * @return
 	 */
 	public CuckooJobExecLog initDailyJobLog(CuckooJobDetail cuckooJobDetail, Boolean needTriggleNext, Integer txDate, boolean foreTriggle);
+
+	/**
+	 * 任务执行日志分页查询
+	 * @param qry
+	 * @return
+	 */
+	public PageDataList<CuckooJobExecLog> pageByQry(JobLogQry qry);
+
+	/**
+	 * 修改任务状态
+	 * @param logId
+	 * @param succed
+	 */
+	public void resetLogStatus(Long logId, CuckooJobExecStatus succed);
+
+	/**
+	 * 查询超时任务
+	 * @param overTime
+	 * @param start
+	 * @param limit
+	 * @return
+	 */
+	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(JobLogOverTimeQry qry);
 }
