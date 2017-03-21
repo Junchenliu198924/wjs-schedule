@@ -43,4 +43,10 @@
 	<import resource="classpath*:spring/spring-dao.xml" />
 	<import resource="classpath*:spring/spring-schedule.xml" />
 
+
+
+	<!-- 调度器初始化控制器 -->
+	<bean   class="com.wjs.schedule.manage.CuckooContainerManager">
+    </bean>
+
 </beans>

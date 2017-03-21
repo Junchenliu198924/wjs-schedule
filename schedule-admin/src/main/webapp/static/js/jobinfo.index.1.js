@@ -45,50 +45,17 @@ $(function() {
 	                { "data": 'cronExpression', "visible" : true},
 	                { "data": 'typeDaily', "visible" : true},
 	                
-//	                { "data": 'txDate', "visible" : false},
 	                { "data": 'offset', "visible" : false},
 	                { "data": 'jobStatus', "visible" : true},
 	               
-					 
-//	                { 
-//	                	"data": 'updateTime', 
-//	                	"visible" : false, 
-//	                	"render": function ( data, type, row ) {
-//	                		return data?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-//	                	}
-//	               },
-	               
-//	                { 
-//	                	"data": 'jobStatus', 
-//	                	"visible" : true,
-//	                	"render": function ( data, type, row ) {
-//	                		if ('NORMAL' == data) {
-//	                			return '<small class="label label-success" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-//							} else if ('PAUSED' == data){
-//								return '<small class="label label-default" title="暂停" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-//							} else if ('BLOCKED' == data){
-//								return '<small class="label label-default" title="阻塞[串行]" ><i class="fa fa-clock-o"></i>'+ data +'</small>'; 
-//							}
-//	                		return data;
-//	                	}
-//	                },
 	                { "data": 'cuckooParallelJobArgs', "visible" : true},
-//	                { "data": 'execJobStatus', "visible" : true},
-//	                { 
-//	                	"data": 'flowLastTime', 
-//	                	"visible" : false ,
-//	                	"render": function ( data, type, row ){
-//	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-//	                	}
-//	                },
-//	                { 
-//	                	"data": 'flowCurTime', 
-//	                	"visible" : false ,
-//	                	"render": function ( data, type, row ){
-//	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
-//	                	}
-//	                },
-	                
+	                { "data": 'quartzInit', 
+	                	"visible" : true,
+	                	"render": function ( data, type, row ) {
+	                			return row.triggerType == "CRON"? data?"是":"否" : "";
+	                		}
+	                	},
+	                	                
 	                { "data": '操作' ,
 	                	"render": function ( data, type, row ) {
 	                		return function(){

@@ -36,6 +36,8 @@ public class QuartzManage {
 
 	static final String quartzCronGroup = "quartz_cron";
 	static final String quartzSimpleGroup = "quartz_simple";
+	static final String quartzAutoGroup = "quartz_auto";
+
 	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus){
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		// TriggerKey : name + group
@@ -130,6 +132,17 @@ public class QuartzManage {
 			throw new BaseException(e.getMessage());
 		}
 	}
+	
+	public boolean checkExists(String jobGroup, String jobName){
+		
+		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			return scheduler.checkExists(jobKey) ;
+		} catch (SchedulerException e) {
+			return false;
+		}
+	}
 
 	public void pauseJob(String jobGroup, String jobName) {
 
@@ -203,6 +216,39 @@ public class QuartzManage {
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("执行任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+	}
+
+
+
+	/**
+	 * 增加自动执行任务 
+	 */
+	public void addAutoJob() {
+
+		String quartzJobName = "autoCheckJob";
+		// TriggerKey : name + group
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzAutoGroup);
+		JobKey jobKey = new JobKey(quartzJobName, quartzAutoGroup);
+
+		// JobDetail : jobClass
+		Class<? extends Job> jobClass_ = QuartzAutoJobExecutor.class; 
+
+		JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
+
+		// 每十分钟 
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/10 * * * ?")
+				.withMisfireHandlingInstructionDoNothing();
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
+				.build();
+
+		try {
+			if(!scheduler.checkExists(jobKey)){
+				scheduler.scheduleJob(jobDetail, cronTrigger);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("init QuartzAutoJobExecutor error:{}", e.getMessage(), e);
 			throw new BaseException(e.getMessage());
 		}
 	}

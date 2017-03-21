@@ -114,6 +114,11 @@ public class CuckooJobDetailVo {
      * 依赖任务ID
      */
 	private String  dependencyIds;
+	
+	/**
+	 * 是否初始化quartz(CRON类型任务，数据库直接初始化)
+	 */
+	private boolean quartzInit;
 
     /**
      * cuckoo_job_details表的操作属性:serialVersionUID
@@ -375,6 +380,15 @@ public class CuckooJobDetailVo {
 
 	public void setDependencyIds(String dependencyIds) {
 		this.dependencyIds = dependencyIds;
+	}
+
+	
+	public boolean isQuartzInit() {
+		return quartzInit;
+	}
+
+	public void setQuartzInit(boolean quartzInit) {
+		this.quartzInit = quartzInit;
 	}
 
 	public String toString() {

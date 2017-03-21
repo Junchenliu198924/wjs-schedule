@@ -124,13 +124,8 @@
 					                  	<th name="offset" >业务偏移日期</th> 
 					                  	<th name="jobStatus" >任务状态</th> 
 					                  	<th name="cuckooParallelJobArgs" >任务参数</th> 
+					                  	<th name="quartzInit" >CRON任务是否初始化</th> 
 					                  	
-					                  	<!--
-					                  	<th name="execJobStatus" >执行状态</th>
-					                  	<th name="txDate" >业务执行日期</th> 
-					                  	<th name="flowLastTime" >流式任务上一次时间参数</th>
-					                  	<th name="flowCurTime" >流式任务当前时间参数</th> 
-					                  	-->
 					                  	<th>操作</th>
 					                </tr>
 				                </thead>

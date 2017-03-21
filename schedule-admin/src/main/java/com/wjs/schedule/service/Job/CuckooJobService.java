@@ -136,6 +136,13 @@ public interface CuckooJobService {
 	 */
 	public List<CuckooJobDetail> getJobsByGroupId(Long groupId);
 
+
+	/**
+	 * 检查Cron任务是否初始化quartz信息
+	 * @param jobDetail
+	 */
+	public boolean checkCronQuartzInit(CuckooJobDetail jobDetail);
+
 	
 	
 }

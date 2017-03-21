@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.DateUtil;
+import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
 
 
@@ -119,8 +121,37 @@ public class JobInfoController extends BaseController{
 	@ResponseBody
 	public Object pageList(JobInfoQry jobInfo, Integer start, Integer limit ){
 		PageDataList<CuckooJobDetail> page = cuckooJobService.pageList(jobInfo, start, limit);
-		return dataTable(page);
+		
+		PageDataList<CuckooJobDetailVo> pageVo = convertJobDetailPageVo(page);
+		return dataTable(pageVo);
 	}
+
+	private PageDataList<CuckooJobDetailVo> convertJobDetailPageVo(PageDataList<CuckooJobDetail> page) {
+
+		PageDataList<CuckooJobDetailVo> pageVo = new PageDataList<>();
+		
+		pageVo.setPage(page.getPage());
+		pageVo.setPageSize(page.getPageSize());
+		pageVo.setTotal(page.getTotal());
+		List<CuckooJobDetailVo> rows = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(page.getRows())){
+			for (CuckooJobDetail jobDetail : page.getRows()) {
+				CuckooJobDetailVo vo = new CuckooJobDetailVo();
+				PropertyUtil.copyProperties(vo, jobDetail);
+				
+				if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
+					// 查看Cron是否有这个任务
+					vo.setQuartzInit(cuckooJobService.checkCronQuartzInit(jobDetail));
+				}
+				
+				rows.add(vo);
+			}
+		}
+		pageVo.setRows(rows);
+		
+		return pageVo;
+	}
+
 
 	/**
 	 * 根据jobId获取触发任务的id
@@ -180,8 +211,7 @@ public class JobInfoController extends BaseController{
 	@RequestMapping(value="/trigger")
 	@ResponseBody
 	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, String flowLastTime, String flowCurTime){
-		
-		
+		 
 		
 		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
 			

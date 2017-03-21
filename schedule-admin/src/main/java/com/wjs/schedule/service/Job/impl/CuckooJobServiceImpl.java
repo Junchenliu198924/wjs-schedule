@@ -336,6 +336,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		
 		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		crt.setOrderByClause(" id desc ");
 		CuckooJobDetailCriteria.Criteria exp = crt.createCriteria();
 		if(null != jobInfo.getGroupId()){
 			exp.andGroupIdEqualTo(jobInfo.getGroupId());
@@ -417,6 +418,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 
 		CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobId);
 		
+		
 		if(null ==  cuckooJobDetail){
 			throw new BaseException("can not get jobinfo by id:{}", jobId);
 		}
@@ -447,6 +449,12 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		
 		return cuckooJobDetailMapper.selectByExample(crt);
+	}
+
+	@Override
+	public boolean checkCronQuartzInit(CuckooJobDetail jobDetail) {
+		
+		return quartzManage.checkExists(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()));
 	}
 
 
