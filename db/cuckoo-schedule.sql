@@ -137,18 +137,3 @@ CREATE INDEX idx_jobnext_jobid ON cuckoo_job_next_job(job_id ASC );
 
 
 
-
-CREATE TABLE test_demo
-(
-	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
-	uri                            varchar(100)    DEFAULT ''         NOT NULL	COMMENT 'http请求uri',
-	access_count_max               int             DEFAULT 0          NOT NULL	COMMENT '最大请求数',
-PRIMARY KEY(id)
-)
-ENGINE=InnoDB
-DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
-COMMENT='测试用'
-AUTO_INCREMENT=1
-ROW_FORMAT=COMPACT;
-
-

@@ -52,7 +52,18 @@ public class QuartzManage {
 		// CronTrigger : TriggerKey + cronExpression //
 		// withMisfireHandlingInstructionDoNothing 忽略掉调度终止过程中忽略的调度
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression)
-				.withMisfireHandlingInstructionDoNothing();
+//				withMisfireHandlingInstructionDoNothing
+//				——不触发立即执行
+//				——等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
+//				withMisfireHandlingInstructionIgnoreMisfires
+//				——以错过的第一个频率时间立刻开始执行
+//				——重做错过的所有频率周期后
+//				——当下一次触发频率发生时间大于当前时间后，再按照正常的Cron频率依次执行
+//				withMisfireHandlingInstructionFireAndProceed
+//				——以当前时间为触发频率立刻触发一次执行
+//				——然后按照Cron频率依次执行
+
+				.withMisfireHandlingInstructionIgnoreMisfires();
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
 				.build();
 
@@ -83,7 +94,45 @@ public class QuartzManage {
 			
 			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
 					.repeatMinutelyForTotalCount(1) // 只触发一次
-					.withMisfireHandlingInstructionIgnoreMisfires();
+					
+//					withMisfireHandlingInstructionFireNow
+//					——以当前时间为触发频率立即触发执行
+//					——执行至FinalTIme的剩余周期次数
+//					——以调度或恢复调度的时刻为基准的周期频率，FinalTime根据剩余次数和当前时间计算得到
+//					——调整后的FinalTime会略大于根据starttime计算的到的FinalTime值
+//
+//					withMisfireHandlingInstructionIgnoreMisfires
+//					——以错过的第一个频率时间立刻开始执行
+//					——重做错过的所有频率周期
+//					——当下一次触发频率发生时间大于当前时间以后，按照Interval的依次执行剩下的频率
+//					——共执行RepeatCount+1次
+//
+//					withMisfireHandlingInstructionNextWithExistingCount
+//					——不触发立即执行
+//					——等待下次触发频率周期时刻，执行至FinalTime的剩余周期次数
+//					——以startTime为基准计算周期频率，并得到FinalTime
+//					——即使中间出现pause，resume以后保持FinalTime时间不变
+//
+//
+//					withMisfireHandlingInstructionNowWithExistingCount
+//					——以当前时间为触发频率立即触发执行
+//					——执行至FinalTIme的剩余周期次数
+//					——以调度或恢复调度的时刻为基准的周期频率，FinalTime根据剩余次数和当前时间计算得到
+//					——调整后的FinalTime会略大于根据starttime计算的到的FinalTime值
+//
+//					withMisfireHandlingInstructionNextWithRemainingCount
+//					——不触发立即执行
+//					——等待下次触发频率周期时刻，执行至FinalTime的剩余周期次数
+//					——以startTime为基准计算周期频率，并得到FinalTime
+//					——即使中间出现pause，resume以后保持FinalTime时间不变
+//
+//					withMisfireHandlingInstructionNowWithRemainingCount
+//					——以当前时间为触发频率立即触发执行
+//					——执行至FinalTIme的剩余周期次数
+//					——以调度或恢复调度的时刻为基准的周期频率，FinalTime根据剩余次数和当前时间计算得到
+//					——调整后的FinalTime会略大于根据starttime计算的到的FinalTime值
+					
+					.withMisfireHandlingInstructionNowWithExistingCount();
 			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey)
 					.withSchedule(simpleScheduleBuilder)
 					.startAt(new Date(System.currentTimeMillis() + waitTime)) //  设置起始时间
@@ -241,10 +290,9 @@ public class QuartzManage {
 
 		// 每十分钟 
 		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/10 * * * ?")
-				.withMisfireHandlingInstructionDoNothing();
+				.withMisfireHandlingInstructionFireAndProceed();
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
 				.build();
-
 		try {
 			if(!scheduler.checkExists(jobKey)){
 				scheduler.scheduleJob(jobDetail, cronTrigger);
