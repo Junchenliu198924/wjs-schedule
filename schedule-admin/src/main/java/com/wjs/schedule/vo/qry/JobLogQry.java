@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 public class JobLogQry {
 
+	private Long logId;
 	private Long groupId;
 	private Long jobId;
 	
@@ -21,6 +22,13 @@ public class JobLogQry {
 	private Long endDateTime;
 	
 	
+	
+	public Long getLogId() {
+		return logId;
+	}
+	public void setLogId(Long logId) {
+		this.logId = logId;
+	}
 	public Long getGroupId() {
 		return groupId;
 	}

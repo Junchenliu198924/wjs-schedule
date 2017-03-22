@@ -53,6 +53,13 @@
 						</select>
 	              	</div>
 	            </div>
+	            
+	            <div class="col-xs-3">
+	              	<div class="input-group">
+	                	<span class="input-group-addon">日志ID</span>
+                		<input type="text" class="form-control" id="logId" value="${id}" autocomplete="on" >
+	              	</div>
+	            </div>
 	    </div>
 	            
 		<div class="row">	            

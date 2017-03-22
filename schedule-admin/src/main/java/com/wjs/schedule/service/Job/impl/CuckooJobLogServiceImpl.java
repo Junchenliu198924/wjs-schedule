@@ -185,6 +185,10 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		
 		CuckooJobExecLogCriteria.Criteria crt = crtPi.createCriteria();
 	  
+		if(null != qry.getLogId()){
+			crt.andIdEqualTo(qry.getLogId());
+		}
+		
 		if(null != qry.getGroupId()){
 			crt.andGroupIdEqualTo(qry.getGroupId());
 		}
