@@ -584,7 +584,7 @@
 						        	}else{
 						        		 $("#runTime").html("<center>"+data.resultMsg+"</center>");
 						        		
-						        		 $("#cron").val("");
+						        		 //$("#cron").val("");
 						        	}
 						            
 						        }
