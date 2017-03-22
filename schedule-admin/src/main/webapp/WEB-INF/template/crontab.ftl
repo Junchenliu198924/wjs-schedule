@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Be Cron - 在线Cron表达式生成器</title>
-	<meta name="description" content="通过这个生成器,您可以在线生成任务调度比如Quartz的Cron表达式,对Quartz Cron 表达式的可视化双向解析和生成." />
-	<meta name="keywords" content="cron creater,generate Cron Expression,Cron Expression online,Quartz Cron Expresssion,cron在线生成工具" />
-	<meta name="baidu-tc-cerfication" content="52031c379393b942ce0d59195791f366" />
-    <link href="/static/cron/themes/bootstrap/easyui.min.css" rel="stylesheet" type="text/css" />
+  	<title>任务调度中心</title>
+  	<#import "/common/common.macro.ftl" as netCommon>
+	<@netCommon.commonStyle />
+	<!-- DataTables -->
+  	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/datatables/dataTables.bootstrap.css">
+
+	<link href="/static/cron/themes/bootstrap/easyui.min.css" rel="stylesheet" type="text/css" />
     <link href="/static/cron/themes/icon.css" rel="stylesheet" type="text/css" />
     <link href="/static/cron/icon.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
@@ -23,18 +25,40 @@
         {
             width: 95px;
         }
-        ul {
-            list-style:none;
-            padding-left:10px;
-        }
-        li {
-            height:20px;
-        }
+        #ul {
+        #    list-style:none;
+        #    padding-left:10px;
+        #}
+        #li {
+        #    height:20px;
+        #}
     </style>
 </head>
-<body>
-    <center>
-        <div class="easyui-layout" style="width:830px;height:560px; border: 1px rgb(202, 196, 196) solid;
+<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && "off" == cookieMap["adminlte_settings"].value >sidebar-collapse</#if>">
+<div class="wrapper">
+	<!-- header -->
+	<@netCommon.commonHeader />
+	<!-- left -->
+	<@netCommon.commonLeft />
+	
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper">
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<h1>调度管理<small>任务调度中心</small></h1>
+			<!--
+			<ol class="breadcrumb">
+				<li><a><i class="fa fa-dashboard"></i>调度管理</a></li>
+				<li class="active">调度中心</li>
+			</ol>
+			-->
+		</section>
+		
+		<!-- Main content -->
+	    <section class="content">
+	    
+	    
+	    <div class="easyui-layout" style="width:830px;height:560px; border: 1px rgb(202, 196, 196) solid;
             border-radius: 5px;">
             <div style="height: 100%;">
                 <div class="easyui-tabs" data-options="fit:true,border:false">
@@ -520,7 +544,7 @@
 							    <td>Cron 表达式:</td>
 							    <td colspan="6"><input type="text" name="cron" style="width: 100%;" value="* * * * * ?" id="cron"
                                          /></td>
-							    <td><input type="button" value="反解析到UI " id="btnFan" onclick="btnFan()"/></td>
+							    <td><input type="button" value="解析 " id="btnCalc" onclick="btnCalc()"/></td>
 						    </tr>
                             <tr >
 							    <td colspan="8" >最近5次运行时间:</td>
@@ -538,30 +562,33 @@
                         //$.parser.parse($("body"));
                         var cpro_id = "u1331261";
 
-                        function btnFan() {
-                            //获取参数中表达式的值
-                            var txt = $("#cron").val();
-                            if (txt) {
-                                var regs = txt.split(' ');
-                                $("input[name=v_second]").val(regs[0]);
-                                $("input[name=v_min]").val(regs[1]);
-                                $("input[name=v_hour]").val(regs[2]);
-                                $("input[name=v_day]").val(regs[3]);
-                                $("input[name=v_mouth]").val(regs[4]);
-                                $("input[name=v_week]").val(regs[5]);
-
-                                initObj(regs[0], "second");
-                                initObj(regs[1], "min");
-                                initObj(regs[2], "hour");
-                                initDay(regs[3]);
-                                initMonth(regs[4]);
-                                initWeek(regs[5]);
-
-                                if (regs.length > 6) {
-                                    $("input[name=v_year]").val(regs[6]);
-                                    initYear(regs[6]);
-                                }
-                            }
+                        function btnCalc() {
+                        	var txt = $("#cron").val();
+                        	if(!txt || txt == ""){
+                        		return;
+                        	}
+                        
+                            $.ajax({
+						        type: 'get',
+						        url: "calcLastRuntime",
+						        dataType: "json",
+						        data: { "cronExpression": $("#cron").val() },
+						        success: function (data) {
+						        	if(data.resultCode == "success"){
+							             var strHTML = "<ul>";
+							             for (var i = 0; i < data.data.length; i++) {
+							                strHTML += "<li>" + data.data[i] + "</li>";
+							             }
+							             strHTML +="</ul>"
+							             $("#runTime").html(strHTML);
+						        	}else{
+						        		 $("#runTime").html("<center>"+data.resultMsg+"</center>");
+						        		
+						        		 $("#cron").val("");
+						        	}
+						            
+						        }
+						    }); 
                         }
                       
 
@@ -702,9 +729,17 @@
             <div>
             </div>
         </div>
-    </center>
+	    	 
+	    </section>
+	</div>
+	
+	<!-- footer -->
+	<@netCommon.commonFooter />
+</div>
+
     <script src="/static/cron/jquery-1.6.2.min.js" type="text/javascript"></script>
     <script src="/static/cron/jquery.easyui.min.js" type="text/javascript"></script>
-    <script src="/static/cron/cron.js" type="text/javascript"></script>
+    <script src="/static/cron/crontab.js" type="text/javascript"></script> 
+
 </body>
 </html>

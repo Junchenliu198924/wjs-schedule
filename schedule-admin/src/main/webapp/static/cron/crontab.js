@@ -127,27 +127,8 @@ $(function() {
 	});
 
 	cron.change(function () {
-	    btnFan();
 	    //设置最近五次运行时间
-	    $.ajax({
-	        type: 'get',
-	        url: "calcLastRuntime",
-	        dataType: "json",
-	        data: { "CronExpression": $("#cron").val() },
-	        success: function (data) {
-	        	if(data.resultCode == "success"){
-		             var strHTML = "<ul>";
-		             for (var i = 0; i < data.data.length; i++) {
-		                strHTML += "<li>" + data.data[i] + "</li>";
-		             }
-		             strHTML +="</ul>"
-		             $("#runTime").html(strHTML);
-	        	}else{
-	        		 $("#runTime").html("<center>"+data.resultMsg+"</center>");
-	        	}
-	            
-	        }
-	    });
+		btnCalc();
 	});
 	
 	var secondList = $(".secondList").children();
