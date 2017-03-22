@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.constant.CuckooJobConstant;
@@ -18,6 +19,7 @@ import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.exception.JobUndailyLogBreakException;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.service.Job.CuckooJobService;
 
@@ -47,6 +49,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 	QuartzManage quartzExec;
 	
 	@Override
+	@Transactional
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
 		
@@ -71,14 +74,20 @@ public class QuartzJobExecutor extends QuartzJobBean {
 			Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
 
 			// 根据jobId找到任务信息
-			final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(cuckooJobId);
+			final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.lockByPrimaryKey(cuckooJobId);
 			if (null == cuckooJobDetail) {
 				LOGGER.error("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}", jobKey.getGroup(),
 						jobKey.getName());
 				throw new BaseException("can not find cuckoojob in quartzExecutor by jobGroup:{},jobName:{}",
 						jobKey.getGroup(), jobKey.getName());
 			}
-			cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail);
+			try {
+				cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail);
+			} catch (JobUndailyLogBreakException e) {
+
+				LOGGER.error("");
+				return ;
+			}
 			
 		}else{
 			LOGGER.info("quartz trigger flow job, jobGroup:{},jobName:{},execIdObj:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(), execIdObj,trigger.getClass());
@@ -98,13 +107,5 @@ public class QuartzJobExecutor extends QuartzJobBean {
 
 	}
 	
-
-	public static void main(String[] args) {
-		JobDataMap data = new JobDataMap();
-		
-		System.out.println(data.getBooleanFromString(CuckooJobConstant.NEED_TRIGGLE_NEXT));
-		System.out.println(data.getIntegerFromString(CuckooJobConstant.DAILY_JOB_TXDATE));
-
-	}
 
 }

@@ -39,8 +39,6 @@ public class ConfigUtil {
 	 * 
 	 * 初始化配置
 	 * 
-	 * @author huhai huhai@malam.com
-	 * @date 2014年5月6日 下午1:18:16
 	 */
 	public synchronized static void init() {
 		if (null == providers) {
@@ -88,8 +86,6 @@ public class ConfigUtil {
 	 * @param @return 字符串|null
 	 * @return String 返回类型
 	 * @throws 异常说明
-	 * @author huhai huhai@malam.com
-	 * @date 2014年3月6日 下午2:21:34
 	 */
 	public static String get(String key) {
 		String val = null;
@@ -118,8 +114,6 @@ public class ConfigUtil {
 	 * @param @return 整数|null
 	 * @return Integer 返回类型
 	 * @throws 异常说明
-	 * @author huhai huhai@malam.com
-	 * @date 2014年3月6日 下午2:21:47
 	 */
 	public static Integer getInteger(String key) {
 		Object value = get(key);
@@ -135,6 +129,12 @@ public class ConfigUtil {
 		}
 		return null;
 	}
+	
+	public static Integer getInteger(String key, int defaut) {
+		
+		Integer rtn =  getInteger(key);
+		return rtn == null ? defaut : rtn;
+	}
 
 	/**
 	 * 
@@ -142,8 +142,6 @@ public class ConfigUtil {
 	 * 
 	 * @param key 配置项名称
 	 * @return 长整数|null
-	 * @author huhai huhai@malam.com
-	 * @date 2014年6月5日 上午11:01:12
 	 */
 	public static Long getLong(String key) {
 		Object value = get(key);
@@ -159,6 +157,13 @@ public class ConfigUtil {
 		}
 		return null;
 	}
+	
+
+	public static Long getLong(String key, long defaut) {
+
+		Long rtn = getLong(key);
+		return rtn == null ? defaut : rtn;
+	}
 
 	/**
 	 * 
@@ -168,8 +173,6 @@ public class ConfigUtil {
 	 * @param @return 双精度小数|null
 	 * @return Double 返回类型
 	 * @throws 异常说明
-	 * @author huhai huhai@malam.com
-	 * @date 2014年3月6日 下午2:27:02
 	 */
 	public static Double getDouble(String key) {
 		Object value = get(key);
@@ -186,14 +189,18 @@ public class ConfigUtil {
 		return null;
 	}
 
+
+	public static Double getDouble(String key, double defaut) {
+		
+		Double rtn =  getDouble(key);
+		return rtn == null ? defaut : rtn;
+	}
 	/**
 	 * 
 	 * 获取Boolean
 	 * 
 	 * @param key
 	 * @return Boolean|null
-	 * @author huhai huhai@malam.com
-	 * @date 2014年6月26日 下午8:43:38
 	 */
 	public static Boolean getBoolean(String key) {
 		Object value = get(key);
@@ -203,6 +210,12 @@ public class ConfigUtil {
 
 		String val = value.toString().trim();
 		return Boolean.valueOf(val);
+	}
+	
+	public static Boolean getBoolean(String key, boolean defaut) {
+		
+		Boolean rtn = getBoolean(key);
+		return rtn == null ? defaut : rtn;
 	}
 
 	/**
@@ -215,8 +228,6 @@ public class ConfigUtil {
 	 * @param @return 字符串数组|null
 	 * @return String[] 返回类型
 	 * @throws 异常说明
-	 * @author huhai huhai@malam.com
-	 * @date 2014年3月6日 下午2:23:15
 	 */
 	public static String[] getArray(String key, String separator, boolean trim) {
 		Object value = get(key);
@@ -246,8 +257,6 @@ public class ConfigUtil {
 	 * @param @return 设定文件
 	 * @return String[] 返回类型
 	 * @throws 异常说明
-	 * @author huhai huhai@malam.com
-	 * @date 2014年3月6日 下午2:59:30
 	 */
 	public static String[] getArray(String key) {
 		return getArray(key, "[;,]", true);
@@ -258,8 +267,6 @@ public class ConfigUtil {
 	 * 获取初始化时的全部配置 (只读)
 	 * 
 	 * @return
-	 * @author huhai huhai@malam.com
-	 * @date 2014年5月6日 下午1:16:21
 	 */
 	public static Map<String, String> getAllInitConfig() {
 		return Collections.unmodifiableMap(initConfig);
@@ -274,8 +281,6 @@ public class ConfigUtil {
 	 * 
 	 * @Description: 用于支持
 	 * @param propertiesConfigProvider
-	 * @author huhai huhai@malam.com
-	 * @date 2014年5月6日 下午10:37:43
 	 */
 	public static void setPropertiesConfigProvider(ConfigProvider propertiesConfigProvider) {
 		ConfigUtil.propertiesConfigProvider = propertiesConfigProvider;
@@ -286,10 +291,9 @@ public class ConfigUtil {
 	 * 设置集中配置提供者（可以是zookeeper、redis等的实现）
 	 * 
 	 * @param centralConfigProvider
-	 * @author huhai huhai@malam.com
-	 * @date 2014年5月6日 下午10:18:20
 	 */
 	public static void setCentralConfigProvider(ConfigProvider centralConfigProvider) {
 		ConfigUtil.centralConfigProvider = centralConfigProvider;
 	}
+
 }

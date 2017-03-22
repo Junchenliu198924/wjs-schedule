@@ -149,11 +149,6 @@ public class CuckooJobExecutor {
 
 	}
 
-	public static void main(String[] args) {
-		JobDataMap data = new JobDataMap();
-		data.put(CuckooJobConstant.NEED_TRIGGLE_NEXT,"1");
-		System.out.println(BooleanUtils.toBoolean(data.getString(CuckooJobConstant.NEED_TRIGGLE_NEXT)));
-	}
 
 	
 
@@ -227,11 +222,17 @@ public class CuckooJobExecutor {
 			
 			// 检查日志中，上一次执行任务(txdate/latest_time倒叙)未执行成功，那么当前任务不能执行
 			if(!cuckooJobLogService.checkPreLogIsDone(jobLog)){
+				
+				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+				return false;
+			}
+			if(!cuckooJobDependencyService.checkDepedencyJobFinished(jobLog)){
+				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 				return false;
 			}
 
 			// 校验任务依赖状态
-			return cuckooJobDependencyService.checkDepedencyJobFinished(jobLog);
+			return true;
 		}
 		
 	}

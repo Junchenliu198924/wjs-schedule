@@ -19,6 +19,7 @@ import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
+import com.wjs.schedule.exception.JobUndailyLogBreakException;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
@@ -72,7 +73,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) {
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) throws JobUndailyLogBreakException {
 
 		CuckooJobExecLog cuckooJobExecLog = null;
 		if(null != cuckooJobId){
@@ -115,6 +116,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 
 				cuckooJobExecLog.setFlowLastTime(0L);
 			}else{
+				if(curTime.equals(latestJobLog.get(0).getFlowCurTime())){
+					throw new JobUndailyLogBreakException("undaily job timeline same error, cuckooJobId:{},latestJobLog:{},curTime:{}", cuckooJobId, latestJobLog.get(0).getFlowCurTime(),curTime );
+				}
 				cuckooJobExecLog.setFlowLastTime(latestJobLog.get(0).getFlowCurTime());
 			}
 			
@@ -257,8 +261,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			}else{
 				// 如果不为空,最近一条的执行是必须要连续的
 				if(!DateUtil.addIntDate(jobLog.getTxDate(), -1).equals(firstResult.get(0).getTxDate())){
-					LOGGER.error("job log exec is not continuous, curlogId:{},txdate:{},prelogId:{},curTime:{}"
+					LOGGER.info("job log exec is not continuous, curlogId:{},txdate:{},prelogId:{},curTime:{}"
 							, jobLog.getId(), jobLog.getTxDate(),firstResult.get(0).getId(), firstResult.get(0).getTxDate());
+					jobLog.setRemark("job log exec is not continuous, curlogId:" + jobLog.getId() + ",txdate:" + jobLog.getTxDate() + ",prelogId:" + firstResult.get(0).getId() + ",curTime:" + firstResult.get(0).getTxDate());
 					return false;
 				}
 			}
@@ -275,6 +280,10 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			if(CollectionUtils.isNotEmpty(cronResult)){
 				if(CuckooJobExecStatus.SUCCED.getValue().equals(cronResult.get(0).getExecJobStatus())){
 					return true;
+				}else{
+					LOGGER.info("prelog is not succed, curlogId:{}, prelogId:{},status:{}", jobLog.getId() , cronResult.get(0).getId(), cronResult.get(0).getExecJobStatus());
+					jobLog.setRemark("prelog is not succed, curlogId:" + jobLog.getId() + ", prelogId:" + cronResult.get(0).getId() + ",status:" + cronResult.get(0).getExecJobStatus());
+					return false;
 				}
 			}
 			
@@ -297,8 +306,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			}else{
 				// 如果不为空,最近一条的执行是必须要连续的
 				if(!jobLog.getFlowLastTime().equals(firstResult.get(0).getFlowCurTime())){
-					LOGGER.error("job log exec is not continuous, curlogId:{},lastTime:{},prelogId:{},curTime:{}"
+					LOGGER.info("job log exec is not continuous, curlogId:{},lastTime:{},prelogId:{},curTime:{}"
 							, jobLog.getId(), jobLog.getFlowLastTime(),firstResult.get(0).getId(), firstResult.get(0).getFlowCurTime());
+					jobLog.setRemark("job log exec is not continuous, curlogId:" + jobLog.getId() + ",txdate:" + jobLog.getTxDate() + ",prelogId:" + firstResult.get(0).getId() + ",curTime:" + firstResult.get(0).getTxDate());
 					return false;
 				}
 				
@@ -315,9 +325,16 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			if(CollectionUtils.isNotEmpty(jobResult)){
 				if(CuckooJobExecStatus.SUCCED.getValue().equals(jobResult.get(0).getExecJobStatus())){
 					return true;
+				}else{
+					LOGGER.info("prelog is not succed, curlogId:{}, prelogId:{},status:{}", jobLog.getId() , jobResult.get(0).getId(), jobResult.get(0).getExecJobStatus());
+					jobLog.setRemark("prelog is not succed, curlogId:" + jobLog.getId() + ", prelogId:" + jobResult.get(0).getId() + ",status:" + jobResult.get(0).getExecJobStatus());
+					return false;
 				}
 			}
 		}
+		
+		LOGGER.info("unknown pending result,  curlogId:{}", jobLog.getId() );
+		jobLog.setRemark("unknown pending result,  curlogId:" + jobLog.getId());
 		return false;
 	}
 

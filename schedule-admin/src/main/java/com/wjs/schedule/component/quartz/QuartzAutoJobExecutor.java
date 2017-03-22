@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
+import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 
@@ -46,7 +47,7 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		for (CuckooJobDetail jobDetail : jobs) {
 			if(!quartzManage.checkExists(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()))){
 				// CRON任务在Cuckoo中有，但是在quartz中没有
-				quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()));
+				quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()),  CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
 			}
 		}
 		

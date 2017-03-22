@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
+import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.CuckooExecutor;
@@ -24,8 +25,20 @@ public class CuckooClientHandler extends IoHandlerAdapter {
     public void messageReceived(IoSession session, Object message) throws Exception {
         String content = message.toString();
         LOGGER.info("client receive a message is :{}" , content);
+        
+        if (CuckooNetConstant.MINA_HEARTBEAT_MSG_SERVER.equals(content)) {
+            // 收到心跳包
+        	LOGGER.debug("heart_beat_message");
+            session.write(CuckooNetConstant.MINA_HEARTBEAT_MSG_CLIENT);
+            return;
+        }
 
-        MessageInfo msgInfo = gson.fromJson(content, MessageInfo.class);
+        MessageInfo msgInfo = null;
+		try {
+			msgInfo = gson.fromJson(content, MessageInfo.class);
+		} catch (Exception e) {
+			LOGGER.error("gson fromJson error, json:{}, error:{}", content, e.getMessage());
+		}
 		if(CuckooMessageType.JOBDOING.equals(msgInfo.getMessageType())){
 			
 			JobInfoBean jobInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), JobInfoBean.class);

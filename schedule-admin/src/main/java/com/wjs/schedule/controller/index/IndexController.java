@@ -53,7 +53,7 @@ public class IndexController extends BaseController{
 		try {
 			
 			CronExpression exp = new CronExpression(cronExpression);
-			SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");  
+			SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");  
             Date d = new Date();  
             int i = 0;  
             // 循环得到接下来n此的触发时间点，供验证  

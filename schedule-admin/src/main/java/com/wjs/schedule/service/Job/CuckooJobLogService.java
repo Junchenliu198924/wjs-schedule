@@ -3,6 +3,7 @@ package com.wjs.schedule.service.Job;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.exception.JobUndailyLogBreakException;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
 import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
@@ -44,7 +45,7 @@ public interface CuckooJobLogService {
 	 * @param cuckooJobDetail
 	 * @return
 	 */
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) ;
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) throws JobUndailyLogBreakException;
 
 	/**
 	 * 控制台执行非日切任务，初始化日志

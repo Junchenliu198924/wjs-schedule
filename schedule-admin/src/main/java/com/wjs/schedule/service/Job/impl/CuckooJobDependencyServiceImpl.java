@@ -116,6 +116,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 
 			LOGGER.info("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
 //			throw new JobCanNotRunningException("dependency was not ready,jobLog:{},dependyJobs:{},readydepJobs:{}", jobLog, depJobIds, readydepJobs);
+			jobLog.setRemark("dependency was not ready,dependyJobs:" + depJobIds + ",readydepJobs:" + readydepJobs);
 			return false;
 		}
 

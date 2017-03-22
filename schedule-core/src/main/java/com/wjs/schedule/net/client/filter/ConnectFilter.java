@@ -10,6 +10,7 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.wjs.schedule.net.server.bean.IoServerBean;
 import com.wjs.schedule.net.server.cache.IoServerCollection;
 
 /**
@@ -81,9 +82,17 @@ public class ConnectFilter extends IoFilterAdapter{
 	@Override
 	public void sessionClosed(NextFilter nextFilter, IoSession session) throws Exception {
 
-		SocketAddress clientAddr = session.getRemoteAddress();
+		InetSocketAddress clientAddr = (InetSocketAddress)session.getRemoteAddress();
+		
+		// 删除 链接
+		IoServerCollection.remove(clientAddr);
+		
+		// 新增待连接信息
+		IoServerBean bean = new IoServerBean();
+		bean.setIp(clientAddr.getHostName());
+		bean.setPort(clientAddr.getPort());
+		IoServerCollection.add(bean);
 		LOGGER.error("客户端异常:{}", clientAddr.toString());
-		// TODO
 		super.sessionClosed(nextFilter, session);
 	}
 

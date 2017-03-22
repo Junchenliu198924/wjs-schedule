@@ -8,7 +8,6 @@ import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
@@ -38,7 +38,7 @@ public class QuartzManage {
 	static final String quartzSimpleGroup = "quartz_simple";
 	static final String quartzAutoGroup = "quartz_auto";
 
-	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus){
+	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus, CuckooIsTypeDaily typeDaily){
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		// TriggerKey : name + group
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzCronGroup);
@@ -51,7 +51,7 @@ public class QuartzManage {
 
 		// CronTrigger : TriggerKey + cronExpression //
 		// withMisfireHandlingInstructionDoNothing 忽略掉调度终止过程中忽略的调度
-		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression)
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cronExpression);
 //				withMisfireHandlingInstructionDoNothing
 //				——不触发立即执行
 //				——等待下次Cron触发频率到达时刻开始按照Cron频率依次执行
@@ -62,8 +62,14 @@ public class QuartzManage {
 //				withMisfireHandlingInstructionFireAndProceed
 //				——以当前时间为触发频率立刻触发一次执行
 //				——然后按照Cron频率依次执行
-
-				.withMisfireHandlingInstructionIgnoreMisfires();
+		if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
+			// 日切任务遗漏任务自动触发
+			cronScheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
+		}else{
+			// 非日切任务忽略遗漏任务
+			cronScheduleBuilder.withMisfireHandlingInstructionDoNothing();
+		}
+				
 		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
 				.build();
 
@@ -169,14 +175,14 @@ public class QuartzManage {
 
 	}
 
-	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus) {
+	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
 
 		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.deleteJob(jobKey);
-				addCronJob(jobGroup, jobName, cronExpression, jobStatus);
+				addCronJob(jobGroup, jobName, cronExpression, jobStatus, typeDaily);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("修改任务调度失败:{}", e.getMessage(), e);
@@ -245,31 +251,6 @@ public class QuartzManage {
 		}
 	}
 	
-	
-	/**
-	 * 
-	 * @param jobGroup
-	 * @param jobName
-	 * @param forceJob -- 是否强制启动（非强制启动，如果时间连接不上的话，会中断执行）
-	 * @param needTrigglerNext
-	 * @param tx_date
-	 */
-	public void triggerJob(String jobGroup, String jobName, Boolean needTrigglerNext, Integer txdate) {
-
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		JobDataMap data = new JobDataMap();
-		data.put(CuckooJobConstant.NEED_TRIGGLE_NEXT, needTrigglerNext);
-		data.put(CuckooJobConstant.DAILY_JOB_TXDATE, txdate);
-		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.triggerJob(jobKey, data);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("执行任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-	}
 
 
 

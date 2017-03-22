@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.component.quartz.QuartzManage;
+import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
@@ -26,6 +27,7 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
+import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
@@ -37,6 +39,7 @@ import com.wjs.schedule.service.Job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.config.ConfigUtil;
 import com.wjs.util.dao.PageDataList;
 
 @Service("cuckooJobService")
@@ -132,7 +135,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		
 		if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
-			quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobId), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()));
+			quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobId), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
 		}
 		
 		return jobId;
@@ -177,13 +180,13 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					
 					
-					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 				}
 			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 如果原来任务类型为Cron，那么修改一条任务
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					// 且新任务为Cron，那么需要修改quartz
-					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 				}else{
 					// 且新任务为NORMAL，那么需要删除quartz
 					quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
@@ -198,7 +201,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			// 新增任务
 			if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 				// 新任务为Cron，那么需要新增quartz。否则不做处理
-				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 			}
 		}
 		
@@ -430,7 +433,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	public void rependingJob(CuckooJobExecLog jobLog) {
 		LOGGER.info("repending job ,jobLog:{} ", jobLog);
 		// 使用Quartz.simpleJob进行触发 
-		quartzManage.addSimpleJob(jobLog, 60000L);
+		quartzManage.addSimpleJob(jobLog, ConfigUtil.getLong(CuckooJobConstant.CUCKOO_PENDING_JOB_RETRY_LONG, 60000L));
 
 	}
 	
