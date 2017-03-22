@@ -306,13 +306,13 @@ $(function() {
         		if (data.resultCode == "success") {
 					$('#editModal').modal('hide');
 					setTimeout(function () {
-						ComAlert.show(1, "新增任务成功", function(){
+						ComAlert.show(1, "操作成功", function(){
 							jobTable.fnDraw();
 							//window.location.reload();
 						});
 					}, 315);
     			} else {
-    				ComAlert.show(2, "新增失败"+ data.resultMsg);
+    				ComAlert.show(2, "操作失败"+ data.resultMsg);
     			}
     		});
 		}
@@ -376,6 +376,8 @@ $(function() {
 		$("#editModal .form input[name='jobCron']").val($(this).parent('p').attr("jobCron"));
 		$("#editModal .form input[name='author']").val($(this).parent('p').attr("author"));
 
+		$("#editModal .form input[name='jobStatus']").val($(this).parent('p').attr("jobStatus"));
+		
 		$("#editModal .form select[name='triggerType']").val($(this).parent('p').attr("triggerType")).trigger('change');
 //		$("#editModal .form select[name='triggerType']").find("option[value='"+$(this).parent('p').attr("triggerType")+"']").attr("selected",true);
 		

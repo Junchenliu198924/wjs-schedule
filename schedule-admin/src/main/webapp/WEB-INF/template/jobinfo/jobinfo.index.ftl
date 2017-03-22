@@ -264,6 +264,7 @@
 							<button type="submit" class="btn btn-primary"  >保存</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 							<input type="hidden" name="id" >
+                            <input type="hidden" name="jobStatus" >
 						</div>
 					</div>
 					
@@ -324,6 +325,7 @@
                             <input type="hidden" name="id" >
                             <input type="hidden" name="typeDaily" >
                             <input type="hidden" name="triggerType" >
+                            <input type="hidden" name="jobStatus" >
                             
 						</div>
 					</div>

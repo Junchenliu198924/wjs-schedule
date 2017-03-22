@@ -80,30 +80,7 @@ public class CuckooJobDetailVo {
      * 
      */
     private String cuckooParallelJobArgs;
-
-    /**
-     * 执行状态 -- cuckoo_job_details.exec_job_status
-     * 
-     */
-    private String execJobStatus;
-
-    /**
-     * 任务执行业务日期参数 -- cuckoo_job_details.tx_date
-     * 
-     */
-    private Integer txDate;
-
-    /**
-     * 流式任务上一次时间参数 -- cuckoo_job_details.flow_last_time
-     * 
-     */
-    private Long flowLastTime;
-
-    /**
-     * 流式任务当前时间参数 -- cuckoo_job_details.flow_cur_time
-     * 
-     */
-    private Long flowCurTime;
+ 
     
     /**
      * 触发任务ID
@@ -279,71 +256,6 @@ public class CuckooJobDetailVo {
         this.cuckooParallelJobArgs = cuckooParallelJobArgs == null ? null : cuckooParallelJobArgs.trim();
     }
 
-    /**
-     * 数据字段 cuckoo_job_details.exec_job_status的get方法 
-     * 
-     */
-    public String getExecJobStatus() {
-        return execJobStatus;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.exec_job_status的set方法
-     * 
-     */
-    public void setExecJobStatus(String execJobStatus) {
-        this.execJobStatus = execJobStatus == null ? null : execJobStatus.trim();
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.tx_date的get方法 
-     * 
-     */
-    public Integer getTxDate() {
-        return txDate;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.tx_date的set方法
-     * 
-     */
-    public void setTxDate(Integer txDate) {
-        this.txDate = txDate;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.flow_last_time的get方法 
-     * 
-     */
-    public Long getFlowLastTime() {
-        return flowLastTime;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.flow_last_time的set方法
-     * 
-     */
-    public void setFlowLastTime(Long flowLastTime) {
-        this.flowLastTime = flowLastTime;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.flow_cur_time的get方法 
-     * 
-     */
-    public Long getFlowCurTime() {
-        return flowCurTime;
-    }
-
-    /**
-     * 数据字段 cuckoo_job_details.flow_cur_time的set方法
-     * 
-     */
-    public void setFlowCurTime(Long flowCurTime) {
-        this.flowCurTime = flowCurTime;
-    }
-    
-    
     
 
     public Long getGroupName() {

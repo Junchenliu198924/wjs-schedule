@@ -26,7 +26,10 @@ public class CuckooClientJobDetailServiceImpl implements CuckooClientJobDetailSe
 		crtPi.setOrderByClause(" bean_name, method_name ");
 		CuckooClientJobDetailCriteria.Criteria crt = crtPi.createCriteria();
 		if(StringUtils.isNotEmpty(qry.getJobClassApplication())){
-			crt.andJobClassApplicationEqualTo(qry.getJobClassApplication());
+			crt.andJobClassApplicationLike("%" + qry.getJobClassApplication() + "%");
+		}
+		if(StringUtils.isNotEmpty(qry.getJobName())){
+			crt.andJobNameLike("%" + qry.getJobName() + "%");
 		}
 		
 		return cuckooClientJobDetailMapper.pageByExample(crtPi);

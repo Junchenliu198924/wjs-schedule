@@ -32,4 +32,10 @@ public interface CuckooJobNextService {
 	 * @param jobId
 	 */
 	public void addOrUpdate(Long jobId, Long nextJobId);
+
+	/**
+	 * 删除某个任务的触发任务关系
+	 * @param id
+	 */
+	public void deletePreJob(Long id);
 }

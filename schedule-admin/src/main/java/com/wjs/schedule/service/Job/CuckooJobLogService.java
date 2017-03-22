@@ -87,4 +87,11 @@ public interface CuckooJobLogService {
 	 * @return
 	 */
 	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(JobLogOverTimeQry qry);
+
+	/**
+	 * 检查上一个任务是否执行成功
+	 * @param jobLog
+	 * @return
+	 */
+	public boolean checkPreLogIsDone(CuckooJobExecLog jobLog);
 }

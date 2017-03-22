@@ -48,7 +48,7 @@
 	            </div>
 	            <div class="col-xs-3">
 	              	<div class="input-group">
-	                	<span class="input-group-addon">描述</span>
+	                	<span class="input-group-addon">任务</span>
                         <select class="form-control" id="jobId" paramVal="${jobId}" >
 						</select>
 	              	</div>

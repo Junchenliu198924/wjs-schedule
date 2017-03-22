@@ -18,6 +18,7 @@ import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.service.Job.CuckooJobLogService;
 import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
@@ -182,6 +183,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		CuckooJobExecLogCriteria crtPi = new CuckooJobExecLogCriteria();
 		crtPi.setStart(qry.getStart());
 		crtPi.setLimit(qry.getLimit());
+		crtPi.setOrderByClause(" id desc ");
 		
 		CuckooJobExecLogCriteria.Criteria crt = crtPi.createCriteria();
 	  
@@ -229,6 +231,94 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		page.setTotal(cuckooJobExecLogSubMapper.countOverTimeJobs(qry));
 		
 		return page;
+	}
+
+	@Override
+	public boolean checkPreLogIsDone(CuckooJobExecLog jobLog) {
+
+		
+		
+		
+		if(CuckooIsTypeDaily.YES.getValue().equals(jobLog.getTypeDaily())){
+			
+			
+			// 第一次执行的情况，返回true
+			CuckooJobExecLogCriteria firstCrt = new CuckooJobExecLogCriteria();
+			firstCrt.setOrderByClause(" tx_date desc ,id desc ");
+			firstCrt.createCriteria().andGroupIdEqualTo(jobLog.getGroupId())
+			.andJobIdEqualTo(jobLog.getJobId())
+			// 考虑到修改任务的时候，如果修改触发方式会造成后续判断条件不一致，如果发生这种情况返回失败
+			.andTriggerTypeEqualTo(jobLog.getTriggerType())
+			// 首次任务重新执行的情况,没有时间更早的任务
+			.andTxDateLessThan(jobLog.getTxDate());
+			List<CuckooJobExecLog> firstResult = cuckooJobExecLogMapper.selectByExample(firstCrt);
+			if(CollectionUtils.isEmpty(firstResult)){
+				return true;
+			}else{
+				// 如果不为空,最近一条的执行是必须要连续的
+				if(!DateUtil.addIntDate(jobLog.getTxDate(), -1).equals(firstResult.get(0).getTxDate())){
+					LOGGER.error("job log exec is not continuous, curlogId:{},txdate:{},prelogId:{},curTime:{}"
+							, jobLog.getId(), jobLog.getTxDate(),firstResult.get(0).getId(), firstResult.get(0).getTxDate());
+					return false;
+				}
+			}
+			
+			
+			// 有上级任务， 日切任务根据txdate-1获得上一个任务最终(ID倒序)执行状态
+			CuckooJobExecLogCriteria cronCrt = new CuckooJobExecLogCriteria();
+			cronCrt.setOrderByClause(" id desc ");
+			cronCrt.createCriteria().andGroupIdEqualTo(jobLog.getGroupId())
+			.andJobIdEqualTo(jobLog.getJobId())
+			.andTxDateEqualTo(DateUtil.addIntDate(jobLog.getTxDate(), -1));
+//			.andExecJobStatusEqualTo(CuckooJobExecStatus.SUCCED.getValue());
+			List<CuckooJobExecLog> cronResult = cuckooJobExecLogMapper.selectByExample(cronCrt);
+			if(CollectionUtils.isNotEmpty(cronResult)){
+				if(CuckooJobExecStatus.SUCCED.getValue().equals(cronResult.get(0).getExecJobStatus())){
+					return true;
+				}
+			}
+			
+		}else if(CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())){
+
+			
+
+			// 第一次执行的情况，返回true
+			CuckooJobExecLogCriteria firstCrt = new CuckooJobExecLogCriteria();
+			firstCrt.setOrderByClause(" flow_cur_time desc ,id desc ");
+			firstCrt.createCriteria().andGroupIdEqualTo(jobLog.getGroupId())
+			.andJobIdEqualTo(jobLog.getJobId())
+			// 考虑到修改任务的时候，如果修改触发方式会造成后续判断条件不一致，如果发生这种情况返回失败
+			.andTriggerTypeEqualTo(jobLog.getTriggerType())
+			// 首次任务重新执行的情况,没有时间更早的任务
+			.andFlowCurTimeLessThan(jobLog.getFlowCurTime());
+			List<CuckooJobExecLog> firstResult = cuckooJobExecLogMapper.selectByExample(firstCrt);
+			if(CollectionUtils.isEmpty(firstResult)){
+				return true;
+			}else{
+				// 如果不为空,最近一条的执行是必须要连续的
+				if(!jobLog.getFlowLastTime().equals(firstResult.get(0).getFlowCurTime())){
+					LOGGER.error("job log exec is not continuous, curlogId:{},lastTime:{},prelogId:{},curTime:{}"
+							, jobLog.getId(), jobLog.getFlowLastTime(),firstResult.get(0).getId(), firstResult.get(0).getFlowCurTime());
+					return false;
+				}
+				
+			}
+			
+			// 非日切任务，根据lastTime获得上一个任务最终(ID倒序)执行状态
+			CuckooJobExecLogCriteria jobCrt = new CuckooJobExecLogCriteria();
+			jobCrt.setOrderByClause(" id desc ");
+			jobCrt.createCriteria().andGroupIdEqualTo(jobLog.getGroupId())
+			.andJobIdEqualTo(jobLog.getJobId())
+			.andFlowCurTimeEqualTo(jobLog.getFlowLastTime());
+//			.andExecJobStatusEqualTo(CuckooJobExecStatus.SUCCED.getValue());
+			List<CuckooJobExecLog> jobResult = cuckooJobExecLogMapper.selectByExample(jobCrt);
+			if(CollectionUtils.isNotEmpty(jobResult)){
+				if(CuckooJobExecStatus.SUCCED.getValue().equals(jobResult.get(0).getExecJobStatus())){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

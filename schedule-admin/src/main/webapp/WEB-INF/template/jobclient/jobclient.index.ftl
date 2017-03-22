@@ -40,12 +40,14 @@
 	    		<div class="col-xs-4">
 	              	<div class="input-group">
 	                	<span class="input-group-addon">作业应用名</span>
-                		<select class="form-control" id="jobClassApplication" >
-                			<#list jobAppWithNull as list>
-                				<option value="${list.value}" >${list.description}</option>
-                			</#list>
-	                  	</select>
-	              	</div>
+                		<input type="text" class="form-control" id="jobClassApplication" value="${jobClassApplication}" autocomplete="on" >
+	                 </div>
+	            </div>
+	    		<div class="col-xs-4">
+	              	<div class="input-group">
+	    			 	<span class="input-group-addon">任务名称</span>
+                		<input type="text" class="form-control" id="jobNameInput" value="${jobName}" autocomplete="on" >
+	              	 </div>
 	            </div>
 	            <div class="col-xs-2">
 	            	<button class="btn btn-block btn-info" id="searchBtn">搜索</button>

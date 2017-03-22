@@ -10,6 +10,8 @@ public class JobClientQry {
 	
 	private String jobClassApplication;
 	
+	private String jobName;
+	
 	
 
 	public Integer getStart() {
@@ -37,6 +39,16 @@ public class JobClientQry {
 	}
 	
 	
+	
+	
+	public String getJobName() {
+		return jobName;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
+	}
+
 	@Override
 	public String toString() {
 		

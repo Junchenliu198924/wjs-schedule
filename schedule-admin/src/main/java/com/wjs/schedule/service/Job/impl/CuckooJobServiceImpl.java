@@ -146,6 +146,13 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		if(null == jobInfo || null == jobInfo.getId()){
 			throw new BaseException("jobinfo should not be null");
 		}
+		
+		if(StringUtils.isNotEmpty(jobInfo.getCronExpression())){
+			if(!CronExpression.isValidExpression(jobInfo.getCronExpression())){
+
+				throw new BaseException("cronexpression is not valid:" + jobInfo.getCronExpression());
+			}
+		}
 
 		// 根据ID查询任务信息
 		CuckooJobDetail orginJobDetail = cuckooJobDetailMapper.selectByPrimaryKey(jobInfo.getId());
@@ -155,6 +162,10 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		CuckooJobDetail targetJobDetail = new CuckooJobDetail();
 
+		// 先复制原任务信息
+		PropertyUtil.copyProperties(targetJobDetail, orginJobDetail);
+		
+		// 提交修改内容覆盖
 		PropertyUtil.copyProperties(targetJobDetail, jobInfo);
 		
 		// 修改cuckoo任务
@@ -164,16 +175,18 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			if(CuckooJobTriggerType.JOB.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 原来任务类型为job触发 且新任务为Cron，那么需要新增quartz。否则不做处理
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
-					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+					
+					
+					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 				}
 			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 如果原来任务类型为Cron，那么修改一条任务
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					// 且新任务为Cron，那么需要修改quartz
-					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 				}else{
 					// 且新任务为NORMAL，那么需要删除quartz
-					quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
+					quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
 				}
 			}else {
 				throw new BaseException("unknow job triggle type : "+ jobInfo.getTriggerType());
@@ -181,28 +194,37 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}else{
 			// 如果原始任务组编号与目前任务组编号不同
 			// 删除任务
-			quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getJobName()));
+			quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
 			// 新增任务
 			if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 				// 新任务为Cron，那么需要新增quartz。否则不做处理
-				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
+				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()));
 			}
 		}
 		
+		if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
+			// CRON触发的任务，删除被触发任务关系
+			cuckooJobNextService.deletePreJob(targetJobDetail.getId());
+		}else{
+			if(null != jobInfo.getPreJobId()){
+				// 触发任务
+				CuckooJobDetail jobPreTriggle = getJobById(jobInfo.getPreJobId());
+				if(null == jobPreTriggle){
+					throw new BaseException("can not find pre trigger job by preJobId:{}", jobInfo.getPreJobId());
+				}
+				cuckooJobNextService.addOrUpdate(jobInfo.getPreJobId(), jobInfo.getId());
+			}	
+		}
 		
-		if(null != jobInfo.getPreJobId()){
-			// 触发任务
-			CuckooJobDetail jobPreTriggle = getJobById(jobInfo.getPreJobId());
-			if(null == jobPreTriggle){
-				throw new BaseException("can not find pre trigger job by preJobId:{}", jobInfo.getPreJobId());
-			}
-			cuckooJobNextService.addOrUpdate(jobInfo.getPreJobId(), jobInfo.getId());
-		}		
+		String[] dependencyIds = {};
 		if(StringUtils.isNotEmpty(jobInfo.getDependencyIds())){
 			// 依赖任务  
-			String[] dependencyIds = jobInfo.getDependencyIds().split(",");
-			cuckooJobDependencyService.addOrUpdateJobDependency(jobInfo.getId() , dependencyIds);
+			dependencyIds = jobInfo.getDependencyIds().split(",");
 		}
+		cuckooJobDependencyService.addOrUpdateJobDependency(jobInfo.getId() , dependencyIds);
+
+		
+		cuckooJobDetailMapper.updateByPrimaryKeySelective(targetJobDetail);
 		
 	}
 
@@ -445,7 +467,10 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	public List<CuckooJobDetail>  getJobsByGroupId(Long groupId) {
 
 		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
-		crt.createCriteria().andGroupIdEqualTo(groupId);
+		if(null != groupId){
+
+			crt.createCriteria().andGroupIdEqualTo(groupId);
+		}
 		
 		
 		return cuckooJobDetailMapper.selectByExample(crt);

@@ -79,9 +79,7 @@ public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 		
 		// 一个任务只能有一个任务触发
 		
-		CuckooJobNextJobCriteria preJobCrt = new CuckooJobNextJobCriteria();
-		preJobCrt.createCriteria().andNextJobIdEqualTo(nextJobId);
-		cuckooJobNextJobMapper.deleteByExample(preJobCrt);
+		deletePreJob(nextJobId);
 //		List<CuckooJobNextJob> preJobs = cuckooJobNextJobMapper.selectByExample(preJobCrt);
 //		if(CollectionUtils.isNotEmpty(preJobs)){
 //			throw new BaseException("job have pre trigger job aready, prejob:{}",preJobs.get(0));
@@ -90,6 +88,13 @@ public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 		cuckooJobNextJob.setJobId(jobId);
 		cuckooJobNextJob.setNextJobId(nextJobId);
 		cuckooJobNextJobMapper.insert(cuckooJobNextJob);
+	}
+
+	@Override
+	public void deletePreJob(Long jobId) {
+		CuckooJobNextJobCriteria preJobCrt = new CuckooJobNextJobCriteria();
+		preJobCrt.createCriteria().andNextJobIdEqualTo(jobId);
+		cuckooJobNextJobMapper.deleteByExample(preJobCrt);
 	}
 
 }

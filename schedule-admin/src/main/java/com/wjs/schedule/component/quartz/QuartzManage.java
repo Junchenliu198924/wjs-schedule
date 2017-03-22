@@ -110,6 +110,8 @@ public class QuartzManage {
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.deleteJob(jobKey);
+			}else{
+				throw new BaseException("cron job not exist, jobName:{}", quartzJobName);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("删除任务调度失败:{}", e.getMessage(), e);

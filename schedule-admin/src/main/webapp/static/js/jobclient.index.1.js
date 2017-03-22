@@ -10,6 +10,7 @@ $(function() {
 	        data : function ( d ) {
 	        	var obj = {};
 	        	obj.jobClassApplication = $('#jobClassApplication').val();
+	        	obj.jobName = $('#jobNameInput').val();
 	        	obj.start = d.start;
 	        	obj.limit = d.length;
                 return obj;

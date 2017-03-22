@@ -3,10 +3,8 @@ $(function() {
 	// 任务组列表选中, 任务列表初始化和选中
     var ifParam = true;
 	$("#groupId").on("change", function () {
+
 		var groupId = $(this).children('option:selected').val();
-		if(!groupId){
-			return;
-		}
 		$.ajax({
 			type : 'POST',
             async: false,   // async, avoid js invoke pagelist before jobName data init
@@ -29,6 +27,8 @@ $(function() {
 			},
 		});
 	});
+	
+	
 	if ($("#groupId").attr("paramVal")){
 		$("#groupId").find("option[value='" + $("#groupId").attr("paramVal") + "']").attr("selected",true);
         $("#groupId").change();

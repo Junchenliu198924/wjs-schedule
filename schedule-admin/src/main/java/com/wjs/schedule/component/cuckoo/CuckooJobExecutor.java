@@ -213,7 +213,7 @@ public class CuckooJobExecutor {
 		// 查询任务信息
 		CuckooJobDetail jobInfo = cuckooJobDetailMapper.selectByPrimaryKey(jobLog.getJobId());
 
-		if(jobLog.getForceTriggle()){
+		if(jobLog.getForceTriggle()){  
 			// 强制执行的任务（手工调度），不需要校验
 			return true;
 		}else{
@@ -222,6 +222,11 @@ public class CuckooJobExecutor {
 				LOGGER.info("job is paush,triggle next time, jobInfo:{}", jobInfo);
 				jobLog.setRemark("job is paush,triggle next time");
 				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+				return false;
+			}
+			
+			// 检查日志中，上一次执行任务(txdate/latest_time倒叙)未执行成功，那么当前任务不能执行
+			if(!cuckooJobLogService.checkPreLogIsDone(jobLog)){
 				return false;
 			}
 
