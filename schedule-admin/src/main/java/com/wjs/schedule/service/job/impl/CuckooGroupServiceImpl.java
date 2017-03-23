@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
+import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.domain.exec.CuckooJobGroupCriteria;
 import com.wjs.schedule.exception.BaseException;
@@ -20,6 +23,9 @@ public class CuckooGroupServiceImpl implements CuckooGroupService {
 
 	@Autowired
 	CuckooJobGroupMapper cuckooJobGroupMapper;
+	
+	@Autowired
+	CuckooJobDetailMapper cuckooJobDetailMapper;
 	
 	@Override
 	@Transactional
@@ -45,6 +51,16 @@ public class CuckooGroupServiceImpl implements CuckooGroupService {
 	public CuckooJobGroup getGroupById(Long groupId) {
 		
 		return cuckooJobGroupMapper.selectByPrimaryKey(groupId);
+	}
+
+	@Override
+	public void deleteById(Long id) {
+
+		cuckooJobGroupMapper.deleteByPrimaryKey(id);
+		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		crt.createCriteria().andGroupIdEqualTo(id);
+		
+		cuckooJobDetailMapper.deleteByExample(crt);
 	}
 
 }

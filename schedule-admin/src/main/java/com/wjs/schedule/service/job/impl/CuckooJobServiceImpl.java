@@ -266,7 +266,10 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		if (null != cuckooJobDetail) {
 			cuckooJobDetailMapper.deleteByPrimaryKey(id);
 			// 根据任务信息删除quartz信息
-			quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getId()));
+			if(quartzManage.checkCronExists(String.valueOf(cuckooJobDetail.getId()))){
+
+				quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getId()));
+			}
 		}
 
 		// 日志删除（暂时保留日志）

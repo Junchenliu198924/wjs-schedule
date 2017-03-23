@@ -87,7 +87,7 @@ $(function() {
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true},
 	                { "data": 'groupId', "bSortable": false, "visible" : false},
-	                { "data": 'jobId', "bSortable": false, "visible" : false},	                 
+	                { "data": 'jobId', "bSortable": false, "visible" : true},	                 
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : false},
 	                { "data": 'triggerType', "visible" : true},

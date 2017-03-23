@@ -1,9 +1,6 @@
 package com.wjs.schedule.controller.jobgroup;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,11 +14,8 @@ import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.domain.exec.CuckooJobGroupCriteria;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
-import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.enums.CuckooJobStatus;
-import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.service.job.CuckooGroupService;
 import com.wjs.schedule.vo.job.JobGroup;
 import com.wjs.util.bean.PropertyUtil;
 
@@ -29,6 +23,9 @@ import com.wjs.util.bean.PropertyUtil;
 @RequestMapping("/jobgroup")
 public class JobGroupController  extends BaseController{
 
+	
+	@Autowired
+	CuckooGroupService cuckooGroupService;
 	
 	@Autowired
 	CuckooJobGroupMapper cuckooJobGroupMapper;
@@ -84,7 +81,8 @@ public class JobGroupController  extends BaseController{
 			throw new BaseException("id can not be null");
 		}
 		
-		cuckooJobGroupMapper.deleteByPrimaryKey(id);
+		cuckooGroupService.deleteById(id);
+		
 		return success();
 	}
 }

@@ -26,5 +26,11 @@ public interface CuckooGroupService {
 	 * @return
 	 */
 	public CuckooJobGroup getGroupById(Long groupId);
+
+	/**
+	 * 删除分组，还要删除分组下的任务
+	 * @param id
+	 */
+	public void deleteById(Long id);
 	
 }

@@ -4,7 +4,7 @@ $(function() {
 	$('.remove').on('click', function(){
 		var id = $(this).attr('id');
 
-		ComConfirm.show("确认删除分组?", function(){
+		ComConfirm.show("确认删除分组,删除分组的用时，分组的任务也会一起删除?", function(){
 			$.ajax({
 				type : 'POST',
 				url : base_url + '/jobgroup/remove',
