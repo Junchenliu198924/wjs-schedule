@@ -93,13 +93,13 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		}
 
 		// 检查唯一性索引 groupid,jobName
-		CuckooJobDetailCriteria jobUkCrt = new CuckooJobDetailCriteria();
-		jobUkCrt.createCriteria().andGroupIdEqualTo(jobDetail.getGroupId()).andJobNameEqualTo(jobDetail.getJobName());
-		List<CuckooJobDetail> jobUkCheck = cuckooJobDetailMapper.selectByExample(jobUkCrt);
-		if (CollectionUtils.isNotEmpty(jobUkCheck)) {
-			throw new BaseException("job has aready added ,groupId:{},jobName:{}", jobDetail.getGroupId(),
-					jobDetail.getJobName());
-		}
+//		CuckooJobDetailCriteria jobUkCrt = new CuckooJobDetailCriteria();
+//		jobUkCrt.createCriteria().andGroupIdEqualTo(jobDetail.getGroupId()).andJobNameEqualTo(jobDetail.getJobName());
+//		List<CuckooJobDetail> jobUkCheck = cuckooJobDetailMapper.selectByExample(jobUkCrt);
+//		if (CollectionUtils.isNotEmpty(jobUkCheck)) {
+//			throw new BaseException("job has aready added ,groupId:{},jobName:{}", jobDetail.getGroupId(),
+//					jobDetail.getJobName());
+//		}
 
 		// 如果是cron，校验cron是否正确
 		if (CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())) {
@@ -244,10 +244,10 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		cuckooJobDependencyService.addOrUpdateJobDependency(jobInfo.getId(), dependencyIds);
 
 		// 邮件接收人
-		String mailTo = jobInfo.getMailTo();
-		Long overTime = jobInfo.getOverTime();
-		Long overTimeLong = overTime * 60 * 60 * 1000;
-		addJobExtendInfo(targetJobDetail.getId(), mailTo, overTimeLong);
+		String mailTo = jobInfo.getMailTo() == null ? "" : jobInfo.getMailTo();
+		Long overTime = jobInfo.getOverTime() == null ? Long.MAX_VALUE : jobInfo.getOverTime() * 60 * 60 * 1000;
+		
+		addJobExtendInfo(targetJobDetail.getId(), mailTo, overTime);
 
 		cuckooJobDetailMapper.updateByPrimaryKeySelective(targetJobDetail);
 

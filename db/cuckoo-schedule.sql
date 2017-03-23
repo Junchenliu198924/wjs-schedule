@@ -61,7 +61,6 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='ÈÎÎñ±í'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
-CREATE UNIQUE INDEX uk_jobdetail ON cuckoo_job_detail(group_id ASC ,job_name ASC );
 CREATE INDEX idx_jobdetail_groupid ON cuckoo_job_detail(group_id ASC );
 CREATE INDEX idx_jobdetail_app ON cuckoo_job_detail(job_class_application ASC );
 CREATE INDEX idx_jobdetail_name ON cuckoo_job_detail(job_name ASC );
