@@ -36,6 +36,7 @@ public class JobRunningErrorException extends Throwable{
 		super(MessageFormatter.arrayFormat(format, arguments).getMessage());
 	}
 	
+	
 	public static void main(String[] args) {
 		String[] arr = {"你好","哈哈"};
 		System.out.println(MessageFormatter.arrayFormat("ninhao:{},haha:{}", arr).getMessage());

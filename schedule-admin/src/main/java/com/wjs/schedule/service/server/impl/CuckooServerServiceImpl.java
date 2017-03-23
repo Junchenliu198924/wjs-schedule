@@ -22,6 +22,8 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.enums.CuckooClientJobStatus;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.exception.JobCanNotRunningException;
+import com.wjs.schedule.exception.JobRunningErrorException;
 import com.wjs.schedule.net.server.ServerUtil;
 import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
@@ -41,13 +43,12 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 	CuckooJobService cuckooJobService;
 	
 	@Override
-	public CuckooClientJobExecResult execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean) {
+	public CuckooClientJobExecResult execRemoteJob(List<CuckooClientJobDetail> remoteJobExecs, JobInfoBean jobBean) throws JobCanNotRunningException, JobRunningErrorException {
 		
 		CuckooClientJobExecResult result = new CuckooClientJobExecResult();
 		if(CollectionUtils.isEmpty(remoteJobExecs)){
-			result.setSuccess(false);
-			result.setRemark("remoteJobExecs is null");
-			return result;
+//			return result;
+			throw new JobCanNotRunningException("remoteJobExecs is null");
 		}
 		// 根据remoteJobExec 获取socket,
 		Object socket = null;
@@ -55,16 +56,17 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		for (CuckooClientJobDetail cuckooClientJobDetail : remoteJobExecs) {
 			socket = JobClientSessionCache.get(cuckooClientJobDetail.getId());
 			if(null != socket){
+				
 				socketClient = cuckooClientJobDetail;
 				break;
 			}
 		}
+		
+		result.setClientJobInfo(socketClient);
 		result.setClientJobInfo(socketClient);
 		// 意外情况获取不到socket
 		if(socket == null){
-			result.setSuccess(false);
-			result.setRemark("remoteJobExecs can not get socket");
-			return result;
+			throw new JobCanNotRunningException("JobClientSessionCache can not get socket");
 		}
 		
 		// 更新远程服务器最新调用时间
@@ -75,14 +77,13 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 			LOGGER.info("调用远程任务开始,jobApp:{},jobName:{},bean:{}" , socketClient.getJobClassApplication() ,socketClient.getJobName(), jobBean);
 			ServerUtil.send(socketClient, CuckooMessageType.JOBDOING,  jobBean);
 			result.setSuccess(true);
+			return result;
 		} catch (Exception e) {
-			result.setSuccess(false);
+
 			LOGGER.error("job exec error:{}",e.getMessage() ,e);
-			result.setRemark(e.getMessage());
+			throw new JobRunningErrorException("job exec error:{}",e.getMessage());
 		}
 		
-		
-		return result;
 	}
 
 	@Override

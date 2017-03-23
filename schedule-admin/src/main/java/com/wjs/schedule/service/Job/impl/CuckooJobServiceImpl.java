@@ -147,7 +147,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		addJobExtendInfo(jobId, mailTo, overTimeLong);
 		
 		if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
-			quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobId), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
+			quartzManage.addCronJob(String.valueOf(jobId), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
 		}
 		
 		return jobId;
@@ -211,16 +211,16 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					
 					
-					quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
+					quartzManage.addCronJob(String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 				}
 			}else if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ){
 				// 如果原来任务类型为Cron，那么修改一条任务
 				if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 					// 且新任务为Cron，那么需要修改quartz
-					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
+					quartzManage.modfyCronJob(String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 				}else{
 					// 且新任务为NORMAL，那么需要删除quartz
-					quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
+					quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getId()));
 				}
 			}else {
 				throw new BaseException("unknow job triggle type : "+ jobInfo.getTriggerType());
@@ -228,11 +228,11 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}else{
 			// 如果原始任务组编号与目前任务组编号不同
 			// 删除任务
-			quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
+			quartzManage.deleteCronJob(String.valueOf(orginJobDetail.getId()));
 			// 新增任务
 			if(CuckooJobTriggerType.CRON.getValue().equals(targetJobDetail.getTriggerType())){
 				// 新任务为Cron，那么需要新增quartz。否则不做处理
-				quartzManage.addCronJob(String.valueOf(targetJobDetail.getGroupId()), String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
+				quartzManage.addCronJob(String.valueOf(targetJobDetail.getId()), jobInfo.getCronExpression(), CuckooJobStatus.fromName(targetJobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(targetJobDetail.getTypeDaily()));
 			}
 		}
 		
@@ -283,7 +283,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		if(null != cuckooJobDetail){
 			cuckooJobDetailMapper.deleteByPrimaryKey(id);
 			// 根据任务信息删除quartz信息
-			quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getGroupId()), String.valueOf(cuckooJobDetail.getId()));
+			quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getId()));
 		}
 		
 		// 日志删除（暂时保留日志）
@@ -309,7 +309,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		// 更新quartz任务状态
 		if(CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType())){
-			quartzManage.pauseJob(String.valueOf(orginJobDetail.getGroupId()),String.valueOf(orginJobDetail.getId()));
+			quartzManage.pauseCronJob(String.valueOf(orginJobDetail.getId()));
 		}
 	}
 
@@ -330,7 +330,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 				cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetail);
 				// 更新quartz任务状态
 				if(CuckooJobTriggerType.CRON.getValue().equals(cuckooJobDetail.getTriggerType())){
-					quartzManage.pauseJob(String.valueOf(cuckooJobDetail.getGroupId()),String.valueOf(cuckooJobDetail.getId()));
+					quartzManage.pauseCronJob(String.valueOf(cuckooJobDetail.getId()));
 				}
 			}
 		}
@@ -354,7 +354,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 
 		// 更新quartz任务状态
 		if (CuckooJobTriggerType.CRON.getValue().equals(orginJobDetail.getTriggerType()) ) {
-			quartzManage.resumeJob(String.valueOf(orginJobDetail.getGroupId()), String.valueOf(orginJobDetail.getId()));
+			quartzManage.resumeCronJob(String.valueOf(orginJobDetail.getId()));
 		}
 
 	}
@@ -519,7 +519,7 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	@Override
 	public boolean checkCronQuartzInit(CuckooJobDetail jobDetail) {
 		
-		return quartzManage.checkExists(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()));
+		return quartzManage.checkCronExists(String.valueOf(jobDetail.getId()));
 	}
 
 

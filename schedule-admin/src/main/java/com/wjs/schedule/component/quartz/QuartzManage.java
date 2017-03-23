@@ -37,9 +37,44 @@ public class QuartzManage {
 	static final String quartzCronGroup = "quartz_cron";
 	static final String quartzSimpleGroup = "quartz_simple";
 	static final String quartzAutoGroup = "quartz_auto";
+	
+	
 
-	public void addCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus, CuckooIsTypeDaily typeDaily){
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+
+	/**
+	 * 增加自动执行任务 
+	 */
+	public void addAutoJob() {
+
+		String quartzJobName = "autoCheckJob";
+		// TriggerKey : name + group
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzAutoGroup);
+		JobKey jobKey = new JobKey(quartzJobName, quartzAutoGroup);
+
+		// JobDetail : jobClass
+		Class<? extends Job> jobClass_ = QuartzAutoJobExecutor.class; 
+
+		JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
+
+		// 每十分钟 
+		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/10 * * * ?")
+				.withMisfireHandlingInstructionDoNothing();
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
+				.build();
+		try {
+			if(!scheduler.checkExists(jobKey)){
+				scheduler.scheduleJob(jobDetail, cronTrigger);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("init QuartzAutoJobExecutor error:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+	}
+
+
+
+	public void addCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus, CuckooIsTypeDaily typeDaily){
+		String quartzJobName = jobId;
 		// TriggerKey : name + group
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzCronGroup);
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
@@ -87,8 +122,104 @@ public class QuartzManage {
 	
 	
 
+	public void deleteCronJob(String jobName) {
+
+		String quartzJobName = jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.deleteJob(jobKey);
+			}else{
+				throw new BaseException("cron job not exist, jobName:{}", quartzJobName);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("删除任务调度失败:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+
+	}
+
+	public void modfyCronJob(String jobName, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
+
+		String quartzJobName = jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.deleteJob(jobKey);
+				addCronJob(jobName, cronExpression, jobStatus, typeDaily);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("修改任务调度失败:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+	}
+	
+	public boolean checkCronExists(String jobName){
+		
+		String quartzJobName = CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			return scheduler.checkExists(jobKey) ;
+		} catch (SchedulerException e) {
+			return false;
+		}
+	}
+
+	public void pauseCronJob(String jobName) {
+
+		String quartzJobName = jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.pauseJob(jobKey);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("暂停任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+		
+	}
+
+	public void pauseAll() {
+		
+		try {
+			scheduler.pauseAll();
+		} catch (SchedulerException e) {
+			LOGGER.error("暂停所有任务调度失败:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+		
+	}
+
+	public void resumeCronJob(String jobName) {
+
+		String quartzJobName = jobName;
+		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		try {
+			if(scheduler.checkExists(jobKey) ){
+				scheduler.resumeJob(jobKey);
+			}
+		} catch (SchedulerException e) {
+			LOGGER.error("恢复任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+	}
+
+	public void resumeAll() {
+		
+		try {
+			scheduler.resumeAll();
+		} catch (SchedulerException e) {
+			LOGGER.error("恢复所有任务调度失败:{}", e.getMessage(), e);
+			throw new BaseException(e.getMessage());
+		}
+	}
+	
+
+
+
 	public void addSimpleJob(CuckooJobExecLog jobLog,Long waitTime) {
-		String quartzJobName = jobLog.getGroupId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
+		String quartzJobName = jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
 		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
 		try {
@@ -156,133 +287,6 @@ public class QuartzManage {
 		}
 		
 	}
-	
-
-	public void deleteCronJob(String jobGroup, String jobName) {
-
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.deleteJob(jobKey);
-			}else{
-				throw new BaseException("cron job not exist, jobName:{}", quartzJobName);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("删除任务调度失败:{}", e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-
-	}
-
-	public void modfyCronJob(String jobGroup, String jobName, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
-
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.deleteJob(jobKey);
-				addCronJob(jobGroup, jobName, cronExpression, jobStatus, typeDaily);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("修改任务调度失败:{}", e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-	}
-	
-	public boolean checkExists(String jobGroup, String jobName){
-		
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		try {
-			return scheduler.checkExists(jobKey) ;
-		} catch (SchedulerException e) {
-			return false;
-		}
-	}
-
-	public void pauseJob(String jobGroup, String jobName) {
-
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.pauseJob(jobKey);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("暂停任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-		
-	}
-
-	public void pauseAll() {
-		
-		try {
-			scheduler.pauseAll();
-		} catch (SchedulerException e) {
-			LOGGER.error("暂停所有任务调度失败:{}", e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-		
-	}
-
-	public void resumeJob(String jobGroup, String jobName) {
-
-		String quartzJobName = jobGroup + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
-		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
-		try {
-			if(scheduler.checkExists(jobKey) ){
-				scheduler.resumeJob(jobKey);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("恢复任务调度失败:jobGroup:{},jobName:{},{}", quartzCronGroup, quartzJobName, e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-	}
-
-	public void resumeAll() {
-		
-		try {
-			scheduler.resumeAll();
-		} catch (SchedulerException e) {
-			LOGGER.error("恢复所有任务调度失败:{}", e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-	}
-	
-
-
-
-	/**
-	 * 增加自动执行任务 
-	 */
-	public void addAutoJob() {
-
-		String quartzJobName = "autoCheckJob";
-		// TriggerKey : name + group
-		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzAutoGroup);
-		JobKey jobKey = new JobKey(quartzJobName, quartzAutoGroup);
-
-		// JobDetail : jobClass
-		Class<? extends Job> jobClass_ = QuartzAutoJobExecutor.class; 
-
-		JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
-
-		// 每十分钟 
-		CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/10 * * * ?")
-				.withMisfireHandlingInstructionFireAndProceed();
-		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).withSchedule(cronScheduleBuilder)
-				.build();
-		try {
-			if(!scheduler.checkExists(jobKey)){
-				scheduler.scheduleJob(jobDetail, cronTrigger);
-			}
-		} catch (SchedulerException e) {
-			LOGGER.error("init QuartzAutoJobExecutor error:{}", e.getMessage(), e);
-			throw new BaseException(e.getMessage());
-		}
-	}
 
 
 
@@ -295,7 +299,6 @@ public class QuartzManage {
 			return false;
 		}
 	}
-
 
 	
 	

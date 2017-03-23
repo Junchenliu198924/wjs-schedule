@@ -189,9 +189,9 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(crt);
 		
 		for (CuckooJobDetail jobDetail : jobs) {
-			if(!quartzManage.checkExists(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()))){
+			if(!quartzManage.checkCronExists(String.valueOf(jobDetail.getId()))){
 				// CRON任务在Cuckoo中有，但是在quartz中没有
-				quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()),  CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
+				quartzManage.addCronJob(String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()),  CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
 			}
 		}
 		

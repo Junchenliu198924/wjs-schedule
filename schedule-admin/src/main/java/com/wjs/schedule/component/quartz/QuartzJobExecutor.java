@@ -67,11 +67,11 @@ public class QuartzJobExecutor extends QuartzJobBean {
 			
 			String quartzJobGroup = jobKey.getGroup();
 			String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
-			if (quartzJobNameArr.length < 2) {
+			if (quartzJobNameArr.length < 1) {
 				LOGGER.error("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 				throw new BaseException("Unformat quartz Job ,group:{},name:{} ", quartzJobGroup, jobKey.getName());
 			}
-			Long cuckooJobId = Long.valueOf(quartzJobNameArr[1]);
+			Long cuckooJobId = Long.valueOf(quartzJobNameArr[0]);
 
 			// 根据jobId找到任务信息
 			final CuckooJobDetail cuckooJobDetail = cuckooJobDetailMapper.lockByPrimaryKey(cuckooJobId);

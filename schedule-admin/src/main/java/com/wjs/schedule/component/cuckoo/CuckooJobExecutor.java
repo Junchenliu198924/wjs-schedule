@@ -3,7 +3,6 @@ package com.wjs.schedule.component.cuckoo;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,15 +79,20 @@ public class CuckooJobExecutor {
 
 		if(checkJobCanRunning(jobLog)){
 
-			executeJob(jobLog);
-			return true;
+			try {
+				executeJob(jobLog);
+				return true;
+			} catch (JobCanNotRunningException e) {
+				return false;
+			}
+			
 		};
 		return false;
 	}
 
 
 	// 执行任务
-	private void executeJob(CuckooJobExecLog jobLog) {
+	private void executeJob(CuckooJobExecLog jobLog) throws JobCanNotRunningException {
 		
 		LOGGER.info("job start execjob,jobLog:{}", jobLog);
 		
@@ -108,7 +112,7 @@ public class CuckooJobExecutor {
 			List<CuckooClientJobDetail>  remoteExecutors = cuckooServerService.getExecRemotesId(jobLog.getJobId());
 			if(CollectionUtils.isEmpty(remoteExecutors)){
 				LOGGER.error("no remoteExecutors fund, add job into todo queue,jobLog:{}", jobLog);
-				throw new JobRunningErrorException("no executor fund, add job into todo queue,jobLog:{}", jobLog);
+				throw new JobCanNotRunningException("no executor fund, add job into todo queue,jobLog:{}", jobLog);
 			}
 			
 
@@ -124,9 +128,9 @@ public class CuckooJobExecutor {
 			jobBean.setNeedTrigglerNext(jobLog.getNeedTriggleNext());
 			
 			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
-			if(!remoteExecutor.isSuccess()){
-				throw new JobRunningErrorException("job exec error:{},jobLog:{}",remoteExecutor.getRemark(), jobLog);
-			}
+//			if(!remoteExecutor.isSuccess()){
+//				throw new JobRunningErrorException("job exec error:{},jobLog:{}",remoteExecutor.getRemark(), jobLog);
+//			}
 			if(null != remoteExecutor.getClientJobInfo()){
 				cuckooClientIp = remoteExecutor.getClientJobInfo().getCuckooClientIp();
 				cuckooClientTag = remoteExecutor.getClientJobInfo().getCuckooClientTag();
@@ -136,7 +140,12 @@ public class CuckooJobExecutor {
 			// 未知异常，报错处理
 			execJobStatus = CuckooJobExecStatus.FAILED.getValue();
 			remark = e.getMessage();
-			LOGGER.error("failed job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+		} catch (JobCanNotRunningException e) {
+			execJobStatus = CuckooJobExecStatus.PENDING.getValue();
+			remark = e.getMessage();
+			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			throw e;
 		}finally{
 			LOGGER.info("failed job exec,succes:{},jobInfo:{}", remark, jobLog);
 			// 插入执行日志
