@@ -107,7 +107,7 @@
 					
 					<div class="box">
 			            <div class="box-header">
-							<h3 class="box-title">超时(任务执行超过${overHours}小时)列表</h3>&nbsp;&nbsp;
+							<h3 class="box-title">超时列表</h3>&nbsp;&nbsp;
 							<input type="hidden" id="overHours" value="${overHours}"/>
 						</div>
 			            <div class="box-body">

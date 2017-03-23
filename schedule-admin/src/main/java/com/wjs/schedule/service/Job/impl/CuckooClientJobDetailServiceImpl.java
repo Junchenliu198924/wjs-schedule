@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job.impl;
+package com.wjs.schedule.service.job.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria;
-import com.wjs.schedule.service.Job.CuckooClientJobDetailService;
+import com.wjs.schedule.service.job.CuckooClientJobDetailService;
 import com.wjs.schedule.vo.qry.JobClientQry;
 import com.wjs.util.dao.PageDataList;
 

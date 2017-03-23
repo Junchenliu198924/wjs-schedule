@@ -124,8 +124,9 @@
 					                  	<th name="offset" >业务偏移日期</th> 
 					                  	<th name="jobStatus" >任务状态</th> 
 					                  	<th name="cuckooParallelJobArgs" >任务参数</th> 
+					                  	<th name="overTime" >超时告警时间</th> 
+					                  	<th name="mailTo" >邮件接收人</th> 
 					                  	<th name="quartzInit" >CRON任务是否初始化</th> 
-					                  	
 					                  	<th>操作</th>
 					                </tr>
 				                </thead>
@@ -257,7 +258,21 @@
                        	<label for="lastname" class="col-sm-2 control-label">任务描述<font color="black">*</font></label>
                         <div class="col-sm-4"><input type="text" class="form-control" name="jobDesc" placeholder="任务描述说明" maxlength="100" ></div>
 					</div>
-                    <hr>
+                    
+                    <div class="form-group">
+	            		<!--
+		            	.任务超时
+		            	-->
+		            	<label for="lastname" class="col-sm-2 control-label">超时告警时间(小时)<font color="black">*</font></label>
+                        <div class="col-sm-4"><input type="text" class="form-control" name="overTime"   value="${overTime}"  maxlength="100" ></div>
+		            </div>
+                    <div class="form-group">
+                   		 <!--
+		            	.邮件提醒
+		            	-->	 
+                       	<label for="lastname" class="col-sm-2 control-label">邮件接收列表<font color="black">*</font></label>
+                        <div class="col-sm-10"><input type="text" class="form-control" name="mailTo"  value="${defaltMailTo}" maxlength="100" ></div>
+					</div>
                     
 					<div class="form-group">
 						<div class="col-sm-offset-3 col-sm-6">

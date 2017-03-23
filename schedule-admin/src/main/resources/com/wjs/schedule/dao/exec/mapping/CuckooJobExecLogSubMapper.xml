@@ -13,25 +13,24 @@
   </sql>
    
   <select id="pageOverTimeJobs" resultMap="com.wjs.schedule.dao.exec.CuckooJobExecLogMapper.BaseResultMap" parameterType="com.wjs.schedule.vo.qry.JobLogOverTimeQry" >
-    select
-    <include refid="com.wjs.schedule.dao.exec.CuckooJobExecLogMapper.Base_Column_List" />
-    from cuckoo_job_exec_log
-    <if test="overTime != null" >
-      where exec_job_status = 'RUNNING'
-      and (job_end_time - job_start_time &gt; ${overTime})
-    </if>
+    select s1.*
+	from cuckoo_job_exec_log s1
+	INNER JOIN cuckoo_job_extend s2
+	on s1.job_id = s2.job_id
+	where s1.exec_job_status in('RUNNING')
+	and s1.job_start_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
     <if test="limit != 0 " >
        limit ${start} , ${limit}
     </if>
   </select>
    
   <select id="countOverTimeJobs" parameterType="com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria" resultType="java.lang.Integer" >
-    select count(*)  
-   	from cuckoo_job_exec_log
-    <if test="overTime != null" >
-      where exec_job_status = 'RUNNING'
-      and (job_end_time - job_start_time &gt; ${overTime})
-    </if>
+    select count(1)
+	from cuckoo_job_exec_log s1
+	INNER JOIN cuckoo_job_extend s2
+	on s1.job_id = s2.job_id
+	where s1.exec_job_status in('RUNNING')
+	and s1.job_start_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
   </select>
    
 </mapper>

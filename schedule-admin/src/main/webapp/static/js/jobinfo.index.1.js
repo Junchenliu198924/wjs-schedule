@@ -49,12 +49,34 @@ $(function() {
 	                { "data": 'jobStatus', "visible" : true},
 	               
 	                { "data": 'cuckooParallelJobArgs', "visible" : true},
+
+	                { "data": 'overTime'
+	                	,"visible" : false
+	                	,"render": function ( data, type, row ) {
+	                		if(row.overTime == null){
+	                			return "";
+	                		}else{
+	                			return row.overTime/60/60/1000;
+	                		}
+	                	}
+	                },
+	                { "data": 'mailTo'
+	                	, "visible" : false
+	                	,"render": function ( data, type, row ) {
+	                		if(row.mailTo == null){
+	                			return "";
+	                		}else{
+	                			return row.mailTo;
+	                		}
+	                	}
+	                },
+	                
 	                { "data": 'quartzInit', 
 	                	"visible" : true,
 	                	"render": function ( data, type, row ) {
 	                			return row.triggerType == "CRON"? data?"是":"否" : "";
-	                		}
-	                	},
+	                	}
+	                },
 	                	                
 	                { "data": '操作' ,
 	                	"render": function ( data, type, row ) {
@@ -97,6 +119,8 @@ $(function() {
 								' offset="'+ row.offset +'" '+
 								' jobStatus="'+ row.jobStatus +'" '+
 								' cuckooParallelJobArgs="'+ row.cuckooParallelJobArgs +'" '+
+								' overTime="'+ (row.overTime == null ? "" : row.overTime/60/60/1000 ) +'" '+
+								' mailTo="'+ (row.mailTo == null ? "": row.mailTo) +'" '+
 //								' txDate="'+ row.txDate +'" '+
 //								' execJobStatus="'+ row.execJobStatus +'" '+
 //								' flowLastTime="'+ row.flowLastTime +'" '+
@@ -382,6 +406,10 @@ $(function() {
 //		$("#editModal .form select[name='triggerType']").find("option[value='"+$(this).parent('p').attr("triggerType")+"']").attr("selected",true);
 		
 		$("#editModal .form input[name='cronExpression']").val($(this).parent('p').attr("cronExpression"));
+
+		$("#editModal .form input[name='overTime']").val($(this).parent('p').attr("overTime"));
+		$("#editModal .form input[name='mailTo']").val($(this).parent('p').attr("mailTo"));
+		
 		$.post(base_url + "/jobinfo/getPreJobIdByJobId", 
 			{"jobId" : $(this).parent('p').attr("id")}
 			, function(data, status) {

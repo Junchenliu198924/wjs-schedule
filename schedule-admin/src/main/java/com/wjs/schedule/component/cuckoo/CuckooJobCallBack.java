@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.service.Job.CuckooJobLogService;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.job.CuckooJobService;
 
 /**
  * 客户端任务执行完成，调用方法

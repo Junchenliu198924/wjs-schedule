@@ -104,6 +104,19 @@ CREATE INDEX idx_joblog_starttime ON cuckoo_job_exec_log(job_start_time ASC );
 CREATE INDEX idx_joblog_endtime ON cuckoo_job_exec_log(job_end_time ASC );
 
 
+CREATE TABLE cuckoo_job_extend
+(
+	job_id                         bigint          DEFAULT 0          NOT NULL	COMMENT '任务ID',
+	email_list                     varchar(2000)   DEFAULT ''         NOT NULL	COMMENT '邮件列表逗号分隔',
+	over_time_long                 bigint          DEFAULT 0          NOT NULL	COMMENT '邮件超时时间设置(毫秒)',
+PRIMARY KEY(job_id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='任务其他信息'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+
 
 CREATE TABLE cuckoo_job_group
 (

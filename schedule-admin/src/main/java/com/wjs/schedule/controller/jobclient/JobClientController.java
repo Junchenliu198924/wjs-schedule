@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
-import com.wjs.schedule.service.Job.CuckooClientJobDetailService;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooClientJobDetailService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooClientJobDetailVo;
 import com.wjs.schedule.vo.qry.JobClientQry;
 import com.wjs.schedule.web.util.JqueryDataTable;

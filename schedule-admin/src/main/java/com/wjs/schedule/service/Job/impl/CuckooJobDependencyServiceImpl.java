@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job.impl;
+package com.wjs.schedule.service.job.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.service.Job.CuckooJobDependencyService;
+import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.util.CuckBeanUtil;
 import com.wjs.schedule.vo.job.JobDependency;
 import com.wjs.util.bean.PropertyUtil;

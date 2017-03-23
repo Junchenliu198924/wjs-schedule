@@ -14,7 +14,7 @@ import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobService;
 
 public class CuckooContainerManager implements ApplicationListener<ContextRefreshedEvent> {
 

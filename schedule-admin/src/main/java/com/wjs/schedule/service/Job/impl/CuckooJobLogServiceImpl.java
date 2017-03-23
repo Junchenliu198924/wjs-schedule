@@ -1,9 +1,10 @@
-package com.wjs.schedule.service.Job.impl;
+package com.wjs.schedule.service.job.impl;
 
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wjs.schedule.component.mail.MailSendSpring;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogSubMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
+import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
-import com.wjs.schedule.service.Job.CuckooJobLogService;
+import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
@@ -36,6 +39,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Autowired
 	CuckooJobExecLogSubMapper cuckooJobExecLogSubMapper;
+	
+	@Autowired
+	MailSendSpring mailSendSpring;
+	
+	@Autowired
+	CuckooJobExtendMapper cuckooJobExtendMapper;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -61,8 +70,42 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		log.setRemark(message);
 		cuckooJobExecLogMapper.updateByPrimaryKeySelective(log);
 		
+		if(CuckooJobExecStatus.FAILED.getValue().equals(jobStatus.getValue()) || CuckooJobExecStatus.BREAK.getValue().equals(jobStatus.getValue())){
+			// 失败或者终端，需要发送告警邮件
+			try {
+				sendJobErrorMessage(id, jobStatus);
+			} catch (Exception e) {
+				LOGGER.error("waring");
+			}
+		}
+		
 	}
 
+
+	private void sendJobErrorMessage(Long logId , CuckooJobExecStatus jobStatus) {
+
+		CuckooJobExecLog cuckooJobExecLog = cuckooJobExecLogMapper.selectByPrimaryKey(logId);
+		
+		CuckooJobExtend cuckooJobExtend = cuckooJobExtendMapper.selectByPrimaryKey(cuckooJobExecLog.getJobId());
+		if(null != cuckooJobExtend){
+			
+			String mailList = cuckooJobExtend.getEmailList();
+			if(StringUtils.isEmpty(mailList)){
+				return;
+			}
+			String[] mailArr = mailList.split(",");
+			for (String to : mailArr) {
+
+				try {
+					mailSendSpring.sendEmail(to, "任务调度平台执行" + jobStatus.getDescription(), "任务【id:{},jobName:{}】执行失败,jobDetail:{}");
+				} catch (Exception e) {
+					LOGGER.error("mail send errorjob exception,to:{}, joblog:{}" , to , cuckooJobExecLog , e);
+				}
+			}
+		}
+		
+		
+	}
 
 	@Override
 	public void updateJobLogByPk(CuckooJobExecLog cuckooJobExecLogs) {

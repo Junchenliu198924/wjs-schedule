@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job.impl;
+package com.wjs.schedule.service.job.impl;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import com.wjs.schedule.dao.exec.CuckooJobNextJobMapper;
 import com.wjs.schedule.domain.exec.CuckooJobNextJob;
 import com.wjs.schedule.domain.exec.CuckooJobNextJobCriteria;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.service.Job.CuckooJobNextService;
+import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.util.CuckBeanUtil;
 import com.wjs.schedule.vo.job.JobNext;
 import com.wjs.util.bean.PropertyUtil;

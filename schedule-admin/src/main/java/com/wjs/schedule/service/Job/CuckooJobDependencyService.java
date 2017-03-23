@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job;
+package com.wjs.schedule.service.job;
 
 import java.util.List;
 

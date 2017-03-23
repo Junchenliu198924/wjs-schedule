@@ -20,8 +20,8 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
-import com.wjs.schedule.service.Job.CuckooJobLogService;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.job.CuckooJobService;
 
 @Component("quartzJobExecutor")
 public class QuartzJobExecutor extends QuartzJobBean {

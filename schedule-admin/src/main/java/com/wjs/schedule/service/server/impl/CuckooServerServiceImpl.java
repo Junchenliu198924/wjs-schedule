@@ -23,7 +23,7 @@ import com.wjs.schedule.enums.CuckooClientJobStatus;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.net.server.ServerUtil;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
 import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 import com.wjs.schedule.vo.net.ClientInfo;

@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job;
+package com.wjs.schedule.service.job;
 
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;

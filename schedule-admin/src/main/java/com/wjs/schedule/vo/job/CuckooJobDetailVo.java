@@ -96,6 +96,16 @@ public class CuckooJobDetailVo {
 	 * 是否初始化quartz(CRON类型任务，数据库直接初始化)
 	 */
 	private boolean quartzInit;
+	
+	
+	/**
+	 * 超时告警时间
+	 */
+	private Long overTime;
+	/**
+	 * 邮件接收人
+	 */
+	private String mailTo;
 
     /**
      * cuckoo_job_details表的操作属性:serialVersionUID
@@ -301,6 +311,23 @@ public class CuckooJobDetailVo {
 
 	public void setQuartzInit(boolean quartzInit) {
 		this.quartzInit = quartzInit;
+	}
+	
+
+	public Long getOverTime() {
+		return overTime;
+	}
+
+	public void setOverTime(Long overTime) {
+		this.overTime = overTime;
+	}
+
+	public String getMailTo() {
+		return mailTo;
+	}
+
+	public void setMailTo(String mailTo) {
+		this.mailTo = mailTo;
 	}
 
 	public String toString() {

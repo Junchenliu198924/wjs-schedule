@@ -1,18 +1,16 @@
 package com.wjs.schedule.util;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wjs.schedule.domain.exec.CuckooJobDependency;
-import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobNextJob;
-import com.wjs.schedule.enums.CuckooJobExecStatus;
-import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.vo.job.JobDependency;
-import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.job.JobNext;
 
 public class CuckBeanUtil {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(CuckBeanUtil.class);
 
 	public static CuckooJobNextJob parseJobNext(JobNext jobNext) {
 

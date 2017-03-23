@@ -1,4 +1,4 @@
-package com.wjs.schedule.service.Job.impl;
+package com.wjs.schedule.service.job.impl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,22 +20,24 @@ import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
+import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.service.Job.CuckooJobDependencyService;
-import com.wjs.schedule.service.Job.CuckooJobLogService;
-import com.wjs.schedule.service.Job.CuckooJobNextService;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobDependencyService;
+import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.job.CuckooJobNextService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.bean.PropertyUtil;
@@ -76,6 +78,11 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 	
 	@Autowired
 	CuckooJobDependencyService cuckooJobDependencyService;
+	
+	@Autowired
+	CuckooJobExtendMapper cuckooJobExtendMapper;
+	
+	
 	
 	@Override
 	@Transactional
@@ -133,6 +140,11 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 			cuckooJobDependencyService.addOrUpdateJobDependency(jobId, dependencyIds);
 		}
 		
+		// 邮件接收人
+		String mailTo = jobDetail.getMailTo();
+		Long overTime = jobDetail.getOverTime();
+		Long overTimeLong = overTime * 60 *60 * 1000;
+		addJobExtendInfo(jobId, mailTo, overTimeLong);
 		
 		if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
 			quartzManage.addCronJob(String.valueOf(jobDetail.getGroupId()), String.valueOf(jobId), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()), CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
@@ -140,6 +152,25 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		
 		return jobId;
 		
+	}
+
+	private void addJobExtendInfo(Long jobId, String mailTo, Long overTime) {
+		
+		CuckooJobExtend cuckooJobExtend = cuckooJobExtendMapper.selectByPrimaryKey(jobId);
+		if(null == cuckooJobExtend){
+			// 新增
+			CuckooJobExtend ext = new CuckooJobExtend();
+			ext.setJobId(jobId);
+			ext.setEmailList(mailTo);
+			ext.setOverTimeLong(overTime);
+			cuckooJobExtendMapper.insertSelective(ext);
+			
+		}else{
+			// 删除
+			cuckooJobExtend.setOverTimeLong(overTime);
+			cuckooJobExtend.setEmailList(mailTo);
+			cuckooJobExtendMapper.updateByPrimaryKeySelective(cuckooJobExtend);
+		}
 	}
 
 	@Override
@@ -226,6 +257,12 @@ public class CuckooJobServiceImpl implements CuckooJobService{
 		}
 		cuckooJobDependencyService.addOrUpdateJobDependency(jobInfo.getId() , dependencyIds);
 
+		
+		// 邮件接收人
+		String mailTo = jobInfo.getMailTo();
+		Long overTime = jobInfo.getOverTime();
+		Long overTimeLong = overTime * 60 *60 * 1000;
+		addJobExtendInfo(targetJobDetail.getId(), mailTo, overTimeLong);
 		
 		cuckooJobDetailMapper.updateByPrimaryKeySelective(targetJobDetail);
 		

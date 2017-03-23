@@ -285,6 +285,18 @@ public class QuartzManage {
 	}
 
 
+
+	public boolean checkSimpleExist(CuckooJobExecLog jobLog) {
+		String quartzJobName = jobLog.getGroupId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
+		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
+		try {
+			return scheduler.checkExists(jobKey) ;
+		} catch (SchedulerException e) {
+			return false;
+		}
+	}
+
+
 	
 	
 }

@@ -14,22 +14,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.controller.BaseController;
+import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.service.Job.CuckooGroupService;
-import com.wjs.schedule.service.Job.CuckooJobDependencyService;
-import com.wjs.schedule.service.Job.CuckooJobNextService;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooGroupService;
+import com.wjs.schedule.service.job.CuckooJobDependencyService;
+import com.wjs.schedule.service.job.CuckooJobNextService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.config.ConfigUtil;
 import com.wjs.util.dao.PageDataList;
 
 
@@ -53,6 +57,9 @@ public class JobInfoController extends BaseController{
 	@Autowired
 	CuckooJobDependencyService cuckooJobDependencyService;
 	
+	@Autowired
+	CuckooJobExtendMapper cuckooJobExtendMapper;
+	
 	@RequestMapping
 	public String index0(HttpServletRequest request) {
 		
@@ -62,6 +69,14 @@ public class JobInfoController extends BaseController{
 	
 	@RequestMapping(value = "/index")
 	public String index(HttpServletRequest request) {
+		
+		// 默认超时时间
+		request.setAttribute("overTime", 3);
+				
+		
+		// 默认邮件接收人
+		request.setAttribute("defaltMailTo", ConfigUtil.get("mail.receive.defalt.email"));
+		
 		// 任务类型
 		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
 		request.setAttribute("jobGroupList", jobGroupList);
@@ -142,6 +157,14 @@ public class JobInfoController extends BaseController{
 				if(CuckooJobTriggerType.CRON.getValue().equals(jobDetail.getTriggerType())){
 					// 查看Cron是否有这个任务
 					vo.setQuartzInit(cuckooJobService.checkCronQuartzInit(jobDetail));
+				}
+				
+				// 查询其他扩展信息
+				CuckooJobExtend cuckooJobExtend = cuckooJobExtendMapper.selectByPrimaryKey(jobDetail.getId());
+				if(null != cuckooJobExtend){
+
+					vo.setOverTime(cuckooJobExtend.getOverTimeLong());
+					vo.setMailTo(cuckooJobExtend.getEmailList());
 				}
 				
 				rows.add(vo);

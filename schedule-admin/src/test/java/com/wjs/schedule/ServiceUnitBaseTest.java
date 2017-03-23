@@ -11,7 +11,7 @@ public class ServiceUnitBaseTest {
 	
 	@Test
 	public void temp(){
-		System.out.println("111");
+		System.out.println("ServiceUnitBaseTest.temp");
 	}
 
 }

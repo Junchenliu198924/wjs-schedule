@@ -13,7 +13,9 @@ public class CuckooJobConstant {
 	 */
 	public static final String QUARTZ_JOBNAME_JOINT = "_";
 	
-	
+	/**
+	 * 
+	 */
 	public static final String CUCKOO_PENDING_JOB_RETRY_LONG = "cuckoo.pending.job.retry.long";
 	
 	

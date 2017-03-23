@@ -7,7 +7,7 @@ import com.wjs.schedule.ServiceUnitBaseTest;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
-import com.wjs.schedule.service.Job.CuckooJobService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
 
 public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
