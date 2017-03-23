@@ -129,17 +129,26 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		for (Iterator<Entry<String, Set<CuckooJobExecLogVo>>> it =  mailSends.entrySet().iterator(); it.hasNext() ;) {
 			Entry<String, Set<CuckooJobExecLogVo>> entry = it.next();
 			
-			StringBuffer mailTitle = new StringBuffer("任务执行超时提醒:");
+			StringBuffer mailTitle = new StringBuffer("任务执行超时提醒");
 			StringBuffer mailContent = new StringBuffer("超时任务信息列表:");
 			
 			Set<CuckooJobExecLogVo> logs = entry.getValue();
 			for (Iterator<CuckooJobExecLogVo> logIt =  logs.iterator(); logIt.hasNext() ;) {
 
 				CuckooJobExecLogVo vo = logIt.next();
-				mailTitle.append(vo.getJobDesc() + ",");
+//				mailTitle.append(vo.getJobName() + ",");
 				
 				mailContent.append("/n");
-				mailContent.append(vo);
+				mailContent.append("logId:");
+				mailContent.append(vo.getId());
+				mailContent.append(",jobId:");
+				mailContent.append(vo.getJobId());
+				mailContent.append(",jobName:");
+				mailContent.append(vo.getJobName());
+				mailContent.append(",jobStartTime:");
+				mailContent.append(vo.getJobStartTimeDesc());
+				mailContent.append(",jobStatus:");
+				mailContent.append(vo.getExecJobStatusDesc());
 			}
 			
 			String title = mailTitle.toString();

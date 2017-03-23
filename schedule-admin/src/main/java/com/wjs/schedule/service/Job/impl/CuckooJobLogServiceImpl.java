@@ -149,8 +149,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 //			cuckooJobExecLog.setFlowLastTime(0L);
 			// 获得上一次任务执行时间最大的截止时间为当前任务的开始时间
 			CuckooJobExecLogCriteria crt = new CuckooJobExecLogCriteria();
-			crt.createCriteria().andJobIdEqualTo(cuckooJobExecLog.getJobId())
-			.andGroupIdEqualTo(cuckooJobExecLog.getGroupId());
+			crt.createCriteria().andJobIdEqualTo(cuckooJobExecLog.getJobId());
 			crt.setOrderByClause(" flow_cur_time desc ");
 			crt.setStart(0);
 			crt.setLimit(1);
