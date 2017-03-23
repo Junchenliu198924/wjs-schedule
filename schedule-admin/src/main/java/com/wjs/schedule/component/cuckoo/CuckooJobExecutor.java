@@ -93,28 +93,24 @@ public class CuckooJobExecutor {
 
 	// 执行任务
 	private void executeJob(CuckooJobExecLog jobLog) throws JobCanNotRunningException {
-		
+
 		LOGGER.info("job start execjob,jobLog:{}", jobLog);
-		
 
 		cuckooJobExecLogsMapper.lockByPrimaryKey(jobLog.getId());
-
 
 		String remark = "";
 		String execJobStatus = CuckooJobExecStatus.RUNNING.getValue();
 		// 初始化执行日志
 		String cuckooClientIp = null;
 		String cuckooClientTag = null;
-		
-		
+
 		try {
 			// 查询远程执行器-- 考虑负载均衡 ,如果可执行客户端没有的话，放到数据库队列里面去。用于客户端重连等操作完成后操作
-			List<CuckooClientJobDetail>  remoteExecutors = cuckooServerService.getExecRemotesId(jobLog.getJobId());
-			if(CollectionUtils.isEmpty(remoteExecutors)){
+			List<CuckooClientJobDetail> remoteExecutors = cuckooServerService.getExecRemotesId(jobLog.getJobId());
+			if (CollectionUtils.isEmpty(remoteExecutors)) {
 				LOGGER.error("no remoteExecutors fund, add job into todo queue,jobLog:{}", jobLog);
 				throw new JobCanNotRunningException("no executor fund, add job into todo queue,jobLog:{}", jobLog);
 			}
-			
 
 			// 调用日志执行单元(远程调用)
 			JobInfoBean jobBean = new JobInfoBean();
@@ -126,34 +122,46 @@ public class CuckooJobExecutor {
 			jobBean.setJobLogId(jobLog.getId());
 			jobBean.setCuckooParallelJobArgs(jobLog.getCuckooParallelJobArgs());
 			jobBean.setNeedTrigglerNext(jobLog.getNeedTriggleNext());
-			
+
 			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(remoteExecutors, jobBean);
-//			if(!remoteExecutor.isSuccess()){
-//				throw new JobRunningErrorException("job exec error:{},jobLog:{}",remoteExecutor.getRemark(), jobLog);
-//			}
-			if(null != remoteExecutor.getClientJobInfo()){
+			// if(!remoteExecutor.isSuccess()){
+			// throw new JobRunningErrorException("job exec
+			// error:{},jobLog:{}",remoteExecutor.getRemark(), jobLog);
+			// }
+			if (null != remoteExecutor.getClientJobInfo()) {
 				cuckooClientIp = remoteExecutor.getClientJobInfo().getCuckooClientIp();
 				cuckooClientTag = remoteExecutor.getClientJobInfo().getCuckooClientTag();
 			}
-			
-		} catch (JobRunningErrorException e) {
-			// 未知异常，报错处理
-			execJobStatus = CuckooJobExecStatus.FAILED.getValue();
-			remark = e.getMessage();
-			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
-		} catch (JobCanNotRunningException e) {
-			execJobStatus = CuckooJobExecStatus.PENDING.getValue();
-			remark = e.getMessage();
-			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
-			throw e;
-		}finally{
-			LOGGER.info("failed job exec,succes:{},jobInfo:{}", remark, jobLog);
+
+			LOGGER.info("job exec result,remark:{},jobInfo:{}", remark, jobLog);
 			// 插入执行日志
 			jobLog.setCuckooClientIp(cuckooClientIp);
 			jobLog.setCuckooClientTag(cuckooClientTag);
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
 			jobLog.setExecJobStatus(execJobStatus);
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+		} catch (JobRunningErrorException e) {
+			// 未知异常，报错处理
+			execJobStatus = CuckooJobExecStatus.FAILED.getValue();
+			remark = e.getMessage();
+			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			// 插入执行日志
+			jobLog.setCuckooClientIp(cuckooClientIp);
+			jobLog.setCuckooClientTag(cuckooClientTag);
+			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
+			jobLog.setExecJobStatus(execJobStatus);
+			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+		} catch (JobCanNotRunningException e) {
+			execJobStatus = CuckooJobExecStatus.PENDING.getValue();
+			remark = e.getMessage();
+			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			// 插入执行日志
+			jobLog.setCuckooClientIp(cuckooClientIp);
+			jobLog.setCuckooClientTag(cuckooClientTag);
+			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
+			jobLog.setExecJobStatus(execJobStatus);
+			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
+			throw e;
 		}
 
 	}
