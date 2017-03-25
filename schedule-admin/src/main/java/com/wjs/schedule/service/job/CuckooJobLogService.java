@@ -4,8 +4,7 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
-import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
-import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
+import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.dao.PageDataList;
 
@@ -87,7 +86,7 @@ public interface CuckooJobLogService {
 	 * @param limit
 	 * @return
 	 */
-	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(JobLogOverTimeQry qry);
+	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(QryBase qry);
 
 	/**
 	 * 检查上一个任务是否执行成功
@@ -95,4 +94,11 @@ public interface CuckooJobLogService {
 	 * @return
 	 */
 	public boolean checkPreLogIsDone(CuckooJobExecLog jobLog);
+
+	/**
+	 * 查询Pending || Running 状态任务（任务状态不是暂停状态的）
+	 * @param qry
+	 * @return
+	 */
+	public PageDataList<CuckooJobExecLog> pagePendingList(QryBase qry);
 }

@@ -1,12 +1,9 @@
-package com.wjs.schedule.vo.net;
-
-import java.util.HashSet;
-import java.util.Set;
+package com.wjs.schedule.net.vo;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.mina.core.session.IoSession;
 
-public class ClientInfo {
+public class IoClientInfo {
 	
 	/**
 	 * IP
@@ -67,7 +64,7 @@ public class ClientInfo {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ClientInfo other = (ClientInfo) obj;
+		IoClientInfo other = (IoClientInfo) obj;
 		if (remoteApp == null) {
 			if (other.remoteApp != null)
 				return false;

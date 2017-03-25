@@ -44,7 +44,7 @@ public interface CuckooJobService {
 	/**
 	 * 暂停所有任务
 	 */
-	public void pauseAllJob();
+	public void pauseAllJob(JobInfoQry jobInfo);
 	
 	/**
 	 * 恢复一个任务
@@ -54,7 +54,7 @@ public interface CuckooJobService {
 	/**
 	 * 恢复所有任务
 	 */
-	public void resumeAllJob();
+	public void resumeAllJob(JobInfoQry jobInfo);
 	
 	/**
 	 * 将任务重置为PENDING状态
@@ -100,7 +100,7 @@ public interface CuckooJobService {
 	 * @param length
 	 * @return
 	 */
-	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo, Integer start, Integer length);
+	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo);
 
 
 	/**

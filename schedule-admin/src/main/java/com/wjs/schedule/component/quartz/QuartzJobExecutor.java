@@ -63,7 +63,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 		
 		if(null == execIdObj){
 			// 如果日志ID为空，表示当前任务为CRON触发，新增执行日志(一般情况为任务调度节点的第一个任务)
-			LOGGER.info("quartz trigger cron job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
+			LOGGER.debug("quartz trigger cron job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
 			
 			String quartzJobGroup = jobKey.getGroup();
 			String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
@@ -90,7 +90,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 			}
 			
 		}else{
-			LOGGER.info("quartz trigger flow job, jobGroup:{},jobName:{},execIdObj:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(), execIdObj,trigger.getClass());
+			LOGGER.debug("quartz trigger flow job, jobGroup:{},jobName:{},execIdObj:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(), execIdObj,trigger.getClass());
 			
 			Long execId = Long.valueOf(String.valueOf(execIdObj));
 			// 如果日志ID不为空，表示当前日志是通过上级任务触发或者是有等待执行的任务

@@ -5,6 +5,8 @@ public enum CuckooMessageType {
  
 	
 	REGIST("REGIST", "任务注册:ClientTaskInfoBean"),
+	HEARTBEATSERVER("HEARTBEATSERVER", "心跳检测:服务端信息"),
+	HEARTBEATCLIENT("HEARTBEATCLIENT", "心跳检测:客户端信息"),
 	JOBDOING("JOBDOING", "任务执行:JobInfoBean"),
 	JOBSUCCED("JOBSUCCED","任务执行成功:JobInfoBean"),
 	JOBFAILED("JOBFAILED","任务执行失败:JobInfoBean"); 

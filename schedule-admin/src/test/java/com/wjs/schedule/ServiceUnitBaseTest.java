@@ -1,5 +1,8 @@
 package com.wjs.schedule;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,6 +15,7 @@ public class ServiceUnitBaseTest {
 	@Test
 	public void temp(){
 		System.out.println("ServiceUnitBaseTest.temp");
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
 	}
 
 }

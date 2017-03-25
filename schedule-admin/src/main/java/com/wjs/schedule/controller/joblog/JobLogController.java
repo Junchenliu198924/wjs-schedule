@@ -22,8 +22,8 @@ import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.job.CuckooGroupService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobService;
+import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
-import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
@@ -111,8 +111,26 @@ public class JobLogController extends BaseController {
 	
 	
 	@ResponseBody
+	@RequestMapping(value="/pagePendingList")
+	public Object pagePendingList(QryBase qry){
+		
+		PageDataList<CuckooJobExecLog> pageLog = cuckooJobLogService.pagePendingList(qry);
+		
+		PageDataList<CuckooJobExecLogVo> pageLogVo = new PageDataList<>();
+		pageLogVo.setPage(pageLog.getPage());
+		pageLogVo.setPageSize(pageLog.getPageSize());
+		pageLogVo.setTotal(pageLog.getTotal());
+		
+		
+		pageLogVo.setRows(converPageRows(pageLog.getRows()));
+		
+		return dataTable(pageLogVo);
+	}
+	
+	
+	@ResponseBody
 	@RequestMapping(value="/pageOverTimeList")
-	public Object pageOverTimeList(JobLogOverTimeQry qry){
+	public Object pageOverTimeList(QryBase qry){
 		
 		PageDataList<CuckooJobExecLog> pageLog = cuckooJobLogService.pageOverTimeJobs(qry);
 		

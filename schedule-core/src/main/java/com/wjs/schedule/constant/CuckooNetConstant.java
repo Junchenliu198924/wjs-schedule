@@ -9,6 +9,8 @@ public class CuckooNetConstant {
 	public static final String MINA_HEARTBEAT_MSG_SERVER = "mina.heartbeat.msg.server";
 	
 	public static final String MINA_HEARTBEAT_MSG_CLIENT = "mina.heartbeat.msg.client";
+
+	public static final String CUCKOO_SERVER_TCPPORT = "cuckoo.server.tcpPort";
 	
 	
 }

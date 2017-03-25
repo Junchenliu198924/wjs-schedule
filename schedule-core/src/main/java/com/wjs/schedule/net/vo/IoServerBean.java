@@ -1,7 +1,6 @@
-package com.wjs.schedule.net.server.bean;
+package com.wjs.schedule.net.vo;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
 
 public class IoServerBean {

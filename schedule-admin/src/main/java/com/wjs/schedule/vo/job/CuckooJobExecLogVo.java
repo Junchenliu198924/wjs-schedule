@@ -1,7 +1,5 @@
 package com.wjs.schedule.vo.job;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
@@ -332,7 +330,7 @@ public class CuckooJobExecLogVo {
      */
     public void setFlowLastTime(Long flowLastTime) {
         this.flowLastTime = flowLastTime;
-        flowLastTimeDesc = DateUtil.getStringDay(this.flowLastTime,"yyyy-MM-dd HH:mm:ss");
+        flowLastTimeDesc = DateUtil.getStringDay(this.flowLastTime,"yyyy-MM-dd HH:mm:ss:SSS");
     }
 
     /**
@@ -349,7 +347,7 @@ public class CuckooJobExecLogVo {
      */
     public void setFlowCurTime(Long flowCurTime) {
         this.flowCurTime = flowCurTime;
-		flowCurTimeDesc = DateUtil.getStringDay(this.flowCurTime, "yyyy-MM-dd HH:mm:ss");
+		flowCurTimeDesc = DateUtil.getStringDay(this.flowCurTime, "yyyy-MM-dd HH:mm:ss:SSS");
     }
 
     /**

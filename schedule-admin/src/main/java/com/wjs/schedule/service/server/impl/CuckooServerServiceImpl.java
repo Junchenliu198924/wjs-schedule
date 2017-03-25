@@ -25,10 +25,10 @@ import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobCanNotRunningException;
 import com.wjs.schedule.exception.JobRunningErrorException;
 import com.wjs.schedule.net.server.ServerUtil;
+import com.wjs.schedule.net.vo.IoClientInfo;
 import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.service.server.CuckooServerService;
 import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
-import com.wjs.schedule.vo.net.ClientInfo;
 
 @Service("cuckooServerService")
 public class CuckooServerServiceImpl implements CuckooServerService {
@@ -145,7 +145,7 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		}
 		
 		// 链接缓存中增加缓存
-		ClientInfo socket = new ClientInfo();
+		IoClientInfo socket = new IoClientInfo();
 		socket.setRemoteApp(clientTaskInfoBean.getAppName());
 		socket.setRemoteTag(clientTaskInfoBean.getClientTag());
 		socket.setSession(session);

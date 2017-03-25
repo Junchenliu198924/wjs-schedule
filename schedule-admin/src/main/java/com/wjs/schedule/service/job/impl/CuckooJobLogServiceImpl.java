@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.component.mail.MailSendSpring;
+import com.wjs.schedule.component.quartz.QuartzManage;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogSubMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
@@ -24,7 +25,7 @@ import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
 import com.wjs.schedule.service.job.CuckooJobLogService;
-import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
+import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
@@ -45,6 +46,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Autowired
 	CuckooJobExtendMapper cuckooJobExtendMapper;
+	
+	@Autowired
+	QuartzManage quartzManage;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -97,7 +101,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			for (String to : mailArr) {
 
 				try {
-					mailSendSpring.sendEmail(to, "任务调度平台执行" + jobStatus.getDescription(), "任务【id:{},jobName:{}】执行失败,jobDetail:{}");
+					mailSendSpring.sendEmail(to, "任务调度平台执行" + jobStatus.getDescription(), "任务【id:"+cuckooJobExecLog.getId()+",groupId:"+cuckooJobExecLog.getGroupId()+",jobName:"+cuckooJobExecLog.getJobName()+"】执行失败,logDetail:"+cuckooJobExecLog.toString());
 				} catch (Exception e) {
 					LOGGER.error("mail send errorjob exception,to:{}, joblog:{}" , to , cuckooJobExecLog , e);
 				}
@@ -265,10 +269,19 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setId(logId);
 		cuckooJobExecLog.setExecJobStatus(status.getValue());
 		cuckooJobExecLogMapper.updateByPrimaryKeySelective(cuckooJobExecLog);
+		
+		if(CuckooJobExecStatus.SUCCED.getValue().equals(status.getValue())){
+			// 任务重置为成功，需要删除cron中的数据
+			CuckooJobExecLog jobLog = cuckooJobExecLogMapper.selectByPrimaryKey(logId);
+			if(CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())){
+				// 非日切任务，要把cron中的simpleTrigger删除
+				quartzManage.deleteSimpleJob(jobLog);
+			}
+		}
 	}
 
 	@Override
-	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(JobLogOverTimeQry qry) {
+	public PageDataList<CuckooJobExecLog> pageOverTimeJobs(QryBase qry) {
 		
 		PageDataList<CuckooJobExecLog> page = new PageDataList<>();
 		page.setPage(qry.getStart() / qry.getLimit()  + 1);
@@ -348,7 +361,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			}else{
 				// 如果不为空,最近一条的执行是必须要连续的
 				if(!jobLog.getFlowLastTime().equals(firstResult.get(0).getFlowCurTime())){
-					LOGGER.info("job log exec is not continuous, curlogId:{},lastTime:{},prelogId:{},curTime:{}"
+					LOGGER.error("job log exec is not continuous, curlogId:{},lastTime:{},prelogId:{},curTime:{}"
 							, jobLog.getId(), jobLog.getFlowLastTime(),firstResult.get(0).getId(), firstResult.get(0).getFlowCurTime());
 					jobLog.setRemark("job log exec is not continuous, curlogId:" + jobLog.getId() + ",txdate:" + jobLog.getTxDate() + ",prelogId:" + firstResult.get(0).getId() + ",curTime:" + firstResult.get(0).getTxDate());
 					return false;
@@ -368,7 +381,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 				if(CuckooJobExecStatus.SUCCED.getValue().equals(jobResult.get(0).getExecJobStatus())){
 					return true;
 				}else{
-					LOGGER.info("prelog is not succed, curlogId:{}, prelogId:{},status:{}", jobLog.getId() , jobResult.get(0).getId(), jobResult.get(0).getExecJobStatus());
+					LOGGER.debug("prelog is not succed, curlogId:{}, prelogId:{},status:{}", jobLog.getId() , jobResult.get(0).getId(), jobResult.get(0).getExecJobStatus());
 					jobLog.setRemark("prelog is not succed, curlogId:" + jobLog.getId() + ", prelogId:" + jobResult.get(0).getId() + ",status:" + jobResult.get(0).getExecJobStatus());
 					return false;
 				}
@@ -378,6 +391,18 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		LOGGER.info("unknown pending result,  curlogId:{}", jobLog.getId() );
 		jobLog.setRemark("unknown pending result,  curlogId:" + jobLog.getId());
 		return false;
+	}
+
+	@Override
+	public PageDataList<CuckooJobExecLog> pagePendingList(QryBase qry) {
+
+		PageDataList<CuckooJobExecLog> page = new PageDataList<>();
+		page.setPage(qry.getStart() / qry.getLimit()  + 1);
+		page.setPageSize(qry.getLimit());
+		page.setRows(cuckooJobExecLogSubMapper.pagePendingJobs(qry));
+		page.setTotal(cuckooJobExecLogSubMapper.countPendingJobs(qry));
+		
+		return page;
 	}
 
 }

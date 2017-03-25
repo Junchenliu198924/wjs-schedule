@@ -2,11 +2,10 @@ package com.wjs.schedule.vo.qry;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class JobClientQry {
+import com.wjs.schedule.vo.QryBase;
+
+public class JobClientQry extends QryBase{
 	
-	private Integer start;
-	
-	private Integer limit;
 	
 	private String jobClassApplication;
 	
@@ -14,21 +13,6 @@ public class JobClientQry {
 	
 	
 
-	public Integer getStart() {
-		return start;
-	}
-
-	public void setStart(Integer start) {
-		this.start = start;
-	}
-
-	public Integer getLimit() {
-		return limit;
-	}
-
-	public void setLimit(Integer limit) {
-		this.limit = limit;
-	}
 
 	public String getJobClassApplication() {
 		return jobClassApplication;

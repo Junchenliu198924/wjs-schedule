@@ -30,8 +30,8 @@ import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
 import com.wjs.schedule.net.client.filter.ConnectFilter;
 import com.wjs.schedule.net.client.handle.CuckooClientHandler;
-import com.wjs.schedule.net.server.bean.IoServerBean;
 import com.wjs.schedule.net.server.cache.IoServerCollection;
+import com.wjs.schedule.net.vo.IoServerBean;
 
 public class ClientUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);

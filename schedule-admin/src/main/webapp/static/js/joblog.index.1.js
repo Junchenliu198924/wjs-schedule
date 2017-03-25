@@ -86,7 +86,7 @@ $(function() {
 	    //"scrollX": false,
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true},
-	                { "data": 'groupId', "bSortable": false, "visible" : false},
+	                { "data": 'groupId', "bSortable": false, "visible" : true},
 	                { "data": 'jobId', "bSortable": false, "visible" : true},	                 
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : false},
@@ -135,14 +135,14 @@ $(function() {
 	                { 
 	                	"data": 'flowLastTime',
 	                	"render": function ( data, type, row ) {
-	                		return data!=0?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                		return row.flowLastTimeDesc;
 	                	}, 
 	                	"visible" : true
 	                },
 	                { 
 	                	"data": 'flowCurTime',
 	                	"render": function ( data, type, row ) {
-	                		return data!=0?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
+	                		return row.flowCurTimeDesc;
 	                	},
 	                	"visible" : true
 	                },

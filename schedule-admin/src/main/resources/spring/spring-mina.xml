@@ -24,7 +24,7 @@
 	</bean>
 	<!-- 监听端口 8687-->
 	<bean id="defaultLocalAddress" class="java.net.InetSocketAddress">
-		<constructor-arg index="0" value="${tcpPort}"></constructor-arg>
+		<constructor-arg index="0" value="${cuckoo.server.tcpPort}"></constructor-arg>
 	</bean>
 	
 	<!-- handler -->

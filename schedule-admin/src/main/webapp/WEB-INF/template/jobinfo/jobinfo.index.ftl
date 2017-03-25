@@ -304,7 +304,7 @@
 					<div class="form-group" name="dailyParam">
                         <label for="lastname" class="col-sm-2 control-label">执行日期<font color="red">*</font></label>
                         <div class="col-sm-4">
-                        	<input type="text" class="form-control" name="txDate" placeholder="格式 “yyyyMMdd”" maxlength="50" >
+                        	<input type="text" class="form-control" name="txDate" placeholder="格式 “yyyyMMdd”" maxlength="8" >
                         </div>
                         
 					</div>
@@ -312,11 +312,11 @@
                    	<div class="form-group hide" name="cronParam">
                         <label for="lastname" class="col-sm-2 control-label">任务起始日期<font color="red">*</font></label>
                         <div class="col-sm-4">
-                        	<input type="text" class="form-control" name="flowLastTime" placeholder="格式“yyyyMMddHHmmss”" maxlength="50" >
+                        	<input type="text" class="form-control" name="flowLastTime" placeholder="格式“yyyy-MM-dd HH:mm:ss:SSS”" maxlength="30" >
                         </div>
                         <label for="lastname" class="col-sm-2 control-label">任务结束日期<font color="red">*</font></label>
                         <div class="col-sm-4">
-                        	<input type="text" class="form-control" name="flowCurTime" placeholder="格式“yyyyMMddHHmmss”" maxlength="50" >
+                        	<input type="text" class="form-control" name="flowCurTime" placeholder="格式“yyyy-MM-dd HH:mm:ss:SSS”" maxlength="30" >
                         </div>
 					</div>
                    

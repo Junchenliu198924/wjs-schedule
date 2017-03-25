@@ -122,15 +122,13 @@ public class QuartzManage {
 	
 	
 
-	public void deleteCronJob(String jobName) {
+	public void deleteCronJob(String jobId) {
 
-		String quartzJobName = jobName;
+		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
-			if(scheduler.checkExists(jobKey) ){
+			if(checkCronExists(jobId)){
 				scheduler.deleteJob(jobKey);
-			}else{
-				throw new BaseException("cron job not exist, jobName:{}", quartzJobName);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("删除任务调度失败:{}", e.getMessage(), e);
@@ -139,14 +137,14 @@ public class QuartzManage {
 
 	}
 
-	public void modfyCronJob(String jobName, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
+	public void modfyCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
 
-		String quartzJobName = jobName;
+		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
 				scheduler.deleteJob(jobKey);
-				addCronJob(jobName, cronExpression, jobStatus, typeDaily);
+				addCronJob(jobId, cronExpression, jobStatus, typeDaily);
 			}
 		} catch (SchedulerException e) {
 			LOGGER.error("修改任务调度失败:{}", e.getMessage(), e);
@@ -154,9 +152,9 @@ public class QuartzManage {
 		}
 	}
 	
-	public boolean checkCronExists(String jobName){
+	public boolean checkCronExists(String jobId){
 		
-		String quartzJobName = CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobName;
+		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			return scheduler.checkExists(jobKey) ;
@@ -165,9 +163,9 @@ public class QuartzManage {
 		}
 	}
 
-	public void pauseCronJob(String jobName) {
+	public void pauseCronJob(String jobId) {
 
-		String quartzJobName = jobName;
+		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
@@ -191,9 +189,9 @@ public class QuartzManage {
 		
 	}
 
-	public void resumeCronJob(String jobName) {
+	public void resumeCronJob(String jobId) {
 
-		String quartzJobName = jobName;
+		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
 			if(scheduler.checkExists(jobKey) ){
@@ -291,13 +289,29 @@ public class QuartzManage {
 
 
 	public boolean checkSimpleExist(CuckooJobExecLog jobLog) {
-		String quartzJobName = jobLog.getGroupId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
+		String quartzJobName = jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
 		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
 		try {
 			return scheduler.checkExists(jobKey) ;
 		} catch (SchedulerException e) {
 			return false;
 		}
+	}
+
+
+
+	public void deleteSimpleJob(CuckooJobExecLog jobLog) {
+		String quartzJobName = jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
+		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
+		
+		try {
+			if(checkSimpleExist(jobLog)){
+				scheduler.deleteJob(jobKey);
+			}
+		} catch (SchedulerException e) {
+			// ignore
+		}
+		
 	}
 
 	

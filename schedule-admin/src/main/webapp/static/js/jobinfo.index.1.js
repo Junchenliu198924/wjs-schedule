@@ -175,10 +175,10 @@ $(function() {
 		var url;
 		var type = $(this).attr("type");
 		if ("job_pause_all" == type) {
-			typeName = "暂停全部";
+			typeName = "暂停按条件查询出的全部任务？";
 			url = base_url + "/jobinfo/paushAll";
 		} else if ("job_resume_all" == type) {
-			typeName = "回复全部";
+			typeName = "恢复按条件查询出的全部任务？";
 			url = base_url + "/jobinfo/resumeAll";
 		}
 		
@@ -186,6 +186,13 @@ $(function() {
 			$.ajax({
 				type : 'POST',
 				url : url,
+				data : {
+		        	"groupId" : $('#groupId').val(),
+		        	"jobClassApplication" : $('#jobClassApplication').val(),
+		        	"jobId" : $('#jobId').val(),
+		        	"jobStatus" : $('#jobStatus').val(),
+		        	"jobExecStatus" : $('#jobExecStatus').val()
+	            },
 				dataType : "json",
 				success : function(data){
 					if (data.resultCode == "success") {

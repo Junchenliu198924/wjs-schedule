@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
@@ -134,8 +133,8 @@ public class JobInfoController extends BaseController{
 	 */
 	@RequestMapping(value="/pageList")
 	@ResponseBody
-	public Object pageList(JobInfoQry jobInfo, Integer start, Integer limit ){
-		PageDataList<CuckooJobDetail> page = cuckooJobService.pageList(jobInfo, start, limit);
+	public Object pageList(JobInfoQry jobInfo){
+		PageDataList<CuckooJobDetail> page = cuckooJobService.pageList(jobInfo);
 		
 		PageDataList<CuckooJobDetailVo> pageVo = convertJobDetailPageVo(page);
 		return dataTable(pageVo);
@@ -208,9 +207,9 @@ public class JobInfoController extends BaseController{
 	 */
 	@RequestMapping(value="/paushAll")
 	@ResponseBody
-	public Object paushAll(){
+	public Object paushAll(JobInfoQry jobInfo){
 		
-		cuckooJobService.pauseAllJob();
+		cuckooJobService.pauseAllJob(jobInfo);
 		return success();
 	}
 	
@@ -220,9 +219,9 @@ public class JobInfoController extends BaseController{
 	 */
 	@RequestMapping(value="/resumeAll")
 	@ResponseBody
-	public Object resumeAll(){
+	public Object resumeAll(JobInfoQry jobInfo){
 
-		cuckooJobService.resumeAllJob();
+		cuckooJobService.resumeAllJob(jobInfo);
 		return success();
 	}
 	
@@ -238,7 +237,7 @@ public class JobInfoController extends BaseController{
 		
 		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
 			
-			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyyMMddHHmmss"), DateUtil.getLongTime(flowCurTime, "yyyyMMddHHmmss"), true);
+			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyy-MM-dd HH:mm:ss:SSS"), DateUtil.getLongTime(flowCurTime, "yyyy-MM-dd HH:mm:ss:SSS"), true);
 		}else if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
 
 			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate, true);

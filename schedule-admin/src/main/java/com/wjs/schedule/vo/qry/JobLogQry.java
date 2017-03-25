@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class JobLogQry {
+import com.wjs.schedule.vo.QryBase;
+
+public class JobLogQry  extends QryBase{
 
 	private Long logId;
 	private Long groupId;
@@ -15,8 +17,6 @@ public class JobLogQry {
 	//	2017-03-20 00:00:00 - 2017-03-21 00:00:00
 	private String filterTime;
 	
-	private Integer start;
-	private Integer limit;
 	
 	private Long startDateTime;
 	private Long endDateTime;
@@ -56,20 +56,6 @@ public class JobLogQry {
 		this.filterTime = filterTime;
 	}
 	
-	
-	
-	public Integer getStart() {
-		return start;
-	}
-	public void setStart(Integer start) {
-		this.start = start;
-	}
-	public Integer getLimit() {
-		return limit;
-	}
-	public void setLimit(Integer limit) {
-		this.limit = limit;
-	}
 	public Long getStartDateTime() {
 		return startDateTime;
 	}

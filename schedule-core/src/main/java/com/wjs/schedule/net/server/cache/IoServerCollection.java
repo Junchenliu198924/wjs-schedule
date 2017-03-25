@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.wjs.schedule.net.server.bean.IoServerBean;
+import com.wjs.schedule.net.vo.IoServerBean;
 
 public class IoServerCollection {
 	

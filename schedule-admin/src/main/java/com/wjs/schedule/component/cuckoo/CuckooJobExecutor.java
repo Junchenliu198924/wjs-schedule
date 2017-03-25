@@ -3,7 +3,6 @@ package com.wjs.schedule.component.cuckoo;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.component.quartz.QuartzManage;
-import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
@@ -73,8 +71,9 @@ public class CuckooJobExecutor {
 	public boolean executeQuartzJob(CuckooJobExecLog jobLog) {
 
 		if (!CuckooJobExecStatus.PENDING.getValue().equals(jobLog.getExecJobStatus())) {
-
+			// 如果任务状态是非PENDING状态的，表示被用户修改过状态，此处记录ERROR日志。并且将当期Quartz丢弃（返回成功即可）
 			LOGGER.error("invalid job exec status:{},jobLogInfo:{}", jobLog.getExecJobStatus(), jobLog);
+			return true;
 		}
 
 		if(checkJobCanRunning(jobLog)){
@@ -99,7 +98,6 @@ public class CuckooJobExecutor {
 		cuckooJobExecLogsMapper.lockByPrimaryKey(jobLog.getId());
 
 		String remark = "";
-		String execJobStatus = CuckooJobExecStatus.RUNNING.getValue();
 		// 初始化执行日志
 		String cuckooClientIp = null;
 		String cuckooClientTag = null;
@@ -138,28 +136,26 @@ public class CuckooJobExecutor {
 			jobLog.setCuckooClientIp(cuckooClientIp);
 			jobLog.setCuckooClientTag(cuckooClientTag);
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
-			jobLog.setExecJobStatus(execJobStatus);
+			jobLog.setExecJobStatus(CuckooJobExecStatus.RUNNING.getValue());
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 		} catch (JobRunningErrorException e) {
 			// 未知异常，报错处理
-			execJobStatus = CuckooJobExecStatus.FAILED.getValue();
 			remark = e.getMessage();
 			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
 			// 插入执行日志
 			jobLog.setCuckooClientIp(cuckooClientIp);
 			jobLog.setCuckooClientTag(cuckooClientTag);
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
-			jobLog.setExecJobStatus(execJobStatus);
+			jobLog.setExecJobStatus( CuckooJobExecStatus.FAILED.getValue());
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 		} catch (JobCanNotRunningException e) {
-			execJobStatus = CuckooJobExecStatus.PENDING.getValue();
 			remark = e.getMessage();
 			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
 			// 插入执行日志
 			jobLog.setCuckooClientIp(cuckooClientIp);
 			jobLog.setCuckooClientTag(cuckooClientTag);
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
-			jobLog.setExecJobStatus(execJobStatus);
+			jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 			throw e;
 		}
@@ -208,10 +204,6 @@ public class CuckooJobExecutor {
 		
 		if(CollectionUtils.isNotEmpty(jobInfoNexts)){
 			
-
-			JobDataMap data = new JobDataMap(); 
-			data.put(CuckooJobConstant.JOB_EXEC_ID, jobLog.getId());
-			
 			for (CuckooJobDetail cuckooJobDetail : jobInfoNexts) {
 				//  判断任务类型，修改任务状态为PENDING，放入到PENDING任务队列中
 				cuckooJobService.pendingJob(cuckooJobDetail, jobLog);
@@ -231,7 +223,7 @@ public class CuckooJobExecutor {
 		}else{
 			// 非强制执行的任务（手工调度），状态为暂停，等待下次调度
 			if (CuckooJobStatus.PAUSE.getValue().equals(jobInfo.getJobStatus())) {
-				LOGGER.info("job is paush,triggle next time, jobInfo:{}", jobInfo);
+				LOGGER.debug("job is paush,triggle next time, jobInfo:{}", jobInfo);
 				jobLog.setRemark("job is paush,triggle next time");
 				cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 				return false;

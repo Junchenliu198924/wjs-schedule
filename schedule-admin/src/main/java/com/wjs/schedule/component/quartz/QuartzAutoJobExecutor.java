@@ -32,8 +32,8 @@ import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
-import com.wjs.schedule.vo.qry.JobLogOverTimeQry;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.config.ConfigUtil;
@@ -90,7 +90,7 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		// 任务超时列表 Map<mailTo,List<joblogs>>
 		Map<String, Set<CuckooJobExecLogVo>> mailSends = new HashMap<>();
 		
-		JobLogOverTimeQry qry = new JobLogOverTimeQry();
+		QryBase qry = new QryBase();
 		qry.setStart(0);
 		qry.setLimit(1000);
 		for (int i = 0; ; i++) {

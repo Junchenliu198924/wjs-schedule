@@ -2,7 +2,9 @@ package com.wjs.schedule.vo.qry;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class JobInfoQry {
+import com.wjs.schedule.vo.QryBase;
+
+public class JobInfoQry  extends QryBase{
 
 	private Long groupId;
 	

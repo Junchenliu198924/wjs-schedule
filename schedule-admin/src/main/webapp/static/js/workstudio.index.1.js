@@ -20,7 +20,7 @@
 	    //"scrollX": false,
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true},
-	                { "data": 'groupId', "bSortable": false, "visible" : false},
+	                { "data": 'groupId', "bSortable": false, "visible" : true},
 	                { "data": 'jobId', "bSortable": false, "visible" : false},	                 
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : false},
@@ -108,10 +108,9 @@
 		"processing" : true, 
 	    "serverSide": true,
 		"ajax": {
-	        url: base_url + "/joblog/pageList" ,
+	        url: base_url + "/joblog/pagePendingList" ,
 	        data : function ( d ) {
 	        	var obj = {};
-	        	obj.jobStatusStr = "PENDING,RUNNING";
 	        	obj.start = d.start;
 	        	obj.limit = d.length;
                 return obj;
@@ -122,7 +121,7 @@
 	    //"scrollX": false,
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true},
-	                { "data": 'groupId', "bSortable": false, "visible" : false},
+	                { "data": 'groupId', "bSortable": false, "visible" : true},
 	                { "data": 'jobId', "bSortable": false, "visible" : false},	                 
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : false},
@@ -225,7 +224,7 @@
 	    //"scrollX": false,
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true},
-	                { "data": 'groupId', "bSortable": false, "visible" : false},
+	                { "data": 'groupId', "bSortable": false, "visible" : true},
 	                { "data": 'jobId', "bSortable": false, "visible" : false},	                 
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : false},

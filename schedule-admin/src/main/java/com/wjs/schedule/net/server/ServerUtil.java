@@ -12,7 +12,7 @@ import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.vo.net.ClientInfo;
+import com.wjs.schedule.net.vo.IoClientInfo;
 
 public class ServerUtil {
 
@@ -22,7 +22,7 @@ public class ServerUtil {
 	
 	public static void send(CuckooClientJobDetail socketClient, CuckooMessageType messageType, Object message) {
 		
-		ClientInfo clientInfo = JobClientSessionCache.get(socketClient.getId());
+		IoClientInfo clientInfo = JobClientSessionCache.get(socketClient.getId());
 		if(null == clientInfo){
 			LOGGER.info("could not get clientInfo by cuckooClient:{}", socketClient.getId());
 			throw new BaseException("could not get clientInfo by cuckooClient:{}", socketClient.getId());

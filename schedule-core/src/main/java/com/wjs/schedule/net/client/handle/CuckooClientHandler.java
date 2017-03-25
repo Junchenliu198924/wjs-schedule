@@ -14,6 +14,7 @@ import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.CuckooExecutor;
 import com.wjs.schedule.executor.framerwork.CuckooClient;
+import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
 import com.wjs.schedule.net.client.ClientUtil;
@@ -24,7 +25,15 @@ public class CuckooClientHandler extends IoHandlerAdapter {
 	private static final Gson gson = new GsonBuilder().create();
     public void messageReceived(IoSession session, Object message) throws Exception {
         String content = message.toString();
-        LOGGER.info("client receive a message is :{}" , content);
+        LOGGER.info("cuckoo client receive a message is :{}" , content);
+        
+
+		LOGGER.info("messageReceived" + session.getRemoteAddress());
+		LOGGER.info("messageReceived" + session.getServiceAddress());
+		LOGGER.info("messageReceived" + session.getLocalAddress());
+		LOGGER.info("messageReceived" + message);
+		LOGGER.info("messageReceived" + ClientInfoBean.getAppName());
+		LOGGER.info("messageReceived" + ClientInfoBean.getClientTag());
         
         if (CuckooNetConstant.MINA_HEARTBEAT_MSG_SERVER.equals(content)) {
             // 收到心跳包

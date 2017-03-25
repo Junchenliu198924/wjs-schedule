@@ -266,10 +266,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		if (null != cuckooJobDetail) {
 			cuckooJobDetailMapper.deleteByPrimaryKey(id);
 			// 根据任务信息删除quartz信息
-			if(quartzManage.checkCronExists(String.valueOf(cuckooJobDetail.getId()))){
-
-				quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getId()));
-			}
+			quartzManage.deleteCronJob(String.valueOf(cuckooJobDetail.getId()));
 		}
 
 		// 日志删除（暂时保留日志）
@@ -300,12 +297,24 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 
 	@Override
 	@Transactional
-	public void pauseAllJob() {
-
+	public void pauseAllJob(JobInfoQry jobInfo) {
+		
 		// 不能使用quartzManage.pauseAll()，该方法会将后续增加的任务或者强制执行的SimpleTrigger也锁住，此处对任务循环进行锁定
 		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
-		crt.createCriteria().andJobStatusEqualTo(CuckooJobStatus.RUNNING.getValue());
-		crt.setOrderByClause("id asc ");
+		crt.setOrderByClause(" id desc ");
+		CuckooJobDetailCriteria.Criteria exp = crt.createCriteria();
+		if (null != jobInfo.getGroupId()) {
+			exp.andGroupIdEqualTo(jobInfo.getGroupId());
+		}
+		if (null != jobInfo.getJobId()) {
+			exp.andIdEqualTo(jobInfo.getJobId());
+		}
+		if (StringUtils.isNotEmpty(jobInfo.getJobClassApplication())) {
+			exp.andJobClassApplicationEqualTo(jobInfo.getJobClassApplication());
+		}
+		if (StringUtils.isNotEmpty(jobInfo.getJobStatus())) {
+			exp.andJobStatusEqualTo(jobInfo.getJobStatus());
+		} 
 
 		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(crt);
 		if (CollectionUtils.isNotEmpty(jobs)) {
@@ -346,14 +355,32 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 
 	@Override
 	@Transactional
-	public void resumeAllJob() {
+	public void resumeAllJob(JobInfoQry jobInfo) {
+		
+		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
+		crt.setOrderByClause(" id desc ");
+		CuckooJobDetailCriteria.Criteria exp = crt.createCriteria();
+		if (null != jobInfo.getGroupId()) {
+			exp.andGroupIdEqualTo(jobInfo.getGroupId());
+		}
+		if (null != jobInfo.getJobId()) {
+			exp.andIdEqualTo(jobInfo.getJobId());
+		}
+		if (StringUtils.isNotEmpty(jobInfo.getJobClassApplication())) {
+			exp.andJobClassApplicationEqualTo(jobInfo.getJobClassApplication());
+		}
+		if (StringUtils.isNotEmpty(jobInfo.getJobStatus())) {
+			exp.andJobStatusEqualTo(jobInfo.getJobStatus());
+		} 
 
-		// 更新cuckoo状态
-		CuckooJobDetail orginJobDetail = new CuckooJobDetail();
-		orginJobDetail.setJobStatus(CuckooJobStatus.RUNNING.getValue());
-		cuckooJobDetailMapper.updateByExampleSelective(orginJobDetail, new CuckooJobDetailCriteria());
-
-		quartzManage.resumeAll();
+		List<CuckooJobDetail> jobs = cuckooJobDetailMapper.selectByExample(crt);
+		if(CollectionUtils.isNotEmpty(jobs)){
+			for (CuckooJobDetail cuckooJobDetail : jobs) {
+				cuckooJobDetail.setJobStatus(CuckooJobStatus.RUNNING.getValue());
+				cuckooJobDetailMapper.updateByPrimaryKeySelective(cuckooJobDetail);
+				quartzManage.resumeCronJob(String.valueOf(cuckooJobDetail.getId()));
+			}
+		}
 	}
 
 	@Override
@@ -376,7 +403,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 	}
 
 	@Override
-	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo, Integer start, Integer limit) {
+	public PageDataList<CuckooJobDetail> pageList(JobInfoQry jobInfo) {
 
 		CuckooJobDetailCriteria crt = new CuckooJobDetailCriteria();
 		crt.setOrderByClause(" id desc ");
@@ -393,8 +420,8 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		if (StringUtils.isNotEmpty(jobInfo.getJobStatus())) {
 			exp.andJobStatusEqualTo(jobInfo.getJobStatus());
 		}
-		crt.setStart(start);
-		crt.setLimit(limit);
+		crt.setStart(jobInfo.getStart());
+		crt.setLimit(jobInfo.getLimit());
 
 		return cuckooJobDetailMapper.pageByExample(crt);
 	}
@@ -418,7 +445,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 	@Transactional
 	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog) {
 
-		LOGGER.info("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail, fatherJobLog);
+		LOGGER.debug("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail, fatherJobLog);
 		CuckooJobExecLog jobLog = new CuckooJobExecLog();
 		Long curTime = System.currentTimeMillis();
 		// 初始化任务日志信息
@@ -443,7 +470,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 
 	@Override
 	public void rependingJob(CuckooJobExecLog jobLog) {
-		LOGGER.info("repending job ,jobLog:{} ", jobLog);
+		LOGGER.debug("repending job ,jobLog:{} ", jobLog);
 		// 使用Quartz.simpleJob进行触发
 		quartzManage.addSimpleJob(jobLog, ConfigUtil.getLong(CuckooJobConstant.CUCKOO_PENDING_JOB_RETRY_LONG, 60000L));
 

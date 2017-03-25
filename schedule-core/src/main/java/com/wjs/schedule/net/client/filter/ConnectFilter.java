@@ -10,8 +10,8 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wjs.schedule.net.server.bean.IoServerBean;
 import com.wjs.schedule.net.server.cache.IoServerCollection;
+import com.wjs.schedule.net.vo.IoServerBean;
 
 /**
  * 监听客户端连接，断开，异常操作。相关操作需要修改数据库，并修改缓存
