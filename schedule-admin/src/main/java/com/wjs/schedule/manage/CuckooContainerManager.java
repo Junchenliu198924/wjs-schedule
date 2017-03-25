@@ -3,6 +3,7 @@ package com.wjs.schedule.manage;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
 import com.wjs.schedule.component.quartz.QuartzManage;
 import com.wjs.schedule.constant.CuckooNetConstant;
-import com.wjs.schedule.executor.framerwork.bean.ServerInfoBean;
+import com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper;
+import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
+import com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria;
 import com.wjs.util.config.ConfigUtil;
 
 public class CuckooContainerManager implements ApplicationListener<ContextRefreshedEvent> {
@@ -20,24 +23,35 @@ public class CuckooContainerManager implements ApplicationListener<ContextRefres
 	@Autowired
 	QuartzManage quartzManage;
 
+	@Autowired
+	CuckooNetServerInfoMapper cuckooNetServerInfoMapper;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooJobCallBack.class);
+
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 
 		if (event.getApplicationContext().getParent() == null) {
-			// donothing 
+			// donothing
 			LOGGER.info("项目启动完成");
-			
+
 			try {
-				ServerInfoBean.setIp(InetAddress.getLocalHost().getHostAddress());
+				CuckooNetServerInfoCriteria crt = new CuckooNetServerInfoCriteria();
+				crt.createCriteria().andIpEqualTo(InetAddress.getLocalHost().getHostName())
+				.andPortEqualTo(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
+				if(CollectionUtils.isEmpty(cuckooNetServerInfoMapper.selectByExample(crt))){
+					CuckooNetServerInfo cuckooNetServerInfo = new CuckooNetServerInfo();
+					cuckooNetServerInfo.setIp(InetAddress.getLocalHost().getHostName());
+					cuckooNetServerInfo.setPort(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
+					cuckooNetServerInfo.setModifyDate(System.currentTimeMillis());
+					cuckooNetServerInfoMapper.insertSelective(cuckooNetServerInfo);
+				}
 			} catch (UnknownHostException e) {
-				LOGGER.error("get local Ip error:{}", e.getMessage() , e);
+				LOGGER.error("get local Ip error:{}", e.getMessage(), e);
 			}
-			ServerInfoBean.setPort(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
-			
+
 			quartzManage.addAutoJob();
 		}
 	}
 
-	 
 }

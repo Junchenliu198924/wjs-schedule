@@ -31,7 +31,6 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 
 	private static ApplicationContext applicationContext; // Spring应用上下文环境
 	
-	private String clientTag;
 	
 	private String appName ;
 	
@@ -58,16 +57,8 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 		this.appName = appName;
 	}
 
-	public String getClientTag() {
-		return clientTag;
-	}
 
 
-
-	public void setClientTag(String clientTag) {
-		ClientInfoBean.setClientTag(clientTag);
-		this.clientTag = clientTag;
-	}
 
 
 
@@ -144,7 +135,7 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		
-		LOGGER.info("Spring容器加载完成触发,开始连接服务器，并将客户端信息发送到服务器端进行注册,server:{},clientTag:{}", server , clientTag);
+		LOGGER.info("Spring容器加载完成触发,开始连接服务器，并将客户端信息发送到服务器端进行注册,server:{},", server );
 //		CuckooTaskCache
 		if(StringUtils.isEmpty(server)){
 			LOGGER.error("server config is null,Cuckoo will not start");

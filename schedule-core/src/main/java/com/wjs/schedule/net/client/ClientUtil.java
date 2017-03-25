@@ -2,7 +2,9 @@ package com.wjs.schedule.net.client;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,13 +20,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
-import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.enums.CuckooMessageType;
-import com.wjs.schedule.exception.BaseException;
-import com.wjs.schedule.executor.CuckooExecutor;
-import com.wjs.schedule.executor.framerwork.CuckooClient;
 import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
@@ -73,7 +71,7 @@ public class ClientUtil {
 					CuckooTaskBean taskBean = it.next();
 					ClientTaskInfoBean taskInfo =  new ClientTaskInfoBean();
 					taskInfo.setAppName(ClientInfoBean.getAppName());
-					taskInfo.setClientTag(ClientInfoBean.getClientTag());
+//					taskInfo.setClientTag(ClientInfoBean.getClientTag());
 					taskInfo.setBeanName(taskBean.getBeanName());
 					taskInfo.setMethodName(taskBean.getMethodName());
 					taskInfo.setTaskName(taskBean.getTaskName());
@@ -81,7 +79,7 @@ public class ClientUtil {
 				}
 			
 			}
-			LOGGER.info("succed to connect to server,Ip:{},port:{}",bean.getIp(),bean.getPort());
+			LOGGER.info("cuckoo job succed to connect server,Ip:{},port:{}",bean.getIp(),bean.getPort());
 			//
 			// cf.getSession().write("Hi Server!");
 			// cf.getSession().write("quit");
@@ -92,7 +90,6 @@ public class ClientUtil {
 			// connector.dispose();
 		} catch (Exception e) {
 
-			LOGGER.error("failed to connect to server,Ip:{},port:{}",bean.getIp(),bean.getPort());
 			return false;
 		}
 
@@ -111,14 +108,19 @@ public class ClientUtil {
 				Set<IoServerBean> servers = IoServerCollection.getSet();
 				if(CollectionUtils.isNotEmpty(servers)){
 					for(;;){
-						LOGGER.info("try to connect servers");
+						LOGGER.debug("try to connect servers");
+						List<IoServerBean> unConnect = new ArrayList<>();
 						for (IoServerBean ioServerBean : servers) {
 							if(null == ioServerBean.getSession()){
-								ClientUtil.connect(ioServerBean);
+								if(!ClientUtil.connect(ioServerBean)){
+									unConnect.add(ioServerBean);
+								}
 							}
 						}
+						
+						LOGGER.error("cuckoo unconnection to server:{}" , unConnect);
 						try {
-							Thread.sleep(30000);
+							Thread.sleep(60000);
 						} catch (InterruptedException e) {
 							// ignore
 						}

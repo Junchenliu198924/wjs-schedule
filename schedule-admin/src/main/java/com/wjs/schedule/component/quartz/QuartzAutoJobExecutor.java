@@ -73,6 +73,9 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 			
 			// 任务超时/失败等告警
 			waringJobException();
+			
+			// 服务器删除校验(为了及时性，现在放在heartbeat中处理)
+			
 		} catch (Exception e) {
 			LOGGER.error("unknow error:{}", e.getMessage() , e);
 		}

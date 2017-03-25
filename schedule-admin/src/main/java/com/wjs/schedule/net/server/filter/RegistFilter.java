@@ -1,7 +1,10 @@
 package com.wjs.schedule.net.server.filter;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.filterchain.IoFilterChain;
 import org.apache.mina.core.session.IdleStatus;
@@ -11,9 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wjs.schedule.component.cache.JobClientSessionCache;
-import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
-import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
-import com.wjs.schedule.enums.CuckooClientJobStatus;
+import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
+import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
+import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
+import com.wjs.schedule.dao.exec.CuckooNetServerJobMapMapper;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
+import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
+import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
+import com.wjs.schedule.domain.exec.CuckooNetServerJobMapCriteria;
 
 /**
  * 监听客户端连接，断开，异常操作。相关操作需要修改数据库，并修改缓存
@@ -24,9 +33,19 @@ public class RegistFilter extends IoFilterAdapter{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistFilter.class);
 
-	@Autowired
-	CuckooClientJobDetailMapper cuckooClientJobDetailMapper;
 
+	@Autowired
+	CuckooNetClientInfoMapper cuckooNetClientInfoMapper;
+	
+	@Autowired
+	CuckooNetClientJobMapMapper cuckooNetClientJobMapMapper;
+	
+	@Autowired
+	CuckooNetRegistJobMapper cuckooNetRegistJobMapper;
+	
+	@Autowired
+	CuckooNetServerJobMapMapper cuckooNetServerJobMapMapper;
+	
 	/**
 	 这个方法在你的程序、Mina 自身出现异常时回调，一般这里是关闭IoSession。
 	 */
@@ -48,7 +67,7 @@ public class RegistFilter extends IoFilterAdapter{
 	 */
 	@Override
 	public void onPostAdd(IoFilterChain parent, String name, NextFilter nextFilter) throws Exception {
-		System.err.println("onPostAdd");
+//		System.err.println("onPostAdd");
 		super.onPostAdd(parent, name, nextFilter);
 	}
 
@@ -58,7 +77,7 @@ public class RegistFilter extends IoFilterAdapter{
 	@Override
 	public void onPostRemove(IoFilterChain parent, String name, NextFilter nextFilter) throws Exception {
 
-		System.err.println("onPostRemove");
+//		System.err.println("onPostRemove");
 		super.onPostRemove(parent, name, nextFilter);
 	}
 
@@ -70,7 +89,7 @@ public class RegistFilter extends IoFilterAdapter{
 	@Override
 	public void sessionCreated(NextFilter nextFilter, IoSession session) throws Exception {
 
-		System.err.println("sessionCreated");
+//		System.err.println("sessionCreated");
 		super.sessionCreated(nextFilter, session);
 	}
 
@@ -82,7 +101,7 @@ public class RegistFilter extends IoFilterAdapter{
 	@Override
 	public void sessionOpened(NextFilter nextFilter, IoSession session) throws Exception {
 
-		System.err.println("sessionOpened");
+//		System.err.println("sessionOpened");
 		super.sessionOpened(nextFilter, session);
 	}
 
@@ -94,9 +113,49 @@ public class RegistFilter extends IoFilterAdapter{
 	public void sessionClosed(NextFilter nextFilter, IoSession session) throws Exception {
 
 		SocketAddress clientAddr = session.getRemoteAddress();
-		LOGGER.error("客户端异常:{}", clientAddr.toString());
-
+		LOGGER.error("客户端关闭:{}", clientAddr.toString());
+		InetSocketAddress clientSocket = (InetSocketAddress)session.getRemoteAddress();
+//		LOGGER.info("客户端IP："+ clientSocket.getHostName());
+//		LOGGER.info("客户端Port："+ clientSocket.getPort());
+		
+		// 删除client数据
+		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
+		clientCrt.createCriteria().andIpEqualTo(clientSocket.getHostName())
+		.andPortEqualTo(clientSocket.getPort());
+		List<CuckooNetClientInfo> clientInfos = cuckooNetClientInfoMapper.selectByExample(clientCrt);
+		if(CollectionUtils.isNotEmpty(clientInfos)){
+			cuckooNetClientInfoMapper.deleteByExample(clientCrt);
+			for (CuckooNetClientInfo cuckooNetClientInfo : clientInfos) {
+				// 删除client-job关联关系
+				CuckooNetClientJobMapCriteria clientMapCrt = new CuckooNetClientJobMapCriteria();
+				clientMapCrt.createCriteria().andClientIdEqualTo(cuckooNetClientInfo.getId());
+				List<CuckooNetClientJobMap> clientJobMaps = cuckooNetClientJobMapMapper.selectByExample(clientMapCrt);
+				
+				if(CollectionUtils.isNotEmpty(clientJobMaps)){
+					cuckooNetClientJobMapMapper.deleteByExample(clientMapCrt);
+					for (CuckooNetClientJobMap cuckooNetClientJobMap : clientJobMaps) {
+						// 如果一个job没有一个client关联，那么把这个任务也删除掉
+						CuckooNetClientJobMapCriteria clientDelMapcrt = new CuckooNetClientJobMapCriteria();
+						clientDelMapcrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
+						List<CuckooNetClientJobMap> clientDelMaps = cuckooNetClientJobMapMapper.selectByExample(clientDelMapcrt);
+						if(CollectionUtils.isEmpty(clientDelMaps)){
+							cuckooNetRegistJobMapper.deleteByPrimaryKey(cuckooNetClientJobMap.getRegistId());
+							// 如果registjob都删除了，那么server-job关联关系也可以删除
+							CuckooNetServerJobMapCriteria serverJobMapCrt = new CuckooNetServerJobMapCriteria();
+							serverJobMapCrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
+							cuckooNetServerJobMapMapper.deleteByExample(serverJobMapCrt);
+						}
+					}
+				}
+				
+					
+			}
+		}
+		
+		
+	
 		JobClientSessionCache.remove(session);
+
 		super.sessionClosed(nextFilter, session);
 	}
 
@@ -106,7 +165,7 @@ public class RegistFilter extends IoFilterAdapter{
 	@Override
 	public void sessionIdle(NextFilter nextFilter, IoSession session, IdleStatus status) throws Exception {
 
-		System.err.println("sessionIdle");
+//		System.err.println("sessionIdle");
 		super.sessionIdle(nextFilter, session, status);
 	}
 	

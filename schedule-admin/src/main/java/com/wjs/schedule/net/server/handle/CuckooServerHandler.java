@@ -1,7 +1,10 @@
 package com.wjs.schedule.net.server.handle;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -15,8 +18,14 @@ import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
+import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
+import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
+import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
+import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
+import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
-import com.wjs.schedule.net.server.ServerUtil;
 import com.wjs.schedule.service.server.CuckooServerService;
 
 /**
@@ -33,6 +42,8 @@ public class CuckooServerHandler extends IoHandlerAdapter {
 	
 	@Autowired
 	CuckooJobCallBack cuckooJobCallBack;
+	
+	
     
     /**
      * 消息接收事件
@@ -43,6 +54,13 @@ public class CuckooServerHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
         String strMsg = message.toString();
+        // 心跳信息
+        if(CuckooMessageType.HEARTBEATCLIENT.getValue().equals(strMsg)){
+
+            // 打印客户端传来的消息内容
+            LOGGER.info("Server Received HEARTBEATCLIENT : " + strMsg);
+        	return;
+        }
         // 打印客户端传来的消息内容
         LOGGER.info("Server Received Message : " + strMsg);
         
@@ -87,11 +105,7 @@ public class CuckooServerHandler extends IoHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-
-		SocketAddress clientAddr = session.getRemoteAddress();
-		LOGGER.error("client error:{}", clientAddr.toString(), cause);
-	
-		JobClientSessionCache.remove(session);
+		
 		super.exceptionCaught(session, cause);
 	}
 	

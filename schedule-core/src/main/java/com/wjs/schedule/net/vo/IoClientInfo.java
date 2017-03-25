@@ -8,12 +8,12 @@ public class IoClientInfo {
 	/**
 	 * IP
 	 */
-	private String remoteApp;
+	private String ip;
 	
 	/**
 	 * tag
 	 */
-	private String remoteTag;
+	private Integer port;
 	
 	/**
 	 * 连接 -- 每一个APP和Tag只有一个连接和当前服务器连接
@@ -21,23 +21,25 @@ public class IoClientInfo {
 	private  IoSession session;
 
 
-	public String getRemoteApp() {
-		return remoteApp;
+	
+
+
+
+	public String getIp() {
+		return ip;
 	}
 
-	public void setRemoteApp(String remoteApp) {
-		this.remoteApp = remoteApp;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
-	public String getRemoteTag() {
-		return remoteTag;
+	public Integer getPort() {
+		return port;
 	}
 
-	public void setRemoteTag(String remoteTag) {
-		this.remoteTag = remoteTag;
+	public void setPort(Integer port) {
+		this.port = port;
 	}
-
-
 
 	public IoSession getSession() {
 		return session;
@@ -47,12 +49,15 @@ public class IoClientInfo {
 		this.session = session;
 	}
 
+	
+	
+	 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((remoteApp == null) ? 0 : remoteApp.hashCode());
-		result = prime * result + ((remoteTag == null) ? 0 : remoteTag.hashCode());
+		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
+		result = prime * result + ((port == null) ? 0 : port.hashCode());
 		return result;
 	}
 
@@ -65,15 +70,15 @@ public class IoClientInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		IoClientInfo other = (IoClientInfo) obj;
-		if (remoteApp == null) {
-			if (other.remoteApp != null)
+		if (ip == null) {
+			if (other.ip != null)
 				return false;
-		} else if (!remoteApp.equals(other.remoteApp))
+		} else if (!ip.equals(other.ip))
 			return false;
-		if (remoteTag == null) {
-			if (other.remoteTag != null)
+		if (port == null) {
+			if (other.port != null)
 				return false;
-		} else if (!remoteTag.equals(other.remoteTag))
+		} else if (!port.equals(other.port))
 			return false;
 		return true;
 	}

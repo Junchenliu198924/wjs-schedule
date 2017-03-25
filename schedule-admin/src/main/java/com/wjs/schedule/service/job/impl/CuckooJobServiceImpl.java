@@ -17,18 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wjs.schedule.component.cuckoo.CuckooJobExecutor;
 import com.wjs.schedule.component.quartz.QuartzManage;
 import com.wjs.schedule.constant.CuckooJobConstant;
-import com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
-import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
-import com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria;
+import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
+import com.wjs.schedule.domain.exec.CuckooNetRegistJob;
+import com.wjs.schedule.domain.exec.CuckooNetRegistJobCriteria;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
@@ -67,7 +67,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 	CuckooJobLogService cuckooJobLogService;
 
 	@Autowired
-	CuckooClientJobDetailMapper cuckooClientJobDetailMapper;
+	CuckooNetRegistJobMapper cuckooNetRegistJobMapper;
 
 	@Autowired
 	CuckooJobNextService cuckooJobNextService;
@@ -429,8 +429,8 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 	@Override
 	public Map<String, String> findAllApps() {
 
-		List<CuckooClientJobDetail> jobs = cuckooClientJobDetailMapper
-				.selectByExample(new CuckooClientJobDetailCriteria());
+		List<CuckooNetRegistJob> jobs = cuckooNetRegistJobMapper
+				.selectByExample(new CuckooNetRegistJobCriteria());
 		List<String> jobApps = PropertyUtil.fetchFieldList(jobs, "jobClassApplication");
 		Map<String, String> rtn = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(jobApps)) {

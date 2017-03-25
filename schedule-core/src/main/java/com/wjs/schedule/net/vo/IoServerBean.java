@@ -1,6 +1,5 @@
 package com.wjs.schedule.net.vo;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.mina.core.session.IoSession;
 
 public class IoServerBean {
@@ -79,6 +78,6 @@ public class IoServerBean {
 	@Override
 	public String toString() {
 		
-		return ReflectionToStringBuilder.toString(this);
+		return ip + ":" + port;
 	}
 }

@@ -148,4 +148,89 @@ CREATE UNIQUE INDEX uk_cuckoo_next_job ON cuckoo_job_next_job(next_job_id ASC );
 CREATE INDEX idx_jobnext_jobid ON cuckoo_job_next_job(job_id ASC );
 
 
+--- 网络通信管理表
+
+CREATE TABLE cuckoo_net_client_info
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	ip                             varchar(30)     DEFAULT ''         NOT NULL	COMMENT 'IP地址',
+	port                           int             DEFAULT 0          NOT NULL	COMMENT '端口号',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='客户端信息表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE INDEX uk_netclient_ip_port ON cuckoo_net_client_info(ip ASC ,port ASC );
+
+
+CREATE TABLE cuckoo_net_client_job_map
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	client_id                      bigint          DEFAULT 0          NOT NULL	COMMENT '客户端ID',
+	regist_id                      bigint          DEFAULT 0          NOT NULL	COMMENT '任务注册ID',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='客户端与注册任务关联表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX idx_clientjob_clientid_registid ON cuckoo_net_client_job_map(client_id ASC ,regist_id ASC );
+CREATE INDEX idx_clientjob_regiestid ON cuckoo_net_client_job_map(regist_id ASC );
+
+
+CREATE TABLE cuckoo_net_regist_job
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
+	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
+	bean_name                      varchar(256)    DEFAULT ''         NOT NULL	COMMENT '实现类名称',
+	method_name                    varchar(100)    DEFAULT ''         NOT NULL	COMMENT '方法名称',
+	create_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '创建时间',
+	modify_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '修改时间',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='任务注册表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE INDEX idx_clientjob_jobname ON cuckoo_net_regist_job(job_name ASC );
+CREATE UNIQUE INDEX uk_clientjob_app_jobname ON cuckoo_net_regist_job(job_class_application ASC ,job_name ASC );
+
+CREATE TABLE cuckoo_net_server_info
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	ip                             varchar(30)     DEFAULT ''         NOT NULL	COMMENT 'IP地址',
+	port                           int             DEFAULT 0          NOT NULL	COMMENT '端口号',
+	modify_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '修改时间',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='服务端信息表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX uk_netserver_ip_port ON cuckoo_net_server_info(ip ASC ,port ASC );
+
+
+CREATE TABLE cuckoo_net_server_job_map
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	server_id                      bigint          DEFAULT 0          NOT NULL	COMMENT '服务器ID',
+	regist_id                      bigint          DEFAULT 0          NOT NULL	COMMENT '任务注册ID',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='服务端与注册任务关联表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE INDEX idx_serverjob_serverid_registid ON cuckoo_net_server_job_map(server_id ASC ,regist_id ASC );
+CREATE INDEX idx_serverjob_registid ON cuckoo_net_server_job_map(regist_id ASC );
+
+
+
 

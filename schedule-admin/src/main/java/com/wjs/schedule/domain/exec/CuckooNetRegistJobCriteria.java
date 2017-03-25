@@ -3,47 +3,47 @@ package com.wjs.schedule.domain.exec;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CuckooClientJobDetailCriteria {
+public class CuckooNetRegistJobCriteria {
     /**
-     * cuckoo_client_job_detail表的操作属性:orderByClause
+     * cuckoo_net_regist_job表的操作属性:orderByClause
      * 
      */
     protected String orderByClause;
 
     /**
-     * cuckoo_client_job_detail表的操作属性:start
+     * cuckoo_net_regist_job表的操作属性:start
      * 
      */
     protected int start;
 
     /**
-     * cuckoo_client_job_detail表的操作属性:limit
+     * cuckoo_net_regist_job表的操作属性:limit
      * 
      */
     protected int limit;
 
     /**
-     * cuckoo_client_job_detail表的操作属性:distinct
+     * cuckoo_net_regist_job表的操作属性:distinct
      * 
      */
     protected boolean distinct;
 
     /**
-     * cuckoo_client_job_detail表的操作属性:oredCriteria
+     * cuckoo_net_regist_job表的操作属性:oredCriteria
      * 
      */
     protected List<Criteria> oredCriteria;
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: CuckooClientJobDetailCriteria  
+     * cuckoo_net_regist_job数据表的操作方法: CuckooNetRegistJobCriteria  
      * 
      */
-    public CuckooClientJobDetailCriteria() {
+    public CuckooNetRegistJobCriteria() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: setOrderByClause  
+     * cuckoo_net_regist_job数据表的操作方法: setOrderByClause  
      * 
      */
     public void setOrderByClause(String orderByClause) {
@@ -51,7 +51,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: getOrderByClause  
+     * cuckoo_net_regist_job数据表的操作方法: getOrderByClause  
      * 
      */
     public String getOrderByClause() {
@@ -59,7 +59,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: setStart  
+     * cuckoo_net_regist_job数据表的操作方法: setStart  
      * 
      */
     public void setStart(int start) {
@@ -67,7 +67,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: getStart  
+     * cuckoo_net_regist_job数据表的操作方法: getStart  
      * 
      */
     public int getStart() {
@@ -75,7 +75,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: setLimit  
+     * cuckoo_net_regist_job数据表的操作方法: setLimit  
      * 
      */
     public void setLimit(int limit) {
@@ -83,7 +83,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: getLimit  
+     * cuckoo_net_regist_job数据表的操作方法: getLimit  
      * 
      */
     public int getLimit() {
@@ -91,7 +91,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: setDistinct  
+     * cuckoo_net_regist_job数据表的操作方法: setDistinct  
      * 
      */
     public void setDistinct(boolean distinct) {
@@ -99,7 +99,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: isDistinct  
+     * cuckoo_net_regist_job数据表的操作方法: isDistinct  
      * 
      */
     public boolean isDistinct() {
@@ -107,7 +107,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: getOredCriteria  
+     * cuckoo_net_regist_job数据表的操作方法: getOredCriteria  
      * 
      */
     public List<Criteria> getOredCriteria() {
@@ -115,7 +115,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: or  
+     * cuckoo_net_regist_job数据表的操作方法: or  
      * 
      */
     public void or(Criteria criteria) {
@@ -123,7 +123,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: or  
+     * cuckoo_net_regist_job数据表的操作方法: or  
      * 
      */
     public Criteria or() {
@@ -133,7 +133,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: createCriteria  
+     * cuckoo_net_regist_job数据表的操作方法: createCriteria  
      * 
      */
     public Criteria createCriteria() {
@@ -145,7 +145,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: createCriteriaInternal  
+     * cuckoo_net_regist_job数据表的操作方法: createCriteriaInternal  
      * 
      */
     protected Criteria createCriteriaInternal() {
@@ -154,7 +154,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail数据表的操作方法: clear  
+     * cuckoo_net_regist_job数据表的操作方法: clear  
      * 
      */
     public void clear() {
@@ -164,7 +164,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail表的操作类
+     * cuckoo_net_regist_job表的操作类
      * 
      */
     protected abstract static class GeneratedCriteria {
@@ -335,216 +335,6 @@ public class CuckooClientJobDetailCriteria {
 
         public Criteria andJobClassApplicationNotBetween(String value1, String value2) {
             addCriterion("job_class_application not between", value1, value2, "jobClassApplication");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpIsNull() {
-            addCriterion("cuckoo_client_ip is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpIsNotNull() {
-            addCriterion("cuckoo_client_ip is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpEqualTo(String value) {
-            addCriterion("cuckoo_client_ip =", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpNotEqualTo(String value) {
-            addCriterion("cuckoo_client_ip <>", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpGreaterThan(String value) {
-            addCriterion("cuckoo_client_ip >", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpGreaterThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_ip >=", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpLessThan(String value) {
-            addCriterion("cuckoo_client_ip <", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpLessThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_ip <=", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpLike(String value) {
-            addCriterion("cuckoo_client_ip like", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpNotLike(String value) {
-            addCriterion("cuckoo_client_ip not like", value, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpIn(List<String> values) {
-            addCriterion("cuckoo_client_ip in", values, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpNotIn(List<String> values) {
-            addCriterion("cuckoo_client_ip not in", values, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_ip between", value1, value2, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientIpNotBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_ip not between", value1, value2, "cuckooClientIp");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagIsNull() {
-            addCriterion("cuckoo_client_tag is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagIsNotNull() {
-            addCriterion("cuckoo_client_tag is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagEqualTo(String value) {
-            addCriterion("cuckoo_client_tag =", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagNotEqualTo(String value) {
-            addCriterion("cuckoo_client_tag <>", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagGreaterThan(String value) {
-            addCriterion("cuckoo_client_tag >", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagGreaterThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_tag >=", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagLessThan(String value) {
-            addCriterion("cuckoo_client_tag <", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagLessThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_tag <=", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagLike(String value) {
-            addCriterion("cuckoo_client_tag like", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagNotLike(String value) {
-            addCriterion("cuckoo_client_tag not like", value, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagIn(List<String> values) {
-            addCriterion("cuckoo_client_tag in", values, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagNotIn(List<String> values) {
-            addCriterion("cuckoo_client_tag not in", values, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_tag between", value1, value2, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientTagNotBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_tag not between", value1, value2, "cuckooClientTag");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusIsNull() {
-            addCriterion("cuckoo_client_status is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusIsNotNull() {
-            addCriterion("cuckoo_client_status is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusEqualTo(String value) {
-            addCriterion("cuckoo_client_status =", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusNotEqualTo(String value) {
-            addCriterion("cuckoo_client_status <>", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusGreaterThan(String value) {
-            addCriterion("cuckoo_client_status >", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusGreaterThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_status >=", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusLessThan(String value) {
-            addCriterion("cuckoo_client_status <", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusLessThanOrEqualTo(String value) {
-            addCriterion("cuckoo_client_status <=", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusLike(String value) {
-            addCriterion("cuckoo_client_status like", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusNotLike(String value) {
-            addCriterion("cuckoo_client_status not like", value, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusIn(List<String> values) {
-            addCriterion("cuckoo_client_status in", values, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusNotIn(List<String> values) {
-            addCriterion("cuckoo_client_status not in", values, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_status between", value1, value2, "cuckooClientStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andCuckooClientStatusNotBetween(String value1, String value2) {
-            addCriterion("cuckoo_client_status not between", value1, value2, "cuckooClientStatus");
             return (Criteria) this;
         }
 
@@ -880,7 +670,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail表的操作类
+     * cuckoo_net_regist_job表的操作类
      * 
      */
     public static class Criteria extends GeneratedCriteria {
@@ -891,7 +681,7 @@ public class CuckooClientJobDetailCriteria {
     }
 
     /**
-     * cuckoo_client_job_detail表的操作类
+     * cuckoo_net_regist_job表的操作类
      * 
      */
     public static class Criterion {

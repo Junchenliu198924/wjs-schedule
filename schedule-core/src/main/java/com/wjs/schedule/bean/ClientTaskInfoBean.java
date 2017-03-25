@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 public class ClientTaskInfoBean {
 	
 	private String appName;
-	private String clientTag;
 	
 	private String beanName;
 	
@@ -19,14 +18,6 @@ public class ClientTaskInfoBean {
 
 	public void setAppName(String appName) {
 		this.appName = appName;
-	}
-
-	public String getClientTag() {
-		return clientTag;
-	}
-
-	public void setClientTag(String clientTag) {
-		this.clientTag = clientTag;
 	}
 
 	public String getBeanName() {

@@ -9,15 +9,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
-import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.CuckooExecutor;
-import com.wjs.schedule.executor.framerwork.CuckooClient;
-import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
-import com.wjs.schedule.net.client.ClientUtil;
 
 public class CuckooClientHandler extends IoHandlerAdapter {
 
@@ -25,23 +21,15 @@ public class CuckooClientHandler extends IoHandlerAdapter {
 	private static final Gson gson = new GsonBuilder().create();
     public void messageReceived(IoSession session, Object message) throws Exception {
         String content = message.toString();
-        LOGGER.info("cuckoo client receive a message is :{}" , content);
         
-
-		LOGGER.info("messageReceived" + session.getRemoteAddress());
-		LOGGER.info("messageReceived" + session.getServiceAddress());
-		LOGGER.info("messageReceived" + session.getLocalAddress());
-		LOGGER.info("messageReceived" + message);
-		LOGGER.info("messageReceived" + ClientInfoBean.getAppName());
-		LOGGER.info("messageReceived" + ClientInfoBean.getClientTag());
-        
-        if (CuckooNetConstant.MINA_HEARTBEAT_MSG_SERVER.equals(content)) {
+        if (CuckooMessageType.HEARTBEATSERVER.getValue().equals(content)) {
             // 收到心跳包
         	LOGGER.debug("heart_beat_message");
-            session.write(CuckooNetConstant.MINA_HEARTBEAT_MSG_CLIENT);
+            session.write(CuckooMessageType.HEARTBEATCLIENT.getValue());
             return;
         }
 
+        LOGGER.info("cuckoo client receive a message is :{}" , content);
         MessageInfo msgInfo = null;
 		try {
 			msgInfo = gson.fromJson(content, MessageInfo.class);

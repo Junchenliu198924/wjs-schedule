@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
-import com.wjs.schedule.component.cache.JobClientSessionCache;
-import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.net.vo.IoClientInfo;
@@ -20,17 +17,12 @@ public class ServerUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerUtil.class);
 	private static final Gson gson = new GsonBuilder().create();
 	
-	public static void send(CuckooClientJobDetail socketClient, CuckooMessageType messageType, Object message) {
+	public static void send(IoClientInfo clientInfo, CuckooMessageType messageType, Object message) {
 		
-		IoClientInfo clientInfo = JobClientSessionCache.get(socketClient.getId());
-		if(null == clientInfo){
-			LOGGER.info("could not get clientInfo by cuckooClient:{}", socketClient.getId());
-			throw new BaseException("could not get clientInfo by cuckooClient:{}", socketClient.getId());
-		}
 		IoSession session = clientInfo.getSession();
 		if(null == session){
-			LOGGER.info("could not get session from cache , clientApp:{}, clientTag:{} ,cuckooClient:{}",clientInfo.getRemoteApp(), clientInfo.getRemoteTag(), socketClient.getId());
-			throw new BaseException("could not get session from cache , clientApp:{}, clientTag:{} ,cuckooClient:{}",clientInfo.getRemoteApp(), clientInfo.getRemoteTag(), socketClient.getId());
+			LOGGER.info("could not get session from clientInfo:{}", clientInfo);
+			throw new BaseException("could not get session from clientInfo:{}", clientInfo);
 		}
 		
 		

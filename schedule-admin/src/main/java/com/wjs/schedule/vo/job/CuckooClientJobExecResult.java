@@ -2,8 +2,6 @@ package com.wjs.schedule.vo.job;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.domain.exec.CuckooClientJobDetail;
-
 public class CuckooClientJobExecResult {
 	
 	/**
@@ -16,7 +14,6 @@ public class CuckooClientJobExecResult {
 	 */
 	private String remark;
 	
-	private CuckooClientJobDetail clientJobInfo;
 
 	
 
@@ -35,15 +32,6 @@ public class CuckooClientJobExecResult {
 	public void setRemark(String remark) {
 		this.remark = remark.length() > 490 ? remark.substring(0, 490) : remark;
 	}
-
-	public CuckooClientJobDetail getClientJobInfo() {
-		return clientJobInfo;
-	}
-
-	public void setClientJobInfo(CuckooClientJobDetail clientJobInfo) {
-		this.clientJobInfo = clientJobInfo;
-	}
-	
 	
 	
 	@Override

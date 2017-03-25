@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.wjs.schedule.dao.exec.CuckooClientJobDetailMapper" >
-  <resultMap id="BaseResultMap" type="com.wjs.schedule.domain.exec.CuckooClientJobDetail" >
+<mapper namespace="com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.wjs.schedule.domain.exec.CuckooNetServerInfo" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="job_class_application" property="jobClassApplication" jdbcType="VARCHAR" />
-    <result column="cuckoo_client_ip" property="cuckooClientIp" jdbcType="VARCHAR" />
-    <result column="cuckoo_client_tag" property="cuckooClientTag" jdbcType="VARCHAR" />
-    <result column="cuckoo_client_status" property="cuckooClientStatus" jdbcType="VARCHAR" />
-    <result column="job_name" property="jobName" jdbcType="VARCHAR" />
-    <result column="bean_name" property="beanName" jdbcType="VARCHAR" />
-    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="DECIMAL" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="port" property="port" jdbcType="INTEGER" />
     <result column="modify_date" property="modifyDate" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -84,10 +78,9 @@
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    id, job_class_application, cuckoo_client_ip, cuckoo_client_tag, cuckoo_client_status, 
-    job_name, bean_name, method_name, create_date, modify_date
+    id, ip, port, modify_date
   </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
@@ -96,7 +89,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from cuckoo_client_job_detail
+    from cuckoo_net_server_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -113,7 +106,7 @@
     -->
     select 
     <include refid="Base_Column_List" />
-    from cuckoo_client_job_detail
+    from cuckoo_net_server_info
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="lockByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -122,22 +115,22 @@
     -->
     select 
     <include refid="Base_Column_List" />
-    from cuckoo_client_job_detail
+    from cuckoo_net_server_info
     where id = #{id,jdbcType=BIGINT} for update 
   </select>
-  <select id="lockByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria" >
+  <select id="lockByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
     select
     <include refid="Base_Column_List" />
-    from cuckoo_client_job_detail
+    from cuckoo_net_server_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
      for update 
   </select>
-  <select id="pageByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria" >
+  <select id="pageByExample" resultMap="BaseResultMap" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
@@ -146,7 +139,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from cuckoo_client_job_detail
+    from cuckoo_net_server_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -167,63 +160,41 @@
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    delete from cuckoo_client_job_detail
+    delete from cuckoo_net_server_info
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria" >
+  <delete id="deleteByExample" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    delete from cuckoo_client_job_detail
+    delete from cuckoo_net_server_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetail" >
+  <insert id="insert" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfo" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    insert into cuckoo_client_job_detail (id, job_class_application, cuckoo_client_ip, 
-      cuckoo_client_tag, cuckoo_client_status, job_name, 
-      bean_name, method_name, create_date, 
+    insert into cuckoo_net_server_info (id, ip, port, 
       modify_date)
-    values (#{id,jdbcType=BIGINT}, #{jobClassApplication,jdbcType=VARCHAR}, #{cuckooClientIp,jdbcType=VARCHAR}, 
-      #{cuckooClientTag,jdbcType=VARCHAR}, #{cuckooClientStatus,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, 
-      #{beanName,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR}, #{createDate,jdbcType=DECIMAL}, 
+    values (#{id,jdbcType=BIGINT}, #{ip,jdbcType=VARCHAR}, #{port,jdbcType=INTEGER}, 
       #{modifyDate,jdbcType=DECIMAL})
   </insert>
-  <insert id="insertSelective" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetail" >
+  <insert id="insertSelective" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfo" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    insert into cuckoo_client_job_detail
+    insert into cuckoo_net_server_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
       </if>
-      <if test="jobClassApplication != null" >
-        job_class_application,
+      <if test="ip != null" >
+        ip,
       </if>
-      <if test="cuckooClientIp != null" >
-        cuckoo_client_ip,
-      </if>
-      <if test="cuckooClientTag != null" >
-        cuckoo_client_tag,
-      </if>
-      <if test="cuckooClientStatus != null" >
-        cuckoo_client_status,
-      </if>
-      <if test="jobName != null" >
-        job_name,
-      </if>
-      <if test="beanName != null" >
-        bean_name,
-      </if>
-      <if test="methodName != null" >
-        method_name,
-      </if>
-      <if test="createDate != null" >
-        create_date,
+      <if test="port != null" >
+        port,
       </if>
       <if test="modifyDate != null" >
         modify_date,
@@ -233,40 +204,22 @@
       <if test="id != null" >
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="jobClassApplication != null" >
-        #{jobClassApplication,jdbcType=VARCHAR},
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
       </if>
-      <if test="cuckooClientIp != null" >
-        #{cuckooClientIp,jdbcType=VARCHAR},
-      </if>
-      <if test="cuckooClientTag != null" >
-        #{cuckooClientTag,jdbcType=VARCHAR},
-      </if>
-      <if test="cuckooClientStatus != null" >
-        #{cuckooClientStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="jobName != null" >
-        #{jobName,jdbcType=VARCHAR},
-      </if>
-      <if test="beanName != null" >
-        #{beanName,jdbcType=VARCHAR},
-      </if>
-      <if test="methodName != null" >
-        #{methodName,jdbcType=VARCHAR},
-      </if>
-      <if test="createDate != null" >
-        #{createDate,jdbcType=DECIMAL},
+      <if test="port != null" >
+        #{port,jdbcType=INTEGER},
       </if>
       <if test="modifyDate != null" >
         #{modifyDate,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetailCriteria" resultType="java.lang.Integer" >
+  <select id="countByExample" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria" resultType="java.lang.Integer" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    select count(*) from cuckoo_client_job_detail
+    select count(*) from cuckoo_net_server_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -275,34 +228,16 @@
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    update cuckoo_client_job_detail
+    update cuckoo_net_server_info
     <set >
       <if test="record.id != null" >
         id = #{record.id,jdbcType=BIGINT},
       </if>
-      <if test="record.jobClassApplication != null" >
-        job_class_application = #{record.jobClassApplication,jdbcType=VARCHAR},
+      <if test="record.ip != null" >
+        ip = #{record.ip,jdbcType=VARCHAR},
       </if>
-      <if test="record.cuckooClientIp != null" >
-        cuckoo_client_ip = #{record.cuckooClientIp,jdbcType=VARCHAR},
-      </if>
-      <if test="record.cuckooClientTag != null" >
-        cuckoo_client_tag = #{record.cuckooClientTag,jdbcType=VARCHAR},
-      </if>
-      <if test="record.cuckooClientStatus != null" >
-        cuckoo_client_status = #{record.cuckooClientStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="record.jobName != null" >
-        job_name = #{record.jobName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.beanName != null" >
-        bean_name = #{record.beanName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.methodName != null" >
-        method_name = #{record.methodName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.createDate != null" >
-        create_date = #{record.createDate,jdbcType=DECIMAL},
+      <if test="record.port != null" >
+        port = #{record.port,jdbcType=INTEGER},
       </if>
       <if test="record.modifyDate != null" >
         modify_date = #{record.modifyDate,jdbcType=DECIMAL},
@@ -316,50 +251,26 @@
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    update cuckoo_client_job_detail
+    update cuckoo_net_server_info
     set id = #{record.id,jdbcType=BIGINT},
-      job_class_application = #{record.jobClassApplication,jdbcType=VARCHAR},
-      cuckoo_client_ip = #{record.cuckooClientIp,jdbcType=VARCHAR},
-      cuckoo_client_tag = #{record.cuckooClientTag,jdbcType=VARCHAR},
-      cuckoo_client_status = #{record.cuckooClientStatus,jdbcType=VARCHAR},
-      job_name = #{record.jobName,jdbcType=VARCHAR},
-      bean_name = #{record.beanName,jdbcType=VARCHAR},
-      method_name = #{record.methodName,jdbcType=VARCHAR},
-      create_date = #{record.createDate,jdbcType=DECIMAL},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      port = #{record.port,jdbcType=INTEGER},
       modify_date = #{record.modifyDate,jdbcType=DECIMAL}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetail" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfo" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    update cuckoo_client_job_detail
+    update cuckoo_net_server_info
     <set >
-      <if test="jobClassApplication != null" >
-        job_class_application = #{jobClassApplication,jdbcType=VARCHAR},
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
       </if>
-      <if test="cuckooClientIp != null" >
-        cuckoo_client_ip = #{cuckooClientIp,jdbcType=VARCHAR},
-      </if>
-      <if test="cuckooClientTag != null" >
-        cuckoo_client_tag = #{cuckooClientTag,jdbcType=VARCHAR},
-      </if>
-      <if test="cuckooClientStatus != null" >
-        cuckoo_client_status = #{cuckooClientStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="jobName != null" >
-        job_name = #{jobName,jdbcType=VARCHAR},
-      </if>
-      <if test="beanName != null" >
-        bean_name = #{beanName,jdbcType=VARCHAR},
-      </if>
-      <if test="methodName != null" >
-        method_name = #{methodName,jdbcType=VARCHAR},
-      </if>
-      <if test="createDate != null" >
-        create_date = #{createDate,jdbcType=DECIMAL},
+      <if test="port != null" >
+        port = #{port,jdbcType=INTEGER},
       </if>
       <if test="modifyDate != null" >
         modify_date = #{modifyDate,jdbcType=DECIMAL},
@@ -367,19 +278,13 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.wjs.schedule.domain.exec.CuckooClientJobDetail" >
+  <update id="updateByPrimaryKey" parameterType="com.wjs.schedule.domain.exec.CuckooNetServerInfo" >
     <!--
      WARNING -  该映射文件为自动生成, 请勿修改.
     -->
-    update cuckoo_client_job_detail
-    set job_class_application = #{jobClassApplication,jdbcType=VARCHAR},
-      cuckoo_client_ip = #{cuckooClientIp,jdbcType=VARCHAR},
-      cuckoo_client_tag = #{cuckooClientTag,jdbcType=VARCHAR},
-      cuckoo_client_status = #{cuckooClientStatus,jdbcType=VARCHAR},
-      job_name = #{jobName,jdbcType=VARCHAR},
-      bean_name = #{beanName,jdbcType=VARCHAR},
-      method_name = #{methodName,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=DECIMAL},
+    update cuckoo_net_server_info
+    set ip = #{ip,jdbcType=VARCHAR},
+      port = #{port,jdbcType=INTEGER},
       modify_date = #{modifyDate,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
