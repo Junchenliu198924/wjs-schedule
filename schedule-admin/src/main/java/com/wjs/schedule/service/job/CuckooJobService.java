@@ -57,12 +57,12 @@ public interface CuckooJobService {
 	public void resumeAllJob(JobInfoQry jobInfo);
 	
 	/**
-	 * 将任务重置为PENDING状态
+	 * 将任务重置为PENDING状态 -- 返回最新任务的ID
 	 * @param data 
 	 * @param jobGroup
 	 * @param jobName
 	 */
-	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog);
+	public Long pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog);
 	
 
 	/**

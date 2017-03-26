@@ -60,9 +60,9 @@
                 		<input type="text" class="form-control" id="logId" value="${id}" autocomplete="on" >
 	              	</div>
 	            </div>
-	    </div>
+	    	</div>
 	            
-		<div class="row">	            
+			<div class="row">	            
 	            <div class="col-xs-4">
               		<div class="input-group">
                 		<span class="input-group-addon">
@@ -126,10 +126,46 @@
 	<@netCommon.commonFooter />
 </div>
 
+
+<!-- 重做参数.模态框 -->
+<div class="modal fade" id="redoModal" tabindex="-1" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+            	<h4 class="modal-title" name="triggerHeader" >重新执行任务</h4>
+         	</div>
+         	<div class="modal-body">
+         		<form class="form-horizontal form" role="form" >
+                   <div class="form-group" >
+                        <label for="lastname" class="col-sm-2 control-label">触发后续任务<font color="red">*</font></label>
+                        <div class="col-sm-4">
+                        	<select class="form-control" name="needTriggleNext" >
+                				<option value="false" selected>否</option>
+                				<option value="true" >是</option>
+	                  		</select>
+                        </div>
+                        
+					</div>
+                   
+                   
+                   <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-6">
+							<button type="submit" class="btn btn-primary"  >执行</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <input type="hidden" name="logId" >
+						</div>
+					</div>
+				</form>
+         	</div>
+		</div>
+	</div>
+</div>
+
 <@netCommon.commonScript />
 <!-- DataTables -->
 <script src="${request.contextPath}/static/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/plugins/datatables/dataTables.bootstrap.min.js"></script>
+<script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 <!-- daterangepicker -->
 <script src="${request.contextPath}/static/adminlte/plugins/daterangepicker/moment.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/plugins/daterangepicker/daterangepicker.js"></script>

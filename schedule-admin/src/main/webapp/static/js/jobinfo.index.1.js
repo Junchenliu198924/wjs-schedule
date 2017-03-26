@@ -509,7 +509,7 @@ $(function() {
 		}
 	});
 	$("#triggerModal").on('hide.bs.modal', function () {
-		$("#triggerModal .form")[0].reset()
+		$("#triggerModal .form")[0].reset();
 	});
 	
 

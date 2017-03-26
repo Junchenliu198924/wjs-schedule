@@ -133,14 +133,14 @@ public class CuckooJobExecutor {
 		} catch (JobRunningErrorException e) {
 			// 未知异常，报错处理
 			remark = e.getMessage();
-			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			LOGGER.error("running err job exec,err:{},jobInfo:{}", e.getMessage(), jobLog);
 			// 插入执行日志
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
 			jobLog.setExecJobStatus( CuckooJobExecStatus.FAILED.getValue());
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 		} catch (JobCanNotRunningException e) {
 			remark = e.getMessage();
-			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog);
 			// 插入执行日志
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
 			jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());

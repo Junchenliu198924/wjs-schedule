@@ -443,7 +443,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 
 	@Override
 	@Transactional
-	public void pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog) {
+	public Long pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog) {
 
 		LOGGER.debug("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail, fatherJobLog);
 		CuckooJobExecLog jobLog = new CuckooJobExecLog();
@@ -462,10 +462,11 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		jobLog.setFlowCurTime(fatherJobLog.getFlowCurTime());
 
 		cuckooJobExecLogMapper.insertSelective(jobLog);
+		
 		jobLog.setId(cuckooJobExecLogMapper.lastInsertId());
 		// 使用Quartz.simpleJob进行触发
 		quartzManage.addSimpleJob(jobLog, 0L);
-
+		return jobLog.getId();
 	}
 
 	@Override

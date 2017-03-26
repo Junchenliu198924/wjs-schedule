@@ -174,7 +174,7 @@ public class JobLogController extends BaseController {
 	
 	@ResponseBody
 	@RequestMapping(value="/redo")
-	public Object redo(Long logId){
+	public Object redo(Long logId, Boolean needTriggleNext){
 		
 		if(null == logId){
 			throw new BaseException("logid can not be null");
@@ -187,14 +187,14 @@ public class JobLogController extends BaseController {
 			 throw new BaseException("can not get jobLog by logid:{}", logId);
 		}
 		cuckooJobExecLog.setForceTriggle(true);
-		cuckooJobExecLog.setNeedTriggleNext(false);
+		cuckooJobExecLog.setNeedTriggleNext(needTriggleNext == null ? false : needTriggleNext);
 		CuckooJobDetail jobDetail = cuckooJobService.getJobById(cuckooJobExecLog.getJobId());
 		if(null == jobDetail){
 			 throw new BaseException("can not get jobDetail by jobId:{}", cuckooJobExecLog.getJobId());
 		}
-		cuckooJobService.pendingJob(jobDetail, cuckooJobExecLog);
+		Long id = cuckooJobService.pendingJob(jobDetail, cuckooJobExecLog);
 		
-		return success();
+		return success(id);
 	}
 	
 

@@ -218,28 +218,57 @@ $(function() {
 	
 	 
 	$('#joblog_list').on('click', '.redo', function(){
-//		var msg = $(this).find('span').html();
-//		ComAlert.show(2, msg);
-		// 再次执行
-		var _id = $(this).attr('_id');
-		var _execJobStatus = $(this).attr('_execJobStatus');
-		ComConfirm.show("确认将任务"+_id+"【"+_execJobStatus+"】重新执行吗？确认后会新增一条执行信息", function(){
-			$.ajax({
-				type : 'POST',
-				url : base_url + '/joblog/redo',
-				data : {"logId":_id},
-				dataType : "json",
-				success : function(data){
-					if (data.resultCode = "success") {
-						ComAlert.show(1, '操作成功');
-						logTable.fnDraw();
-					} else {
-						ComAlert.show(2, data.resultMsg);
-					}
-				},
-			});
-		});
+		
+		$("#redoModal .form input[name='logId']").val($(this).attr('_id'));
+
+		// show
+		$('#redoModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
+	
+	var triggerModalValidate = $("#redoModal .form").validate({
+		errorElement : 'span',  
+        errorClass : 'help-block',
+        focusInvalid : true,
+
+		
+		highlight : function(element) {
+            $(element).closest('.form-group').addClass('has-error');  
+        },
+        success : function(label) {  
+            label.closest('.form-group').removeClass('has-error');  
+            label.remove();  
+        },
+        errorPlacement : function(error, element) {  
+            element.parent('div').append(error);  
+        },
+        submitHandler : function(form) {
+        	
+        	
+			// post
+    		$.post(base_url + "/joblog/redo", $("#redoModal .form").serialize(), function(data, status) {
+    			if (data.resultCode == "success") {
+					$('#redoModal').modal('hide');
+					setTimeout(function () {
+						ComAlert.show(1, "已加入重新执行队列 ,新日志ID:"+ data.data, function(){
+							//window.location.reload();
+							jobTable.fnDraw();
+						});
+					}, 315);
+    			} else {
+    				if (data.resultMsg) {
+    					ComAlert.show(2, data.resultMsg);
+					} else {
+						ComAlert.show(2, "操作失败");
+					}
+    			}
+    		});
+		}
+	});
+	$("#triggerModal").on('hide.bs.modal', function () {
+		$("#triggerModal .form")[0].reset();
+	});
+	
+	
 	 
 	$('#joblog_list').on('click', '.reset', function(){
 //		var msg = $(this).find('span').html();
