@@ -142,7 +142,7 @@ public class QuartzManage {
 		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
-			if(scheduler.checkExists(jobKey) ){
+			if(checkCronExists(jobId) ){
 				scheduler.deleteJob(jobKey);
 				addCronJob(jobId, cronExpression, jobStatus, typeDaily);
 			}
@@ -156,8 +156,20 @@ public class QuartzManage {
 		
 		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzCronGroup);
+		
 		try {
-			return scheduler.checkExists(jobKey) ;
+			
+			if(scheduler.checkExists(triggerKey)){
+				return true;
+			}else{
+				if(scheduler.checkExists(jobKey)){
+					scheduler.deleteJob(jobKey);
+					return false;
+				}
+				return false;
+			}
+			
 		} catch (SchedulerException e) {
 			return false;
 		}
@@ -168,7 +180,7 @@ public class QuartzManage {
 		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
-			if(scheduler.checkExists(jobKey) ){
+			if(checkCronExists(jobId)){
 				scheduler.pauseJob(jobKey);
 			}
 		} catch (SchedulerException e) {
@@ -194,7 +206,7 @@ public class QuartzManage {
 		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);
 		try {
-			if(scheduler.checkExists(jobKey) ){
+			if(checkCronExists(jobId) ){
 				scheduler.resumeJob(jobKey);
 			}
 		} catch (SchedulerException e) {
@@ -273,12 +285,11 @@ public class QuartzManage {
 					.startAt(new Date(System.currentTimeMillis() + waitTime)) //  设置起始时间
 					.build();
 			
-			if(scheduler.checkExists(jobKey) ){
+			if(checkSimpleExist(jobLog)){
 				scheduler.deleteJob(jobKey);
-				scheduler.scheduleJob(jobDetail, simpleTrigger);
-			}else{
-				scheduler.scheduleJob(jobDetail, simpleTrigger);
-			}
+			} 
+			scheduler.scheduleJob(jobDetail, simpleTrigger);
+			
 		} catch (SchedulerException e) {
 			LOGGER.error("add simple job failed, groupName:{}, jobName:{},error:{}", quartzSimpleGroup, quartzJobName, e.getMessage(), e);
 			throw new BaseException(e.getMessage());
@@ -291,8 +302,19 @@ public class QuartzManage {
 	public boolean checkSimpleExist(CuckooJobExecLog jobLog) {
 		String quartzJobName = jobLog.getJobId() + CuckooJobConstant.QUARTZ_JOBNAME_JOINT + jobLog.getId();
 		JobKey jobKey = new JobKey(quartzJobName, quartzSimpleGroup);
+		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzSimpleGroup);
+		
 		try {
-			return scheduler.checkExists(jobKey) ;
+			
+			if(scheduler.checkExists(triggerKey)){
+				return true;
+			}else{
+				if(scheduler.checkExists(jobKey)){
+					scheduler.deleteJob(jobKey);
+					return false;
+				}
+				return false;
+			}
 		} catch (SchedulerException e) {
 			return false;
 		}
