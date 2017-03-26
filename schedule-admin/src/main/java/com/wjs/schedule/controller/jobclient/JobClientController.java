@@ -1,17 +1,28 @@
 package com.wjs.schedule.controller.jobclient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wjs.schedule.controller.BaseController;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
+import com.wjs.schedule.domain.exec.CuckooNetRegistJob;
+import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
 import com.wjs.schedule.service.job.CuckooJobService;
+import com.wjs.schedule.service.server.CuckooNetService;
+import com.wjs.schedule.vo.job.CuckooNetRegistJobVo;
+import com.wjs.schedule.vo.qry.JobNetQry;
 import com.wjs.schedule.web.util.JqueryDataTable;
+import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
 
 @Controller
@@ -22,8 +33,8 @@ public class JobClientController  extends BaseController{
 	@Autowired
 	CuckooJobService cuckooJobService;
 	
-//	@Autowired
-//	CuckooClientJobDetailService cuckooClientJobDetailService;
+	@Autowired
+	CuckooNetService cuckooNetService;
 	@RequestMapping
 	public String index0(HttpServletRequest request) {
 		
@@ -44,30 +55,64 @@ public class JobClientController  extends BaseController{
 		return "jobclient/jobclient.index";
 	}
 	
-//	@ResponseBody
-//	@RequestMapping(value = "/pageList")
-//	public Object pageList(JobClientQry qry){
-//	
-//		PageDataList<CuckooClientJobDetail> page = cuckooClientJobDetailService.pageData(qry);
-//		
-//		List<CuckooClientJobDetailVo> rows = new ArrayList<>();
-//		if(CollectionUtils.isNotEmpty(page.getRows())){
-//			for (CuckooClientJobDetail r : page.getRows()) {
-//				CuckooClientJobDetailVo vo = new CuckooClientJobDetailVo();
-//				PropertyUtil.copyProperties(vo, r);
-//				rows.add(vo);
-//			}
-//		}
-//		
-//		PageDataList<CuckooClientJobDetailVo> pages = new PageDataList<>();
-//		pages.setPage(page.getPage());
-//		pages.setPageSize(page.getPageSize());
-//		pages.setTotal(page.getTotal());
-//		pages.setRows(rows);
-//		
-//		return dataTable(pages);
-//	}
+	@ResponseBody
+	@RequestMapping(value = "/pageList")
+	public Object pageList(JobNetQry qry){
 	
+		PageDataList<CuckooNetRegistJob> page = cuckooNetService.pageRegistJob(qry);
+		
+		List<CuckooNetRegistJobVo> rows = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(page.getRows())){
+			for (CuckooNetRegistJob r : page.getRows()) {
+				CuckooNetRegistJobVo vo = new CuckooNetRegistJobVo();
+				PropertyUtil.copyProperties(vo, r);
+				
+				// 客户端执行器信息
+				vo.setClients(getCuckooClients(r));
+				
+				// 服务端信息
+				vo.setServers(getCuckooServers(r));
+				rows.add(vo);
+			}
+		}
+		
+		PageDataList<CuckooNetRegistJobVo> pages = new PageDataList<>();
+		pages.setPage(page.getPage());
+		pages.setPageSize(page.getPageSize());
+		pages.setTotal(page.getTotal());
+		pages.setRows(rows);
+		
+		return dataTable(pages);
+	}
+	
+	private List<String> getCuckooServers(CuckooNetRegistJob job) {
+
+		List<String> serverAddrs = new ArrayList<>();
+		List<CuckooNetServerInfo> servers = cuckooNetService.getCuckooServersByRegistJob(job);
+		if(CollectionUtils.isNotEmpty(servers)){
+
+			for (CuckooNetServerInfo cuckooNetServerInfo : servers) {
+				serverAddrs.add(cuckooNetServerInfo.getIp() + ":" + cuckooNetServerInfo.getPort());
+			}
+		}
+		return serverAddrs;
+	}
+
+
+	private List<String> getCuckooClients(CuckooNetRegistJob job) {
+
+		List<String> clientAddrs = new ArrayList<>();
+		List<CuckooNetClientInfo> clients = cuckooNetService.getCuckooClientsByRegistJob(job);
+		if(CollectionUtils.isNotEmpty(clients)){
+
+			for (CuckooNetClientInfo cuckooNetClientInfo : clients) {
+				clientAddrs.add(cuckooNetClientInfo.getIp() + ":" + cuckooNetClientInfo.getPort());
+			}
+		}
+		return clientAddrs;
+	}
+
+
 	/**
 	 * parse PageDataList to JqueryDataTable
 	 * @param page

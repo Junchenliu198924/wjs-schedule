@@ -16,18 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
-import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
-import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
-import com.wjs.schedule.dao.exec.CuckooNetServerJobMapMapper;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
 import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
-import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
-import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
-import com.wjs.schedule.domain.exec.CuckooNetServerJobMapCriteria;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.server.CuckooNetService;
 
 /**
  * 监听客户端连接，断开，异常操作。相关操作需要修改数据库，并修改缓存
@@ -42,21 +37,15 @@ public class RegistFilter extends IoFilterAdapter{
 	@Autowired
 	CuckooNetClientInfoMapper cuckooNetClientInfoMapper;
 	
-	@Autowired
-	CuckooNetClientJobMapMapper cuckooNetClientJobMapMapper;
-	
-	@Autowired
-	CuckooNetRegistJobMapper cuckooNetRegistJobMapper;
-	
-	@Autowired
-	CuckooNetServerJobMapMapper cuckooNetServerJobMapMapper;
-	
 	
 	@Autowired
 	CuckooJobExecLogMapper cuckooJobExecLogMapper;
 	
 	@Autowired
 	CuckooJobLogService cuckooJobLogService;
+	
+	@Autowired 
+	CuckooNetService cuckooNetService;
 	
 	/**
 	 这个方法在你的程序、Mina 自身出现异常时回调，一般这里是关闭IoSession。
@@ -172,32 +161,10 @@ public class RegistFilter extends IoFilterAdapter{
 		clientCrt.createCriteria().andIpEqualTo(clientSocket.getHostName())
 		.andPortEqualTo(clientSocket.getPort());
 		List<CuckooNetClientInfo> clientInfos = cuckooNetClientInfoMapper.selectByExample(clientCrt);
+		
 		if(CollectionUtils.isNotEmpty(clientInfos)){
-			cuckooNetClientInfoMapper.deleteByExample(clientCrt);
 			for (CuckooNetClientInfo cuckooNetClientInfo : clientInfos) {
-				// 删除client-job关联关系
-				CuckooNetClientJobMapCriteria clientMapCrt = new CuckooNetClientJobMapCriteria();
-				clientMapCrt.createCriteria().andClientIdEqualTo(cuckooNetClientInfo.getId());
-				List<CuckooNetClientJobMap> clientJobMaps = cuckooNetClientJobMapMapper.selectByExample(clientMapCrt);
-				
-				if(CollectionUtils.isNotEmpty(clientJobMaps)){
-					cuckooNetClientJobMapMapper.deleteByExample(clientMapCrt);
-					for (CuckooNetClientJobMap cuckooNetClientJobMap : clientJobMaps) {
-						// 如果一个job没有一个client关联，那么把这个任务也删除掉
-						CuckooNetClientJobMapCriteria clientDelMapcrt = new CuckooNetClientJobMapCriteria();
-						clientDelMapcrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
-						List<CuckooNetClientJobMap> clientDelMaps = cuckooNetClientJobMapMapper.selectByExample(clientDelMapcrt);
-						if(CollectionUtils.isEmpty(clientDelMaps)){
-							cuckooNetRegistJobMapper.deleteByPrimaryKey(cuckooNetClientJobMap.getRegistId());
-							// 如果registjob都删除了，那么server-job关联关系也可以删除
-							CuckooNetServerJobMapCriteria serverJobMapCrt = new CuckooNetServerJobMapCriteria();
-							serverJobMapCrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
-							cuckooNetServerJobMapMapper.deleteByExample(serverJobMapCrt);
-						}
-					}
-				}
-				
-					
+				cuckooNetService.removeNetClient(cuckooNetClientInfo);
 			}
 		}
 		

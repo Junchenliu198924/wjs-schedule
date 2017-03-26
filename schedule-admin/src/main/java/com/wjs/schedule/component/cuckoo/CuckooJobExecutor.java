@@ -24,7 +24,7 @@ import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.service.job.CuckooJobService;
-import com.wjs.schedule.service.server.CuckooServerService;
+import com.wjs.schedule.service.server.CuckooNetService;
 import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 
 @Component("cuckooJobExecutor")
@@ -39,7 +39,7 @@ public class CuckooJobExecutor {
 	CuckooJobExecLogMapper cuckooJobExecLogsMapper;
 
 	@Autowired
-	CuckooServerService cuckooServerService;
+	CuckooNetService cuckooServerService;
 
 	@Autowired
 	CuckooJobNextService cuckooJobNextService;
@@ -146,6 +146,13 @@ public class CuckooJobExecutor {
 			jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 			throw e;
+		}catch (Exception e) {
+			remark = e.getMessage();
+			LOGGER.error("cannot running job exec,err:{},jobInfo:{}", e.getMessage(), jobLog, e);
+			// 插入执行日志
+			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
+			jobLog.setExecJobStatus(CuckooJobExecStatus.FAILED.getValue());
+			cuckooJobExecLogsMapper.updateByPrimaryKeySelective(jobLog);
 		}
 
 	}

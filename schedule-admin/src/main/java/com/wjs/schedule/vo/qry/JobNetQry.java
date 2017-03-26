@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.vo.QryBase;
 
-public class JobClientQry extends QryBase{
+public class JobNetQry extends QryBase{
 	
 	
 	private String jobClassApplication;

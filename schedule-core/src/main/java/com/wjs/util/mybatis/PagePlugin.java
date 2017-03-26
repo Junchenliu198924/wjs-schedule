@@ -62,10 +62,14 @@ public class PagePlugin implements Interceptor {
 			if(null != startField){
 				startField.setAccessible(true);
 				start = startField.getInt(parameterObject);
+			}else{
+				throw new RuntimeException("please set field-start in a pageQry");
 			}
 			if(null != limitField){
 				limitField.setAccessible(true);
 				limit = limitField.getInt(parameterObject);
+			}else{
+				throw new RuntimeException("please set field-limit in a pageQry");
 			}
 			  
 			String countSql = getCountSql(boundSql.getSql());
@@ -123,7 +127,12 @@ public class PagePlugin implements Interceptor {
 	private String getCountSql(String sql) {
 		StringBuffer countSql = new StringBuffer(64);
 		countSql.append("select count(1) from ");
-		countSql.append(sql.substring(sql.indexOf("from")+4 , sql.lastIndexOf("limit")));
+		try {
+			countSql.append(sql.substring(sql.indexOf("from")+4 , sql.lastIndexOf("limit")));
+		} catch (RuntimeException e) {
+			System.err.println(sql);
+			e.printStackTrace();
+		}
 		return countSql.toString();
 	}
 

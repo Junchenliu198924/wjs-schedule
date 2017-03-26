@@ -1,6 +1,8 @@
 $(function() {
 	// init date tables
 	var jobTable = $("#job_list").dataTable({
+	    "iDisplayLength":5,
+	    "aLengthMenu":[5,15,50,100],
 		"deferRender": true,
 		"processing" : true, 
 	    "serverSide": true,
@@ -22,12 +24,41 @@ $(function() {
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : false}, 
 	                { "data": 'jobClassApplication', "bSortable": false, "visible" : true},
-					{ "data": 'cuckooClientIp', "visible" : true},
-	                { "data": 'cuckooClientTag', "visible" : true},
-	                { "data": 'cuckooClientStatus', "visible" : true},
 	                { "data": 'jobName', "visible" : true},
 	                { "data": 'beanName', "visible" : true},
 	                { "data": 'methodName', "visible" : true},
+	                { "data": 'servers', 
+	                	"visible" : true,
+	                	"render": function ( data, type, row ) {
+	                		if(data != null){
+	                			var servers = "";
+	                			for (var i = 0; i < data.length; i++) {
+	                				servers += (i == 0 ? "":"</br>") + data[i];
+								}
+	                			
+	                			return servers;
+	                		}else{
+	                			return "";
+	                		}
+	                		
+	                	}
+	                },
+	                { "data": 'clients', 
+	                	"visible" : true,
+	                	"render": function ( data, type, row ) {
+	                		if(data != null){
+	                			var clients = "";
+	                			for (var i = 0; i < data.length; i++) {
+	                				clients += (i == 0 ? "":"</br>") + data[i];
+								}
+	                			
+	                			return clients;
+	                		}else{
+	                			return "";
+	                		}
+	                		
+	                	}
+	                },
 	                
 	                { "data": 'createDate', 
 	                	"visible" : true,
@@ -47,7 +78,7 @@ $(function() {
 			"sProcessing" : "处理中...",
 			"sLengthMenu" : "每页 _MENU_ 条记录",
 			"sZeroRecords" : "没有匹配结果",
-			"sInfo" : "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
+			"sInfo" : "第 _PAGE_ 页 ( 总共 _TOTAL_ 行 )",
 			"sInfoEmpty" : "无记录",
 			"sInfoFiltered" : "(由 _MAX_ 项结果过滤)",
 			"sInfoPostFix" : "",

@@ -32,6 +32,7 @@ import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.server.CuckooNetService;
 import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
 import com.wjs.schedule.vo.qry.JobLogQry;
@@ -60,6 +61,9 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 	@Autowired
 	MailSendSpring mailSendSpring;
 	
+	@Autowired
+	CuckooNetService cuckooNetService;
+	
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
@@ -74,7 +78,8 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 			// 任务超时/失败等告警
 			waringJobException();
 			
-			// 服务器删除校验(为了及时性，现在放在heartbeat中处理)
+			// 服务器、执行器长时间弃用校验
+			removeUselessCuckooNetMessage();
 			
 		} catch (Exception e) {
 			LOGGER.error("unknow error:{}", e.getMessage() , e);
@@ -82,6 +87,12 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		
 	}
 	
+	
+	private void removeUselessCuckooNetMessage() {
+
+		cuckooNetService.removeUselessCuckooNetMessage();
+	}
+
 	/**
 	 * 任务超时/失败等告警
 	 */

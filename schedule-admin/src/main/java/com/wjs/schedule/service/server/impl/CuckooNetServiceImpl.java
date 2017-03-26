@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.component.cache.JobClientSessionCache;
+import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
 import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
 import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
@@ -31,6 +32,7 @@ import com.wjs.schedule.domain.exec.CuckooNetRegistJobCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
 import com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetServerJobMap;
+import com.wjs.schedule.domain.exec.CuckooNetServerJobMapCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobCanNotRunningException;
@@ -38,14 +40,16 @@ import com.wjs.schedule.exception.JobRunningErrorException;
 import com.wjs.schedule.net.server.ServerUtil;
 import com.wjs.schedule.net.vo.IoClientInfo;
 import com.wjs.schedule.service.job.CuckooJobService;
-import com.wjs.schedule.service.server.CuckooServerService;
+import com.wjs.schedule.service.server.CuckooNetService;
 import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
+import com.wjs.schedule.vo.qry.JobNetQry;
 import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.dao.PageDataList;
 
 @Service("cuckooServerService")
-public class CuckooServerServiceImpl implements CuckooServerService {
+public class CuckooNetServiceImpl implements CuckooNetService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooServerServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooNetServiceImpl.class);
 	
 
 	@Autowired
@@ -71,11 +75,13 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 	public CuckooClientJobExecResult execRemoteJob(CuckooNetClientInfo cuckooNetClientInfo, JobInfoBean jobBean) throws JobCanNotRunningException, JobRunningErrorException {
 		
 		CuckooClientJobExecResult result = new CuckooClientJobExecResult();
+		result.setRemark("");
 		// 根据remoteJobExec 获取socket,
 		IoClientInfo socket = JobClientSessionCache.get(cuckooNetClientInfo.getId());
 		// 意外情况获取不到socket
 		if(socket == null){
-			throw new JobCanNotRunningException("JobClientSessionCache can not get socket");
+			result.setRemark("JobClientSessionCache can not get socket,netclient id:"+ cuckooNetClientInfo.getId());
+			throw new JobCanNotRunningException("JobClientSessionCache can not get socket,netclient id:{}", cuckooNetClientInfo.getId());
 		}
 		
 		// 更新远程服务器最新调用时间
@@ -84,9 +90,10 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 			LOGGER.info("调用远程任务开始,jobApp:{},jobName:{},bean:{}" , cuckooNetClientInfo.getIp() ,cuckooNetClientInfo.getPort(), jobBean);
 			ServerUtil.send(socket, CuckooMessageType.JOBDOING,  jobBean);
 			result.setSuccess(true);
+			result.setRemark("succed");
 			return result;
 		} catch (Exception e) {
-
+			result.setRemark("job exec error:" + e.getMessage());
 			LOGGER.error("job exec error:{}",e.getMessage() ,e);
 			throw new JobRunningErrorException("job exec error:{}",e.getMessage());
 		}
@@ -201,8 +208,6 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 			// 唯一索引，无法插入的情况(控制好的话理论上不会出现，出现不影响)
 			LOGGER.error("mapping serverinfo-registjob error,registJobId:{},serverInfoId:{} ", cuckooNetRegistJob.getId(), cuckooNetServerInfo.getId());
 		}
-		
-		
 
 		// 增加client_info 
 		InetSocketAddress clientSocket = (InetSocketAddress)session.getRemoteAddress();
@@ -249,6 +254,155 @@ public class CuckooServerServiceImpl implements CuckooServerService {
 		JobClientSessionCache.put(cuckooNetClientInfo.getId(), socket);
 		LOGGER.info("succed add client job ,clientTaskInfoBean:{}",clientTaskInfoBean);
 		return cuckooNetClientInfo.getId();
+	}
+
+	@Override
+	public PageDataList<CuckooNetRegistJob> pageRegistJob(JobNetQry qry) {
+		
+		CuckooNetRegistJobCriteria registCrt = new CuckooNetRegistJobCriteria();
+		registCrt.setStart(qry.getStart());
+		registCrt.setLimit(qry.getLimit());
+		registCrt.setOrderByClause("id desc");
+		CuckooNetRegistJobCriteria.Criteria crt = registCrt.createCriteria();
+		
+		if(StringUtils.isNotEmpty(qry.getJobClassApplication())){
+			crt.andJobClassApplicationEqualTo(qry.getJobClassApplication());
+		}
+		
+		if(StringUtils.isNotEmpty(qry.getJobName())){
+			crt.andJobNameLike("%"+qry.getJobName()+"%");
+		}
+		
+		
+		return cuckooNetRegistJobMapper.pageByExample(registCrt);
+	}
+
+	@Override
+	public List<CuckooNetServerInfo> getCuckooServersByRegistJob(CuckooNetRegistJob job) {
+
+		
+		CuckooNetServerJobMapCriteria mapCrt = new CuckooNetServerJobMapCriteria();
+		mapCrt.createCriteria().andRegistIdEqualTo(job.getId());
+		List<CuckooNetServerJobMap> maps = cuckooNetServerJobMapMapper.selectByExample(mapCrt);
+		if(CollectionUtils.isNotEmpty(maps)){
+			List<Long> serverIds = PropertyUtil.fetchFieldList(maps, "serverId");
+
+			CuckooNetServerInfoCriteria serCrt = new CuckooNetServerInfoCriteria();
+			serCrt.createCriteria().andIdIn(serverIds).andModifyDateGreaterThan(System.currentTimeMillis() - CuckooNetConstant.CUCKOO_NET_SERVER_OVERTIME);
+			return cuckooNetServerInfoMapper.selectByExample(serCrt);
+		}
+			
+		return null;
+	}
+
+	@Override
+	public List<CuckooNetClientInfo> getCuckooClientsByRegistJob(CuckooNetRegistJob job) {
+
+		CuckooNetClientJobMapCriteria mapCrt = new CuckooNetClientJobMapCriteria();
+		mapCrt.createCriteria().andRegistIdEqualTo(job.getId());
+		List<CuckooNetClientJobMap> maps = cuckooNetClientJobMapMapper.selectByExample(mapCrt);
+		if(CollectionUtils.isNotEmpty(maps)){
+			List<Long> clientIds = PropertyUtil.fetchFieldList(maps, "clientId");
+
+			CuckooNetClientInfoCriteria cliCrt = new CuckooNetClientInfoCriteria();
+			cliCrt.createCriteria().andIdIn(clientIds).andModifyDateGreaterThan(System.currentTimeMillis() - CuckooNetConstant.CUCKOO_NET_CLIENT_OVERTIME);
+			return cuckooNetClientInfoMapper.selectByExample(cliCrt);
+		}
+		return null;
+	}
+
+	@Override
+	public void removeUselessCuckooNetMessage() {
+		
+		CuckooNetClientInfoCriteria cliCrt = new CuckooNetClientInfoCriteria();
+		cliCrt.createCriteria().andModifyDateLessThanOrEqualTo(System.currentTimeMillis() - CuckooNetConstant.CUCKOO_NET_CLIENT_OVERTIME);
+		
+		List<CuckooNetClientInfo> clients = cuckooNetClientInfoMapper.selectByExample(cliCrt);
+		if(CollectionUtils.isNotEmpty(clients)){
+			for (CuckooNetClientInfo cuckooNetClientInfo : clients) {
+				removeNetClient(cuckooNetClientInfo);
+			}
+		}
+		
+		
+		CuckooNetServerInfoCriteria serCrt = new CuckooNetServerInfoCriteria();
+		serCrt.createCriteria().andModifyDateLessThanOrEqualTo(System.currentTimeMillis() - CuckooNetConstant.CUCKOO_NET_SERVER_OVERTIME);
+		
+		List<CuckooNetServerInfo> servers = cuckooNetServerInfoMapper.selectByExample(serCrt);
+		if(CollectionUtils.isNotEmpty(servers)){
+			for (CuckooNetServerInfo cuckooNetServerInfo : servers) {
+
+				removeNetServer(cuckooNetServerInfo);
+			}
+		}
+		
+		
+		
+		
+	}
+
+	@Override
+	public void removeNetClient(CuckooNetClientInfo cuckooNetClientInfo) {
+
+
+		cuckooNetClientInfoMapper.deleteByPrimaryKey(cuckooNetClientInfo.getId());
+		// 删除client-job关联关系
+		CuckooNetClientJobMapCriteria clientMapCrt = new CuckooNetClientJobMapCriteria();
+		clientMapCrt.createCriteria().andClientIdEqualTo(cuckooNetClientInfo.getId());
+		List<CuckooNetClientJobMap> clientJobMaps = cuckooNetClientJobMapMapper.selectByExample(clientMapCrt);
+		
+		if(CollectionUtils.isNotEmpty(clientJobMaps)){
+			cuckooNetClientJobMapMapper.deleteByExample(clientMapCrt);
+			for (CuckooNetClientJobMap cuckooNetClientJobMap : clientJobMaps) {
+				// 如果一个job没有一个client关联，那么把这个任务也删除掉
+				CuckooNetClientJobMapCriteria clientDelMapcrt = new CuckooNetClientJobMapCriteria();
+				clientDelMapcrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
+				List<CuckooNetClientJobMap> clientDelMaps = cuckooNetClientJobMapMapper.selectByExample(clientDelMapcrt);
+				if(CollectionUtils.isEmpty(clientDelMaps)){
+					cuckooNetRegistJobMapper.deleteByPrimaryKey(cuckooNetClientJobMap.getRegistId());
+					// 如果registjob都删除了，那么server-job关联关系也可以删除
+					CuckooNetServerJobMapCriteria serverJobMapCrt = new CuckooNetServerJobMapCriteria();
+					serverJobMapCrt.createCriteria().andRegistIdEqualTo(cuckooNetClientJobMap.getRegistId());
+					cuckooNetServerJobMapMapper.deleteByExample(serverJobMapCrt);
+				}
+			}
+		}
+		
+			
+		// 连接缓存中删除缓存
+		JobClientSessionCache.remove(cuckooNetClientInfo.getId());
+	}
+
+	@Override
+	public void removeNetServer(CuckooNetServerInfo cuckooNetServerInfo) {
+
+//		服务端信息不做主动删除，避免出现问题
+//		cuckooNetServerInfoMapper.deleteByPrimaryKey(cuckooNetServerInfo.getId());
+		
+		// 删除server-job关联关系
+		CuckooNetServerJobMapCriteria serverMapCrt = new CuckooNetServerJobMapCriteria();
+		serverMapCrt.createCriteria().andServerIdEqualTo(cuckooNetServerInfo.getId());
+		List<CuckooNetServerJobMap> serverJobMaps = cuckooNetServerJobMapMapper.selectByExample(serverMapCrt);
+		
+		if(CollectionUtils.isNotEmpty(serverJobMaps)){
+			cuckooNetServerJobMapMapper.deleteByExample(serverMapCrt);
+			for (CuckooNetServerJobMap cuckooNetServerJobMap : serverJobMaps) {
+				// 如果一个job没有一个server关联，那么把这个任务也删除掉
+				CuckooNetServerJobMapCriteria serverDelMapcrt = new CuckooNetServerJobMapCriteria();
+				serverDelMapcrt.createCriteria().andRegistIdEqualTo(cuckooNetServerJobMap.getRegistId());
+				List<CuckooNetServerJobMap> serverDelMaps = cuckooNetServerJobMapMapper.selectByExample(serverDelMapcrt);
+				if(CollectionUtils.isEmpty(serverDelMaps)){
+					cuckooNetRegistJobMapper.deleteByPrimaryKey(cuckooNetServerJobMap.getRegistId());
+//					 如果registjob都删除了，那么client-job关联关系也可以删除
+//					CuckooNetClientJobMapCriteria clientJobMapCrt = new CuckooNetClientJobMapCriteria();
+//					clientJobMapCrt.createCriteria().andRegistIdEqualTo(cuckooNetServerJobMap.getRegistId());
+//					cuckooNetClientJobMapMapper.deleteByExample(clientJobMapCrt);
+//					
+				}
+			}
+		}
+		
+	
 	}
 
 }

@@ -26,7 +26,7 @@ import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
 import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
-import com.wjs.schedule.service.server.CuckooServerService;
+import com.wjs.schedule.service.server.CuckooNetService;
 
 /**
  * 服务器端业务逻辑，封装TimeServerHander，需要针对客户端的session进行缓存操作，并记录数据库
@@ -38,7 +38,7 @@ public class CuckooServerHandler extends IoHandlerAdapter {
 	final Gson  gson = new GsonBuilder().create();
 	
 	@Autowired
-	CuckooServerService cuckooServerService;
+	CuckooNetService cuckooServerService;
 	
 	@Autowired
 	CuckooJobCallBack cuckooJobCallBack;

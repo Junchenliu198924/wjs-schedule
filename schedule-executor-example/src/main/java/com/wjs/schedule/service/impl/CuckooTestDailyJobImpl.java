@@ -1,5 +1,7 @@
 package com.wjs.schedule.service.impl;
 
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,10 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 		// 测试完成
 
 		LOGGER.info("Client exec done ,testCronDailySucced:{}",  jobInfo);
-		throw new BaseException("client throw a exception ");
+		if(new Random().nextInt(10) == 1){
+			// 偶尔报错
+			throw new BaseException("client throw a exception ");
+		}
 	}
 
 	@Override
@@ -52,7 +57,10 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	public void testFlowDailyFailed(JobInfoBean jobInfo) {
 		
 		LOGGER.info("Client exec done ,testFlowDailyFailed:{}",  jobInfo);
-		throw new BaseException();
+		if(new Random().nextInt(10) == 1){
+			// 偶尔报错
+			throw new BaseException("client throw a exception ");
+		}
 		
 	}
 

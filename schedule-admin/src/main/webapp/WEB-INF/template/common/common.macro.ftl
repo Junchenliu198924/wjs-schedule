@@ -86,8 +86,8 @@
 				<li class="nav-click" ><a href="${request.contextPath}/workstudio"><i class="fa fa-circle-o text-red"></i> <span>工作台</span></a></li>
 				<li class="nav-click" ><a href="${request.contextPath}/jobgroup"><i class="fa fa-circle-o text-red"></i> <span>任务分组</span></a></li>
 				<li class="nav-click" ><a href="${request.contextPath}/jobinfo"><i class="fa fa-circle-o text-red"></i> <span>任务详情</span></a></li>
-				<li class="nav-click" ><a href="${request.contextPath}/joblog"><i class="fa fa-circle-o text-yellow"></i><span>调度日志</span></a></li>
                 <li class="nav-click" ><a href="${request.contextPath}/jobclient"><i class="fa fa-circle-o text-aqua"></i> <span>客户端查看</span></a></li>
+				<li class="nav-click" ><a href="${request.contextPath}/joblog"><i class="fa fa-circle-o text-yellow"></i><span>调度日志</span></a></li>
 				<li class="nav-click" ><a href="${request.contextPath}/crontab"><i class="fa fa-circle-o text-red"></i><span>CronTab设置</span></a></li>
 			</ul>
 		</section>

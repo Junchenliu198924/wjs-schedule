@@ -8,9 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
 import com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
+import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
 import com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
@@ -21,7 +22,10 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 	@Autowired
 	CuckooNetServerInfoMapper cuckooNetServerInfoMapper;
 	
-	private static final Gson gson = new GsonBuilder().create();
+	@Autowired
+	CuckooNetClientInfoMapper cuckooNetClinetInfoMapper;
+	
+//	private static final Gson gson = new GsonBuilder().create();
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MinaHeartBeatMessageFactory.class);
 	public Object getRequest(IoSession session) {
@@ -32,6 +36,39 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 
 		LOGGER.info("request heart beat set: " + CuckooMessageType.HEARTBEATSERVER.getValue());
 		InetSocketAddress serverAddr = (InetSocketAddress)session.getLocalAddress();
+		InetSocketAddress clientAddr = (InetSocketAddress)session.getRemoteAddress();
+		try {
+			// 更新服务端活跃时间
+			updateServerStatus(serverAddr);
+			
+			// 更新客户端活跃时间（如果客户端长时间不活跃，可以通过QuartzAutoJobExecutor删除尝试建不活跃的client_info和client_regiest_map）
+			updateClinetStatus(clientAddr);
+		} catch (Exception e) {
+			LOGGER.error("Unknown error :{}", e.getMessage() , e);
+		}
+		
+		return CuckooMessageType.HEARTBEATSERVER.getValue();
+//		return gson.toJson(messageInfo);
+	}
+
+	
+	/*
+	 * 更新客户端活跃时间
+	 * （如果客户端长时间不活跃，可以通过QuartzAutoJobExecutor删除尝试建不活跃的client_info和client_regiest_map）
+	 */
+	private void updateClinetStatus(InetSocketAddress clientAddr) {
+		
+		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
+		clientCrt.createCriteria().andIpEqualTo(clientAddr.getHostName())
+		.andPortEqualTo(clientAddr.getPort());
+		
+		CuckooNetClientInfo updateTime = new CuckooNetClientInfo();
+		updateTime.setModifyDate(System.currentTimeMillis());
+		
+		cuckooNetClinetInfoMapper.updateByExampleSelective(updateTime, clientCrt);
+	}
+
+	private void updateServerStatus(InetSocketAddress serverAddr) {
 		CuckooNetServerInfoCriteria serverCrt = new CuckooNetServerInfoCriteria();
 		serverCrt.createCriteria().andIpEqualTo(serverAddr.getHostName())
 		.andPortEqualTo(serverAddr.getPort());
@@ -40,9 +77,6 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 		updateTime.setModifyDate(System.currentTimeMillis());
 		
 		cuckooNetServerInfoMapper.updateByExampleSelective(updateTime, serverCrt);
-		
-		return CuckooMessageType.HEARTBEATSERVER.getValue();
-//		return gson.toJson(messageInfo);
 	}
 
 	public Object getResponse(IoSession session, Object request) {

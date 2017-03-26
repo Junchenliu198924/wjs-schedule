@@ -150,11 +150,14 @@ CREATE INDEX idx_jobnext_jobid ON cuckoo_job_next_job(job_id ASC );
 
 --- 网络通信管理表
 
+
 CREATE TABLE cuckoo_net_client_info
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	ip                             varchar(30)     DEFAULT ''         NOT NULL	COMMENT 'IP地址',
 	port                           int             DEFAULT 0          NOT NULL	COMMENT '端口号',
+	client_tag                     varchar(30)     DEFAULT ''         NOT NULL	COMMENT '客户端标识',
+	modify_date                    decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '修改时间',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -163,7 +166,6 @@ COMMENT='客户端信息表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
 CREATE INDEX uk_netclient_ip_port ON cuckoo_net_client_info(ip ASC ,port ASC );
-
 
 CREATE TABLE cuckoo_net_client_job_map
 (

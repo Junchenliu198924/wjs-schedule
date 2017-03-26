@@ -5,11 +5,16 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.wjs.schedule.net.server.MinaHeartBeatMessageFactory;
 import com.wjs.schedule.net.vo.IoClientInfo;
 
 public class JobClientSessionCache {
-
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobClientSessionCache.class);
+	
 	/**
 	 * 客户端连接缓存 Map<clientId,Socket>
 	 */
@@ -30,7 +35,18 @@ public class JobClientSessionCache {
 	}
 
 	public static void remove(Long clientId) {
-
+		
+		IoClientInfo  clientInfo = channel.get(clientId);
+		if(null != clientInfo){
+			IoSession session = clientInfo.getSession();
+			if(null != session){
+				try {
+					session.close(true);
+				} catch (Exception e) {
+					LOGGER.error("session close immediately error:{}", e.getMessage() , e);
+				}
+			}
+		}
 		channel.remove(clientId);
 	}
 
