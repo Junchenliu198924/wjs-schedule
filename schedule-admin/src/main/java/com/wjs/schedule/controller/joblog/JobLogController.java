@@ -58,7 +58,6 @@ public class JobLogController extends BaseController {
 		// 任务类型
 		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
 		request.setAttribute("jobGroupList", jobGroupList);
-
 		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();
 		CuckooJobGroup groupNull = new CuckooJobGroup();
 		groupNull.setGroupName("全部/无");
@@ -66,6 +65,10 @@ public class JobLogController extends BaseController {
 		jobGroupsWithNull.addAll(jobGroupList);
 		request.setAttribute("jobGroupsWithNull", jobGroupsWithNull);
 		
+		// 执行状态
+
+		CuckooJobExecStatus[] jobExecStatus = CuckooJobExecStatus.values();
+		request.setAttribute("jobExecStatusList", jobExecStatus);
 		
 		return "joblog/joblog.index";
 	}

@@ -74,8 +74,9 @@ $(function() {
 	        	var obj = {};
 	        	obj.groupId = $('#groupId').val();
 	        	obj.jobId = $('#jobId').val();
-	        	obj.logId = $('#logId').val();
+	        	obj.jobStatusStr = $("#jobStatusStr").val();
 				obj.filterTime = $('#filterTime').val();
+	        	obj.logId = $('#logId').val();
 	        	obj.start = d.start;
 	        	obj.limit = d.length;
                 return obj;

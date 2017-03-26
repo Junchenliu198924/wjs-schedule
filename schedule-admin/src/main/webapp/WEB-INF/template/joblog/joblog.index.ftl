@@ -54,12 +54,18 @@
 	              	</div>
 	            </div>
 	            
-	            <div class="col-xs-3">
+	            <div class="col-xs-4">
 	              	<div class="input-group">
-	                	<span class="input-group-addon">日志ID</span>
-                		<input type="text" class="form-control" id="logId" value="${id}" autocomplete="on" >
+	                	<span class="input-group-addon">任务状态</span>
+                		<select class="form-control" id="jobStatusStr" >
+                			<#list jobExecStatusList as list>
+                				<option value="${list.value}" >${list.description}</option>
+                			</#list>
+	                  	</select>
 	              	</div>
 	            </div>
+	            
+	            
 	    	</div>
 	            
 			<div class="row">	            
@@ -73,6 +79,12 @@
 	              	</div>
 	            </div>
 	            
+				<div class="col-xs-3">
+	              	<div class="input-group">
+	                	<span class="input-group-addon">日志ID</span>
+                		<input type="text" class="form-control" id="logId" value="${id}" autocomplete="on" >
+	              	</div>
+	            </div>
 				
 	            <div class="col-xs-2">
 	            	<button class="btn btn-block btn-info" id="searchBtn">搜索</button>
