@@ -108,7 +108,7 @@ public class CuckooJobExecutor {
 				throw new JobCanNotRunningException("no executor fund, add job into todo queue,jobLog:{}", jobLog);
 			}
 			jobLog.setCuckooClientIp(cuckooNetClientInfo.getIp());
-			jobLog.setCuckooClientTag(String.valueOf(cuckooNetClientInfo.getPort()));
+			jobLog.setCuckooClientPort(cuckooNetClientInfo.getPort());
 			
 			// 调用日志执行单元(远程调用)
 			JobInfoBean jobBean = new JobInfoBean();
@@ -123,7 +123,7 @@ public class CuckooJobExecutor {
 
 			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(cuckooNetClientInfo, jobBean);
 
-
+			remark = remoteExecutor.getRemark();
 			LOGGER.info("job exec result,remark:{},jobInfo:{}", remark, jobLog);
 			// 插入执行日志
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);

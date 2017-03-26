@@ -14,15 +14,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wjs.schedule.component.cache.JobClientSessionCache;
+import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
 import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
 import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
 import com.wjs.schedule.dao.exec.CuckooNetServerJobMapMapper;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
 import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
 import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
 import com.wjs.schedule.domain.exec.CuckooNetServerJobMapCriteria;
+import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.service.job.CuckooJobLogService;
 
 /**
  * 监听客户端连接，断开，异常操作。相关操作需要修改数据库，并修改缓存
@@ -45,6 +50,13 @@ public class RegistFilter extends IoFilterAdapter{
 	
 	@Autowired
 	CuckooNetServerJobMapMapper cuckooNetServerJobMapMapper;
+	
+	
+	@Autowired
+	CuckooJobExecLogMapper cuckooJobExecLogMapper;
+	
+	@Autowired
+	CuckooJobLogService cuckooJobLogService;
 	
 	/**
 	 这个方法在你的程序、Mina 自身出现异常时回调，一般这里是关闭IoSession。
@@ -112,11 +124,48 @@ public class RegistFilter extends IoFilterAdapter{
 	@Override
 	public void sessionClosed(NextFilter nextFilter, IoSession session) throws Exception {
 
-		SocketAddress clientAddr = session.getRemoteAddress();
-		LOGGER.error("客户端关闭:{}", clientAddr.toString());
+
 		InetSocketAddress clientSocket = (InetSocketAddress)session.getRemoteAddress();
-//		LOGGER.info("客户端IP："+ clientSocket.getHostName());
-//		LOGGER.info("客户端Port："+ clientSocket.getPort());
+		LOGGER.error("客户端关闭:{}", clientSocket.toString());
+		
+		try {
+			cuckooNetPreserve(clientSocket, session);
+		} catch (Exception e) {
+			LOGGER.error("unknow error:{}", e.getMessage(), e);
+		}
+		
+		try {
+			runningJobBreakWhenSessionClosed(clientSocket, session);
+		} catch (Exception e) {
+			LOGGER.error("unknow error:{}", e.getMessage(), e);
+		}
+		
+
+		super.sessionClosed(nextFilter, session);
+	}
+
+	/**
+	 * 正在执行的任务，设置成断线
+	 * @param session
+	 */
+	private void runningJobBreakWhenSessionClosed(InetSocketAddress clientSocket , IoSession session) {
+		
+		
+		CuckooJobExecLogCriteria logCrt = new CuckooJobExecLogCriteria();
+		logCrt.createCriteria().andCuckooClientIpEqualTo(clientSocket.getHostName())
+		.andCuckooClientPortEqualTo(clientSocket.getPort())
+		.andExecJobStatusEqualTo(CuckooJobExecStatus.RUNNING.getValue());
+		
+		List<CuckooJobExecLog> logs = cuckooJobExecLogMapper.selectByExample(logCrt);
+		if(CollectionUtils.isNotEmpty(logs)){
+			for (CuckooJobExecLog cuckooJobExecLog : logs) {
+				// 更新日志
+				cuckooJobLogService.updateJobLogStatusById(cuckooJobExecLog.getId(), CuckooJobExecStatus.BREAK, "session closed!");
+			}
+		}
+	}
+
+	private void cuckooNetPreserve(InetSocketAddress clientSocket , IoSession session) {
 		
 		// 删除client数据
 		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
@@ -155,8 +204,6 @@ public class RegistFilter extends IoFilterAdapter{
 		
 	
 		JobClientSessionCache.remove(session);
-
-		super.sessionClosed(nextFilter, session);
 	}
 
 	/**

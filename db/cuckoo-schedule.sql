@@ -85,7 +85,7 @@ CREATE TABLE cuckoo_job_exec_log
 	job_end_time                   decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '任务结束时间',
 	exec_job_status                varchar(10)     DEFAULT ''         NOT NULL	COMMENT '执行状态',
 	cuckoo_client_ip               varchar(30)     DEFAULT ''         NOT NULL	COMMENT '执行器IP',
-	cuckoo_client_tag              varchar(128)    DEFAULT ''         NOT NULL	COMMENT '客户端标识',
+	cuckoo_client_port             int             DEFAULT 0          NOT NULL	COMMENT '客户端port',
 	latest_check_time              decimal(13,0)   DEFAULT 0          NOT NULL	COMMENT '最近检查时间',
 	need_triggle_next              boolean         DEFAULT 1          NOT NULL	COMMENT '是否触发下级任务',
 	force_triggle                  boolean         DEFAULT 1          NOT NULL	COMMENT '是否强制触发',
