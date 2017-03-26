@@ -223,6 +223,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 			cuckooNetClientInfo = new CuckooNetClientInfo();
 			cuckooNetClientInfo.setIp(clientSocket.getHostName());
 			cuckooNetClientInfo.setPort(clientSocket.getPort());
+			cuckooNetClientInfo.setModifyDate(System.currentTimeMillis());
 			try {
 				cuckooNetClientInfoMapper.insertSelective(cuckooNetClientInfo);
 				cuckooNetClientInfo.setId(cuckooNetClientInfoMapper.lastInsertId());
