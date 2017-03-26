@@ -288,38 +288,56 @@ $(function() {
         errorClass : 'help-block',
         focusInvalid : true,  
         rules : {
-			jobDesc : {
-				required : true,
-				maxlength: 50
+        	groupId : {
+				required : true 
 			},
-            jobCron : {
+			jobClassApplication : {
             	required : true
             },
-			executorHandler : {
-				required : false
-			},
-            alarmEmail : {
-            	required : true
-            },
-			author : {
+            jobName : {
 				required : true
-			}
+			},
+			triggerType : {
+				required : true
+			},
+			typeDaily : {
+            	required : true
+            },
+            jobDesc : {
+				required : true,
+				maxlength: 200
+			},
+			preJobId : {
+				digits : true
+            },
+            overTime : {
+            	number : true
+            }
         }, 
         messages : {  
-            jobDesc : {
-            	required :"请输入“描述”."
+        	groupId : {
+            	required :"请选择“任务分组”."
             },
-            jobCron : {
-            	required :"请输入“Cron”."
+            jobClassApplication : {
+            	required :"请选择“执行应用”."
             },
-			executorHandler : {
-				required : "请输入“jobHandler”."
+            jobName : {
+				required : '请输入“CuckooTask("任务名称")”.'
 			},
-            alarmEmail : {
-            	required : "请输入“报警邮件”."
+			triggerType : {
+				required : "请选择触发方式"
+			},
+			typeDaily : {
+            	required : "请选择是否为日切任务"
             },
-            author : {
-            	required : "请输入“负责人”."
+            jobDesc : {
+            	required : "请输入“任务描述”."
+            },
+            preJobId : {
+            	digits : "只能输入一个触发任务的ID."
+            },
+            overTime : {
+            	number : "触发小时，必须是数字"
             }
         },
 		highlight : function(element) {  
@@ -353,8 +371,6 @@ $(function() {
 		editModalValidate.resetForm();
 		$("#editModal .form .form-group").removeClass("has-error");
 		$(".remote_panel").show();	// remote
-
-		$("#editModal .form input[name='executorHandler']").removeAttr("readonly");
 	});
 
 	
@@ -366,10 +382,21 @@ $(function() {
 		if("CRON" == triggerType){
 			$("#editModal .form div[name='cronDiv']").removeClass("hide");
 			$("#editModal .form div[name='triggerJobDiv']").addClass("hide");
+			// 判断是否为日切任务处理
+			var typeDaily = $("#editModal .form select[name='typeDaily']").val();
+			if("NO" == typeDaily){
+				$("#editModal .form div[name='offsetDiv']").addClass("hide");
+				$("#editModal .form input[name='offset']").val("");
+			}else if("YES" == typeDaily){
+				$("#editModal .form div[name='offsetDiv']").removeClass("hide");
+			}
 		}else if("JOB" == triggerType){
 //			,triggerJobDiv
 			$("#editModal .form div[name='cronDiv']").addClass("hide");
 			$("#editModal .form div[name='triggerJobDiv']").removeClass("hide");
+			// 非日切任务处理 -- 不需要配置offset
+			$("#editModal .form div[name='offsetDiv']").addClass("hide");
+			$("#editModal .form input[name='offset']").val("");
 		}else{
 			alert("unknow trigger type!!!");
 		}
@@ -383,8 +410,13 @@ $(function() {
 			$("#editModal .form div[name='offsetDiv']").addClass("hide");
 			$("#editModal .form input[name='offset']").val("");
 		}else if("YES" == typeDaily){
-//			,triggerJobDiv
-			$("#editModal .form div[name='offsetDiv']").removeClass("hide");
+			// 是日切任务，还需要判断是否为CRON类型任务，非CRON任务offset不需要配置，txdate有上级任务决定
+			if("CRON" == $("#editModal .form select[name='triggerType']").val()){
+				$("#editModal .form div[name='offsetDiv']").removeClass("hide");
+			}else{
+				$("#editModal .form div[name='offsetDiv']").addClass("hide");
+				$("#editModal .form input[name='offset']").val("");
+			}
 		}else{
 			alert("unknow typeDaily!!!");
 		}

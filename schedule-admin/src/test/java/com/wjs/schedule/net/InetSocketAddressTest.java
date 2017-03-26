@@ -7,7 +7,7 @@ public class InetSocketAddressTest {
 	public static void main(String[] args) {
 		InetSocketAddress addr = new InetSocketAddress("127.0.0.3", 2123);
 		System.out.println(addr.getPort());
-		System.out.println(addr.getHostName());
+		System.out.println(addr.getAddress().getHostAddress());
 		System.out.println(addr.getAddress());
 		System.out.println(addr.getHostString());
 		

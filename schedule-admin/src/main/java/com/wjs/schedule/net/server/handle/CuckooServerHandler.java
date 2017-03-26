@@ -1,10 +1,8 @@
 package com.wjs.schedule.net.server.handle;
 
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -16,15 +14,7 @@ import com.google.gson.GsonBuilder;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
-import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
-import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
-import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
-import com.wjs.schedule.dao.exec.CuckooNetRegistJobMapper;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
-import com.wjs.schedule.domain.exec.CuckooNetClientJobMap;
-import com.wjs.schedule.domain.exec.CuckooNetClientJobMapCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
 import com.wjs.schedule.service.server.CuckooNetService;
 
@@ -53,6 +43,8 @@ public class CuckooServerHandler extends IoHandlerAdapter {
      */
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
+    	
+
         String strMsg = message.toString();
         // 心跳信息
         if(CuckooMessageType.HEARTBEATCLIENT.getValue().equals(strMsg)){

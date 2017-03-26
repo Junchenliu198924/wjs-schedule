@@ -1,5 +1,7 @@
 package com.wjs.schedule.service.job;
 
+import java.util.Date;
+
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
@@ -42,9 +44,10 @@ public interface CuckooJobLogService {
 	/**
 	 * 初始化Cron类型任务触日志(如果是依赖类型的任务，有上级任务触发下级任务的时候初始化执行日志)
 	 * @param cuckooJobDetail
+	 * @param scheduledFireTime 
 	 * @return
 	 */
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) throws JobUndailyLogBreakException;
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException;
 
 	/**
 	 * 控制台执行非日切任务，初始化日志

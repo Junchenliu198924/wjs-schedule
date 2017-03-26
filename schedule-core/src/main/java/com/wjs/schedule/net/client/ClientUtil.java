@@ -167,7 +167,7 @@ public class ClientUtil {
 			msgInfo.setMessageType(messageType);
 			String msg = gson.toJson(msgInfo);
 			
-			LOGGER.info("客户端发送消息:server:{}, msg:{}",session.getServiceAddress(), msg);
+			LOGGER.info("客户端发送消息:server:{}, msg:{}",session.getLocalAddress(), msg);
 			session.write(msg);
 		} catch (Exception e) {
 			LOGGER.error("client message send error:{}" ,e.getMessage() ,e);

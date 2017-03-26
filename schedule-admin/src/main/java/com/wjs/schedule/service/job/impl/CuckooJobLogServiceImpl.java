@@ -120,7 +120,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail) throws JobUndailyLogBreakException {
+	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException {
 
 		CuckooJobExecLog cuckooJobExecLog = null;
 		if(null != cuckooJobId){
@@ -132,22 +132,22 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 
 		cuckooJobExecLog = new CuckooJobExecLog();
 		 
-		Long curTime =  System.currentTimeMillis();
-		
+		Long runTime =  System.currentTimeMillis();
+
+		Long curTime = scheduledFireTime.getTime();
 		// 写入初始化任务执行信息
 		PropertyUtil.copyProperties(cuckooJobExecLog, cuckooJobDetail);
 		cuckooJobExecLog.setId(null);
 		cuckooJobExecLog.setJobId(cuckooJobDetail.getId());
-		cuckooJobExecLog.setJobStartTime(curTime);
+		cuckooJobExecLog.setJobStartTime(runTime);
 		cuckooJobExecLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-		cuckooJobExecLog.setLatestCheckTime(curTime);
+		cuckooJobExecLog.setLatestCheckTime(runTime);
 		cuckooJobExecLog.setNeedTriggleNext(true);
 		cuckooJobExecLog.setForceTriggle(false);
 		
 		if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobDetail.getTypeDaily())){
 			// 如果是日切任务，那么计算出TxDate
-			
-			cuckooJobExecLog.setTxDate(DateUtil.addIntDate(DateUtil.getIntDay(new Date()), cuckooJobDetail.getOffset()));
+			cuckooJobExecLog.setTxDate(DateUtil.addIntDate(DateUtil.getIntDay(scheduledFireTime), cuckooJobDetail.getOffset()));
 		}else{
 			// 非日切任务,则认为是流式任务
 //			cuckooJobExecLog.setFlowLastTime(0L);
@@ -314,12 +314,17 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			if(CollectionUtils.isEmpty(firstResult)){
 				return true;
 			}else{
-				// 如果不为空,最近一条的执行是必须要连续的
-				if(!DateUtil.addIntDate(jobLog.getTxDate(), -1).equals(firstResult.get(0).getTxDate())){
-					LOGGER.info("job log exec is not continuous, curlogId:{},txdate:{},prelogId:{},curTime:{}"
+				// 如果不为空,最近一条的执行是必须要连续的,(最近一条是0的话，也可以通过)
+				if(!DateUtil.addIntDate(jobLog.getTxDate(), -1).equals(firstResult.get(0).getTxDate()) && !Integer.valueOf(0).equals(firstResult.get(0).getTxDate())){
+					LOGGER.info("job log exec is not continuous, curlogId:{},txdate:{},prelogId:{},txdate:{}"
 							, jobLog.getId(), jobLog.getTxDate(),firstResult.get(0).getId(), firstResult.get(0).getTxDate());
-					jobLog.setRemark("job log exec is not continuous, curlogId:" + jobLog.getId() + ",txdate:" + jobLog.getTxDate() + ",prelogId:" + firstResult.get(0).getId() + ",curTime:" + firstResult.get(0).getTxDate());
+					jobLog.setRemark("job log exec is not continuous, curlogId:" + jobLog.getId() + ",txdate:" + jobLog.getTxDate() + ",prelogId:" + firstResult.get(0).getId() + ",txdate:" + firstResult.get(0).getTxDate());
 					return false;
+				} else{
+					if(Integer.valueOf(0).equals(firstResult.get(0).getTxDate())){
+						// 一开始UnDaily任务，后来修改为Daily的情况会出现
+						return true;
+					}
 				}
 			}
 			

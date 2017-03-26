@@ -34,10 +34,10 @@ public class ServerUtil {
 		
 		try {
 			session.write(msg);
-			LOGGER.info("server send message succed:server:{}, msg:{}",session.getServiceAddress(), msg);
+			LOGGER.info("server send message succed:server:{}, msg:{}",session.getLocalAddress(), msg);
 		} catch (Exception e) {
-			LOGGER.info("server send message failed:server:{}, msg:{},error:{}",session.getServiceAddress(), msg ,e.getMessage() ,e);
-			throw new BaseException("server send message failed:server:{}, msg:{},error:{}",session.getServiceAddress(), msg ,e.getMessage());
+			LOGGER.info("server send message failed:server:{}, msg:{},error:{}",session.getLocalAddress(), msg ,e.getMessage() ,e);
+			throw new BaseException("server send message failed:server:{}, msg:{},error:{}",session.getLocalAddress(), msg ,e.getMessage());
 		}
 		
 	}

@@ -141,7 +141,7 @@ public class RegistFilter extends IoFilterAdapter{
 		
 		
 		CuckooJobExecLogCriteria logCrt = new CuckooJobExecLogCriteria();
-		logCrt.createCriteria().andCuckooClientIpEqualTo(clientSocket.getHostName())
+		logCrt.createCriteria().andCuckooClientIpEqualTo(clientSocket.getAddress().getHostAddress())
 		.andCuckooClientPortEqualTo(clientSocket.getPort())
 		.andExecJobStatusEqualTo(CuckooJobExecStatus.RUNNING.getValue());
 		
@@ -158,7 +158,7 @@ public class RegistFilter extends IoFilterAdapter{
 		
 		// 删除client数据
 		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
-		clientCrt.createCriteria().andIpEqualTo(clientSocket.getHostName())
+		clientCrt.createCriteria().andIpEqualTo(clientSocket.getAddress().getHostAddress())
 		.andPortEqualTo(clientSocket.getPort());
 		List<CuckooNetClientInfo> clientInfos = cuckooNetClientInfoMapper.selectByExample(clientCrt);
 		

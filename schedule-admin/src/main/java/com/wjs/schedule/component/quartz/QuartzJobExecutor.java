@@ -1,5 +1,8 @@
 package com.wjs.schedule.component.quartz;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -52,10 +55,13 @@ public class QuartzJobExecutor extends QuartzJobBean {
 	@Transactional
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
-		
-		
 		Trigger trigger = context.getTrigger();
-		JobKey jobKey = trigger.getJobKey();	
+		JobKey jobKey = trigger.getJobKey();
+		
+		Date scheduledFireTime = context.getScheduledFireTime();
+//		if("15".equals(jobKey.getName())){
+//			System.err.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(scheduledFireTime));
+//		}
 		
 		JobDataMap data = context.getMergedJobDataMap();
 		Object execIdObj = data.get(CuckooJobConstant.JOB_EXEC_ID);
@@ -82,7 +88,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 						jobKey.getGroup(), jobKey.getName());
 			}
 			try {
-				cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail);
+				cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail, scheduledFireTime);
 			} catch (JobUndailyLogBreakException e) {
 
 				LOGGER.error("");

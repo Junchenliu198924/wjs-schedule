@@ -37,6 +37,7 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 		LOGGER.info("request heart beat set: " + CuckooMessageType.HEARTBEATSERVER.getValue());
 		InetSocketAddress serverAddr = (InetSocketAddress)session.getLocalAddress();
 		InetSocketAddress clientAddr = (InetSocketAddress)session.getRemoteAddress();
+		
 		try {
 			// 更新服务端活跃时间
 			updateServerStatus(serverAddr);
@@ -59,7 +60,7 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 	private void updateClinetStatus(InetSocketAddress clientAddr) {
 		
 		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
-		clientCrt.createCriteria().andIpEqualTo(clientAddr.getHostName())
+		clientCrt.createCriteria().andIpEqualTo(clientAddr.getAddress().getHostAddress())
 		.andPortEqualTo(clientAddr.getPort());
 		
 		CuckooNetClientInfo updateTime = new CuckooNetClientInfo();
@@ -70,7 +71,7 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 
 	private void updateServerStatus(InetSocketAddress serverAddr) {
 		CuckooNetServerInfoCriteria serverCrt = new CuckooNetServerInfoCriteria();
-		serverCrt.createCriteria().andIpEqualTo(serverAddr.getHostName())
+		serverCrt.createCriteria().andIpEqualTo(serverAddr.getAddress().getHostAddress())
 		.andPortEqualTo(serverAddr.getPort());
 		
 		CuckooNetServerInfo updateTime = new CuckooNetServerInfo();

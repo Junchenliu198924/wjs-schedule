@@ -83,13 +83,12 @@ public class ConnectFilter extends IoFilterAdapter{
 	public void sessionClosed(NextFilter nextFilter, IoSession session) throws Exception {
 
 		InetSocketAddress clientAddr = (InetSocketAddress)session.getRemoteAddress();
-		
 		// 删除 链接
 		IoServerCollection.remove(clientAddr);
 		
 		// 新增待连接信息
 		IoServerBean bean = new IoServerBean();
-		bean.setIp(clientAddr.getHostName());
+		bean.setIp(clientAddr.getAddress().getHostAddress());
 		bean.setPort(clientAddr.getPort());
 		IoServerCollection.add(bean);
 		LOGGER.error("客户端异常:{}", clientAddr.toString());

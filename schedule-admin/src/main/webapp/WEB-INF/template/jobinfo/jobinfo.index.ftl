@@ -165,6 +165,7 @@
 						<label for="firstname" class="col-sm-2 control-label">分组名称<font color="red">*</font></label>
 						<div class="col-sm-4">
 							<select class="form-control" name="groupId" >
+								<option value="" ></option>
 	                			<#list jobGroupList as group>
 	                				<option value="${group.id}" >${group.groupName}</option>
 	                			</#list>
@@ -173,6 +174,7 @@
                         <label for="lastname" class="col-sm-2 control-label">执行应用<font color="red">*</font></label>
                         <div class="col-sm-4">
 	                        <select class="form-control" name="jobClassApplication" >
+								<option value="" ></option>
 	                			<#list jobAppList?keys as app>
 	                				<option value="${app}" >${jobAppList[app]}</option>
 	                			</#list>
@@ -205,6 +207,7 @@
                     	<label for="firstname" class="col-sm-2 control-label">触发方式<font color="red">*</font></label>
 					    <div class="col-sm-4">
 							<select class="form-control" name="triggerType" >
+								<option value="" ></option>
 		                		<#list jobTriggerTypeNoNull as item>
 		                			<option value="${item.value}" >${item.description}</option>
 		                		</#list>
@@ -235,6 +238,7 @@
 						<label for="lastname" class="col-sm-2 control-label">日切任务<font color="red">*</font></label>
 						<div class="col-sm-4">
 							<select class="form-control" name="typeDaily" >
+								<option value="" ></option>
 		                		<#list jobIsTypeDailyNoNull as item>
 		                			<option value="${item.value}" >${item.description}</option>
 		                		</#list>

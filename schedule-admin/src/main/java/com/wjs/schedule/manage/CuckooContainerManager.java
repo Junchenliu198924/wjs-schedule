@@ -28,6 +28,14 @@ public class CuckooContainerManager implements ApplicationListener<ContextRefres
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooJobCallBack.class);
 
+	public static void main(String[] args) {
+		try {
+			System.out.println(InetAddress.getLocalHost());
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 
@@ -37,11 +45,11 @@ public class CuckooContainerManager implements ApplicationListener<ContextRefres
 
 			try {
 				CuckooNetServerInfoCriteria crt = new CuckooNetServerInfoCriteria();
-				crt.createCriteria().andIpEqualTo(InetAddress.getLocalHost().getHostName())
+				crt.createCriteria().andIpEqualTo(InetAddress.getLocalHost().getHostAddress())
 				.andPortEqualTo(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
 				if(CollectionUtils.isEmpty(cuckooNetServerInfoMapper.selectByExample(crt))){
 					CuckooNetServerInfo cuckooNetServerInfo = new CuckooNetServerInfo();
-					cuckooNetServerInfo.setIp(InetAddress.getLocalHost().getHostName());
+					cuckooNetServerInfo.setIp(InetAddress.getLocalHost().getHostAddress());
 					cuckooNetServerInfo.setPort(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
 					cuckooNetServerInfo.setModifyDate(System.currentTimeMillis());
 					cuckooNetServerInfoMapper.insertSelective(cuckooNetServerInfo);

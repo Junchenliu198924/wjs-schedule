@@ -171,19 +171,18 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 
 		// 增加 server_job关系
 		
-		
 		InetSocketAddress serverSocket = (InetSocketAddress)session.getLocalAddress();
-//		LOGGER.info("服务端IP："+ serverSocket.getHostName());
+//		LOGGER.info("服务端IP："+ serverSocket.getAddress().getHostAddress());
 //		LOGGER.info("服务端Port："+ serverSocket.getPort());
 		// 是否存在server
 		CuckooNetServerInfoCriteria serverCrt =  new CuckooNetServerInfoCriteria();
-		serverCrt.createCriteria().andIpEqualTo(serverSocket.getHostName())
+		serverCrt.createCriteria().andIpEqualTo(serverSocket.getAddress().getHostAddress())
 		.andPortEqualTo(serverSocket.getPort());
 		CuckooNetServerInfo cuckooNetServerInfo = cuckooNetServerInfoMapper.lockByExample(serverCrt);
 		if(null == cuckooNetServerInfo){
 			// 不存在，新增服务器
 			cuckooNetServerInfo = new CuckooNetServerInfo();
-			cuckooNetServerInfo.setIp(serverSocket.getHostName());
+			cuckooNetServerInfo.setIp(serverSocket.getAddress().getHostAddress());
 			cuckooNetServerInfo.setPort(serverSocket.getPort());
 			cuckooNetServerInfo.setModifyDate(System.currentTimeMillis());
 			try {
@@ -192,7 +191,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 				cuckooNetServerInfo = cuckooNetServerInfoMapper.lockByPrimaryKey(cuckooNetServerInfo.getId());
 			} catch (Exception e) {
 				// 并发情况下，抛出异常，表示前面加锁失败了，后面再锁一次，忽略此处错误
-				LOGGER.error("concurrent insert cuckooNetServerInfo error,ip:{},port:{}", serverSocket.getHostName(), serverSocket.getPort(), e);
+				LOGGER.error("concurrent insert cuckooNetServerInfo error,ip:{},port:{}", serverSocket.getAddress().getHostAddress(), serverSocket.getPort(), e);
 				cuckooNetServerInfo = cuckooNetServerInfoMapper.lockByExample(serverCrt);
 			}
 			
@@ -211,17 +210,17 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 
 		// 增加client_info 
 		InetSocketAddress clientSocket = (InetSocketAddress)session.getRemoteAddress();
-//		LOGGER.info("客户端IP："+ clientSocket.getHostName());
+//		LOGGER.info("客户端IP："+ clientSocket.getAddress().getHostAddress());
 //		LOGGER.info("客户端Port："+ clientSocket.getPort());
 		
 		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
-		clientCrt.createCriteria().andIpEqualTo(clientSocket.getHostName())
+		clientCrt.createCriteria().andIpEqualTo(clientSocket.getAddress().getHostAddress())
 		.andPortEqualTo(clientSocket.getPort());
 		CuckooNetClientInfo cuckooNetClientInfo = cuckooNetClientInfoMapper.lockByExample(clientCrt);
 		if(null == cuckooNetClientInfo){
 			// 不存在改客户端信息，新增客户端
 			cuckooNetClientInfo = new CuckooNetClientInfo();
-			cuckooNetClientInfo.setIp(clientSocket.getHostName());
+			cuckooNetClientInfo.setIp(clientSocket.getAddress().getHostAddress());
 			cuckooNetClientInfo.setPort(clientSocket.getPort());
 			cuckooNetClientInfo.setModifyDate(System.currentTimeMillis());
 			try {
@@ -230,7 +229,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 				cuckooNetClientInfo = cuckooNetClientInfoMapper.lockByPrimaryKey(cuckooNetClientInfo.getId());
 			} catch (Exception e) {
 				// 并发情况下，抛出异常，表示前面加锁失败了，后面再锁一次，忽略此处错误
-				LOGGER.error("concurrent insert cuckooNetServerInfo error,ip:{},port:{}", serverSocket.getHostName(), serverSocket.getPort(), e);
+				LOGGER.error("concurrent insert cuckooNetServerInfo error,ip:{},port:{}", serverSocket.getAddress().getHostAddress(), serverSocket.getPort(), e);
 				cuckooNetClientInfo = cuckooNetClientInfoMapper.lockByExample(clientCrt);
 			}
 		}

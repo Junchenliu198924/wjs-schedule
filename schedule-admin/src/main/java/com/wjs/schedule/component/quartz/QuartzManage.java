@@ -97,7 +97,7 @@ public class QuartzManage {
 //				withMisfireHandlingInstructionFireAndProceed
 //				——以当前时间为触发频率立刻触发一次执行
 //				——然后按照Cron频率依次执行
-		if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
+		if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily.getValue())){
 			// 日切任务遗漏任务自动触发
 			cronScheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
 		}else{
