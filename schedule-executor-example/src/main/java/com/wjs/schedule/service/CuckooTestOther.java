@@ -7,4 +7,7 @@ public interface CuckooTestOther {
 	
 
 	public void testCronJobAutoInit(JobInfoBean jobInfo);
+	
+	
+	public void testCronJobOverTime(JobInfoBean jobInfo);
 }
