@@ -237,10 +237,10 @@ public class JobInfoController extends BaseController{
 		
 		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
 			
-			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyy-MM-dd HH:mm:ss:SSS"), DateUtil.getLongTime(flowCurTime, "yyyy-MM-dd HH:mm:ss:SSS"), true);
+			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyy-MM-dd HH:mm:ss:SSS"), DateUtil.getLongTime(flowCurTime, "yyyy-MM-dd HH:mm:ss:SSS"), false);
 		}else if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
 
-			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate, true);
+			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate, false);
 		}else{
 			throw new BaseException("Unknow triggerType:{}", typeDaily);
 		}

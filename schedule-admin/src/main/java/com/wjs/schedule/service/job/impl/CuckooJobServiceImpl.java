@@ -456,7 +456,9 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 		jobLog.setLatestCheckTime(curTime);
 		jobLog.setNeedTriggleNext(fatherJobLog.getNeedTriggleNext());
-		jobLog.setForceTriggle(fatherJobLog.getForceTriggle());
+		// 强制执行属性，不继承
+//		jobLog.setForceTriggle(fatherJobLog.getForceTriggle());
+		jobLog.setForceTriggle(false);
 		jobLog.setTxDate(fatherJobLog.getTxDate());
 		jobLog.setFlowLastTime(fatherJobLog.getFlowLastTime());
 		jobLog.setFlowCurTime(fatherJobLog.getFlowCurTime());
