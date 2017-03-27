@@ -23,7 +23,7 @@ public class CuckooTestOtherImpl implements CuckooTestOther {
 	}
 
 	@Override
-	@CuckooTask("testCronJobAutoInit")
+	@CuckooTask("testCronJobOverTime")
 	public void testCronJobOverTime(JobInfoBean jobInfo) {
 		
 		try {
