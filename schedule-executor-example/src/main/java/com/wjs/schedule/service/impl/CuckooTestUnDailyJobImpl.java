@@ -16,10 +16,19 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooTestUnDailyJobImpl.class);
+	
+	
+
+	int time = 60*10 * 1000;
 	@Override
 	@CuckooTask("testCronUnDailySucced")
 	public void testCronUnDailySucced(JobInfoBean jobInfo) {
 		// 测试完成
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testCronUnDailySucced:{}" , jobInfo );
 	}
 
@@ -27,6 +36,11 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 	@CuckooTask("testCronUnDailyFailed")
 	public void testCronUnDailyFailed(JobInfoBean jobInfo) {
 		// 测试完成
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testCronUnDailyFailed:{}",  jobInfo);
 		if(new Random().nextInt(10) == 1){
 			// 偶尔报错
@@ -38,6 +52,11 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 	@CuckooTask("testFlowUnDailySucced")
 	public void testFlowUnDailySucced(JobInfoBean jobInfo) {
 		// 测试完成
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testFlowUnDailySucced:{}",  jobInfo);
 	}
 
@@ -46,6 +65,11 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 	public void testFlowUnDailyFailed(JobInfoBean jobInfo) {
 		// 测试完成
 
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testFlowUnDailyFailed:{}",  jobInfo);
 		if(new Random().nextInt(10) == 1){
 			// 偶尔报错

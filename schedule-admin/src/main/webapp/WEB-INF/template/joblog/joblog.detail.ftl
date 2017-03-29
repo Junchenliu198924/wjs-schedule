@@ -42,7 +42,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 		         	<div class="modal-body">
-		         		<button id="searchBtn" class="btn btn-primary" _id="${log.id}" >执行</button>
+		         		<button id="searchBtn" class="btn btn-primary" _id="${log.id}" >查看依赖关系</button>
 						<form class="form-horizontal form" role="form" >
 							<div class="modal-header">
 				            	<h4 class="modal-title" name="title" >任务基础信息:日志ID(${log.id})</h4>

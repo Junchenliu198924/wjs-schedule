@@ -36,6 +36,7 @@ import com.wjs.schedule.service.server.CuckooNetService;
 import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
 import com.wjs.schedule.vo.qry.JobLogQry;
+import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.config.ConfigUtil;
 import com.wjs.util.dao.PageDataList;
@@ -144,7 +145,7 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 			Entry<String, Set<CuckooJobExecLogVo>> entry = it.next();
 			
 			StringBuffer mailTitle = new StringBuffer("任务执行超时提醒");
-			StringBuffer mailContent = new StringBuffer("超时任务信息列表:");
+			StringBuffer mailContent = new StringBuffer("超时任务信息列表:"+DateUtil.getStringDay(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
 			
 			Set<CuckooJobExecLogVo> logs = entry.getValue();
 			for (Iterator<CuckooJobExecLogVo> logIt =  logs.iterator(); logIt.hasNext() ;) {
@@ -152,7 +153,7 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 				CuckooJobExecLogVo vo = logIt.next();
 //				mailTitle.append(vo.getJobName() + ",");
 				
-				mailContent.append("/n");
+				mailContent.append("<br/>");
 				mailContent.append("logId:");
 				mailContent.append(vo.getId());
 				mailContent.append(",jobId:");

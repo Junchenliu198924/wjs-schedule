@@ -32,7 +32,7 @@ $(function() {
 
 						$('#triggerHeader').html("任务依赖关系，业务时间："+ curJob.txDate);
 					}else{
-						$('#triggerHeader').html("任务依赖关系，业务时间："+ jobInfo.jobEndTimeDesc+'~'+jobInfo.jobStartTimeDesc);
+						$('#triggerHeader').html("任务依赖关系，业务时间："+ curJob.jobEndTimeDesc+'~'+curJob.jobStartTimeDesc);
 					}
 					
 					

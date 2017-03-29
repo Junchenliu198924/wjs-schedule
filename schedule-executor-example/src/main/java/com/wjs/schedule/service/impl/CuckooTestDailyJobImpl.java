@@ -17,11 +17,17 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooTestDailyJobImpl.class);
 
+	int time = 60*60*1 * 1000;
 	@Override
 	@CuckooTask("testCronDailySucced")
 	public void testCronDailySucced(JobInfoBean jobInfo) {
 		// 测试完成
-
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
+		
 		LOGGER.info("Client exec done ,testCronDailySucced:{}",  jobInfo);
 	}
 
@@ -29,7 +35,11 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	@CuckooTask("testCronDailyFailed")
 	public void testCronDailyFailed(JobInfoBean jobInfo) {
 		// 测试完成
-
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testCronDailySucced:{}",  jobInfo);
 		if(new Random().nextInt(10) == 1){
 			// 偶尔报错
@@ -40,14 +50,22 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	@Override
 	@CuckooTask("testCronDailyDependencySucced")
 	public void testCronDailyDependencySucced(JobInfoBean jobInfo) {
-
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testCronDailyDependencySucced:{}",  jobInfo);
 	}
 
 	@Override
 	@CuckooTask("testFlowDailySucced")
 	public void testFlowDailySucced(JobInfoBean jobInfo) {
-
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testFlowDailySucced:{}",  jobInfo);
 		
 	}
@@ -55,7 +73,11 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	@Override
 	@CuckooTask("testFlowDailyFailed")
 	public void testFlowDailyFailed(JobInfoBean jobInfo) {
-		
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testFlowDailyFailed:{}",  jobInfo);
 		if(new Random().nextInt(10) == 1){
 			// 偶尔报错
@@ -67,7 +89,11 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 	@Override
 	@CuckooTask("testFlowDailyDependencySucced")
 	public void testFlowDailyDependencySucced(JobInfoBean jobInfo) {
-
+		try {
+			Thread.sleep(new Random().nextInt(time ));
+		} catch (InterruptedException e) {
+			LOGGER.error("thread error,{}", e.getMessage());
+		}
 		LOGGER.info("Client exec done ,testFlowDailyDependencySucced:{}",  jobInfo);
 		
 	}

@@ -28,6 +28,7 @@ import com.wjs.schedule.exception.JobUndailyLogBreakException;
 import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobNextService;
+import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
@@ -58,6 +59,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Autowired
 	CuckooJobNextService cuckooJobNextService;
+	
+	@Autowired
+	CuckooJobService cuckooJobService;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -491,7 +495,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 
 	private CuckooJobExecLog nullLog(Long nextJobId) {
 
+		CuckooJobDetail jobInfo = cuckooJobService.getJobById(nextJobId);
 		CuckooJobExecLog log = new CuckooJobExecLog();
+		PropertyUtil.copyProperties(log, jobInfo);
 		log.setJobId(nextJobId);
 		return log;
 	}
