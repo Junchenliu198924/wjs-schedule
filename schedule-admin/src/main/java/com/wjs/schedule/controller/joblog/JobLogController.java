@@ -2,7 +2,10 @@ package com.wjs.schedule.controller.joblog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -189,6 +192,7 @@ public class JobLogController extends BaseController {
 		if(null == cuckooJobExecLog){
 			 throw new BaseException("can not get jobLog by logid:{}", logId);
 		}
+		cuckooJobExecLog.setJobStartTime(System.currentTimeMillis());
 		cuckooJobExecLog.setForceTriggle(true);
 		cuckooJobExecLog.setNeedTriggleNext(needTriggleNext == null ? false : needTriggleNext);
 		CuckooJobDetail jobDetail = cuckooJobService.getJobById(cuckooJobExecLog.getJobId());
@@ -226,5 +230,68 @@ public class JobLogController extends BaseController {
 		return vo;
 	}
 	
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/execview")
+	public Object execview(Long logId){
+		
+		if(null == logId){
+			throw new BaseException("logid can not be null");
+		}
+		
+		
+		CuckooJobExecLog cuckooJobExecLog = cuckooJobLogService.getJobLogByLogId(logId);
+		if(null == cuckooJobExecLog){
+			 throw new BaseException("can not get jobLog by logid:{}", logId);
+		}
+		
+		Map<String, Object> rtn = new HashMap<>();
+		// 查询
+		CuckooJobExecLog preJobLog = cuckooJobLogService.getPreJobLogs(cuckooJobExecLog);
+		List<CuckooJobExecLog> dependencyJobLogs = cuckooJobLogService.getDependencyJobs(cuckooJobExecLog);
+		// 依赖任务中过滤掉上级触发任务
+		if(CollectionUtils.isNotEmpty(dependencyJobLogs) && null != preJobLog ){
+			for (Iterator<CuckooJobExecLog> it = dependencyJobLogs.iterator(); it.hasNext() ;) {
+				CuckooJobExecLog depLog = it.next();
+				if(preJobLog.getId().equals(depLog.getId())){
+					it.remove();
+				}
+			}
+		}
+		
+		List<CuckooJobExecLog> nextJobLogs = cuckooJobLogService.getNextJobs(cuckooJobExecLog);
+		CuckooJobExecLog curJob =  cuckooJobLogService.getJobLogByLogId(logId);
+		rtn.put("curJob", convertLogVo(curJob));
+		rtn.put("depJobs", convertLogVos(dependencyJobLogs));
+		rtn.put("nextJobs", convertLogVos(nextJobLogs));
+		rtn.put("preJob", convertLogVo(preJobLog));
+		
+		return success(rtn);
+	}
+
+	private CuckooJobExecLogVo convertLogVo(CuckooJobExecLog jobLog) {
+		
+		if(null == jobLog){
+			return null;
+		}
+		CuckooJobExecLogVo vo = new CuckooJobExecLogVo();
+		PropertyUtil.copyProperties(vo, jobLog);
+		CuckooJobGroup group = cuckooGroupService.getGroupById(jobLog.getGroupId());
+		vo.setGroupName(group == null? "" : group.getGroupName());
+		return vo;
+	}
+
+	private List<CuckooJobExecLogVo> convertLogVos(List<CuckooJobExecLog> nextJobLogs) {
+		
+		List<CuckooJobExecLogVo> vos = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(nextJobLogs)){
+			for (CuckooJobExecLog cuckooJobExecLog : nextJobLogs) {
+				
+				vos.add(convertLogVo(cuckooJobExecLog));
+			}
+		}
+		return vos;
+	}
 	
 }

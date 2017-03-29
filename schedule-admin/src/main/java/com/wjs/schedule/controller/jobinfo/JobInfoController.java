@@ -2,6 +2,7 @@ package com.wjs.schedule.controller.jobinfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
+import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
@@ -328,5 +330,75 @@ public class JobInfoController extends BaseController{
 		return success();
 	}
 	
+	
+	@RequestMapping(value="/execview")
+	@ResponseBody
+	public Object execview(HttpServletRequest request, Long jobId){
+		
+		if(null == jobId){
+			throw new BaseException("logid can not be null");
+		}
+		
+		
+		CuckooJobDetail cuckooJobDetail = cuckooJobService.getJobById(jobId);
+		if(null == cuckooJobDetail){
+			 throw new BaseException("can not get jobInfo by logid:{}", jobId);
+		}
+		
+		Map<String, Object> rtn = new HashMap<>();
+		// 查询
+		Long preJobId = cuckooJobNextService.findJobIdByNextJobId(jobId);
+		
+		List<Long> dependencyIds = cuckooJobDependencyService.listDependencyIdsByJobId(jobId);
+		
+		// 依赖任务中过滤掉上级触发任务
+		if(CollectionUtils.isNotEmpty(dependencyIds) && null != preJobId ){
+			for (Iterator<Long> it = dependencyIds.iterator(); it.hasNext() ;) {
+				Long id = it.next();
+				if(preJobId.equals(id)){
+					it.remove();
+				}
+			}
+		}
+
+		List<Long> nextJobIds = cuckooJobNextService.findNextJobIdByJobId(jobId);
+		
+		rtn.put("curJob", convertJobVo(jobId));
+		rtn.put("depJobs", convertJobVos(dependencyIds));
+		rtn.put("nextJobs", convertJobVos(nextJobIds));
+		rtn.put("preJob", convertJobVo(preJobId));
+		
+		return success(rtn);
+	}
+
+
+	private List<CuckooJobDetailVo> convertJobVos(List<Long> dependencyIds) {
+
+		List<CuckooJobDetailVo> result = new ArrayList<>();
+
+		if(CollectionUtils.isNotEmpty(dependencyIds)){
+			for (Long jobId : dependencyIds) {
+				result.add(convertJobVo(jobId));
+			}
+		}
+		
+		return result;
+	}
+
+
+	private CuckooJobDetailVo convertJobVo(Long jobId) {
+
+		CuckooJobDetailVo vo = new CuckooJobDetailVo();
+
+		CuckooJobDetail cuckooJobDetail = cuckooJobService.getJobById(jobId);
+		if(null == cuckooJobDetail){
+			return null;
+		}
+		PropertyUtil.copyProperties(vo, cuckooJobDetail);
+		CuckooJobGroup group = cuckooGroupService.getGroupById(cuckooJobDetail.getGroupId());
+		vo.setGroupName(group.getGroupName());
+		return vo;
+	}
+		
 	
 }

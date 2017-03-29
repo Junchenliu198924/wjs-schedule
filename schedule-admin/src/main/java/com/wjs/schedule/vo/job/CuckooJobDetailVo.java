@@ -25,7 +25,7 @@ public class CuckooJobDetailVo {
     /**
      * 分组名称
      */
-    private Long groupName;
+    private String groupName;
 
     /**
      * 任务名称 -- cuckoo_job_details.job_name
@@ -268,11 +268,11 @@ public class CuckooJobDetailVo {
 
     
 
-    public Long getGroupName() {
+    public String getGroupName() {
 		return groupName;
 	}
 
-	public void setGroupName(Long groupName) {
+	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
 

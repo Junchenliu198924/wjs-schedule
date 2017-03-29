@@ -94,7 +94,7 @@ $(function() {
 	                { "data": 'triggerType', "visible" : true},
 					
 
-	                { "data": 'cronExpression', "visible" : true},
+	                { "data": 'cronExpression', "visible" : false},
 	                { "data": 'execJobStatus', "visible" : true},
 	                { 
 	                	"data": 'jobStartTime', 
@@ -102,6 +102,7 @@ $(function() {
 	                		return data != 0 ?moment(new Date(data)).format("YYYY-MM-DD HH:mm:ss"):"";
 	                	}
 	                },
+	                { "data": 'jobExecTimeDesc', "visible" : true},
 	                { 
 	                	"data": 'jobEndTime', 
 	                	"render": function ( data, type, row ) {
@@ -124,7 +125,7 @@ $(function() {
 	                
 
 
-	                { "data": 'cuckooClientIp'},
+	                { "data": 'cuckooClientIp', "visible" : false},
 	                { "data": 'cuckooClientTag', "visible" : false},
 	                { "data": 'typeDaily', "visible" : true},
 	                { "data": 'txDate',

@@ -127,6 +127,7 @@ $(function() {
 //								' flowCurTime="'+ row.flowCurTime +'" '+
 								'>'+
 								'<button class="btn btn-primary btn-xs trigger"  type="button">执行</button>  '+
+								'<button class="btn btn-primary btn-xs jobdependency"  type="button">查看依赖</button>  '+
 								pause_resume +
 								'<button class="btn btn-primary btn-xs" type="job_del" type="button" onclick="javascript:window.open(\'' + logUrl + '\')" >日志</button><br>  '+
 								'<button class="btn btn-warning btn-xs update" type="button">编辑</button>  '+
@@ -480,6 +481,97 @@ $(function() {
 	});
 	
 	
+	
+	
+	$("#job_list").on('click', '.jobdependency',function() {
+
+		var _id = $(this).parent('p').attr("id");
+		
+		// show
+		
+		$.ajax({
+			type : 'POST',
+			url : base_url + '/jobinfo/execview',
+			data : {"jobId":_id},
+			dataType : "json",
+			success : function(data){
+				if (data.resultCode = "success") {
+					
+					// 增加当前任务信息
+					var curJob = data.data.curJob;
+
+					var preJob = data.data.preJob;
+					var depJobs = data.data.depJobs;
+					var nextJobs = data.data.nextJobs;
+					
+					if(curJob == null){
+						ComAlert.show(2, "无法获得当前日志信息");
+						return;
+					}
+					
+					
+					
+					// 删除所有信息
+					$('#modalContainer').html("");
+					
+					// 添加当前任务
+					var curContainer = $('<div class="form-group  modal-header" > </div>' ) ;
+					curContainer.append(createJob("当前任务",curJob));
+					$('#modalContainer').append(curContainer);
+					
+					// 添加前置任务
+					var preContainer = $('<div class="form-group  modal-header" > </div>');
+					curContainer.before(preContainer);
+					
+					if(preJob != null){
+						preContainer.append(createJob("触发任务",preJob));
+					}
+					if(depJobs != null && depJobs.length > 0){
+						for(var i = 0 ; i < depJobs.length ; i++){
+							preContainer.append(createJob("依赖任务",depJobs[i]));
+						}
+					}
+					
+
+					// 添加后续任务
+					
+					var nextContainer = $('<div class="form-group  modal-header" > </div>');
+					curContainer.after(nextContainer);
+					if(nextJobs != null && nextJobs.length > 0){
+						for(var i = 0 ; i < nextJobs.length ; i++){
+							nextContainer.append(createJob("后续任务",nextJobs[i]));
+						}
+					}
+					
+					
+					//  显示
+					$('#dependencyModal').modal({backdrop: false, keyboard: false}).modal('show');
+				} else {
+					ComAlert.show(2, data.resultMsg);
+				}
+			},
+		});
+	});
+
+	function createJob(jobTitle, jobInfo){
+		
+		var html = '<div class="col-sm-4 form-group "> '+
+			   			'<div> '+
+			   			jobTitle +
+						'</div> '+
+			   			'<div> '+
+			   			jobInfo.groupName + '-'+jobInfo.jobName+
+						'</div> ';
+//		html +='<div> '+
+//			jobInfo.execJobStatusDesc
+//			+ jobInfo.jobStartTimeDesc +'<br/>'
+//			+ jobInfo.jobExecTimeDesc+'~'+jobInfo.jobEndTimeDesc+
+//				'</div> ';
+//		html +=	 '</div> ';
+		
+		
+		return $(html);
+	}
 	
 	
 	// 执行

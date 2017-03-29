@@ -453,6 +453,7 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 		jobLog.setId(null);
 		jobLog.setJobId(jobDetail.getId());
 		jobLog.setJobStartTime(curTime);
+		
 		jobLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
 		jobLog.setLatestCheckTime(curTime);
 		jobLog.setNeedTriggleNext(fatherJobLog.getNeedTriggleNext());

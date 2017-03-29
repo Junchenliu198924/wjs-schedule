@@ -1,6 +1,7 @@
 package com.wjs.schedule.service.job;
 
 import java.util.Date;
+import java.util.List;
 
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
@@ -104,4 +105,25 @@ public interface CuckooJobLogService {
 	 * @return
 	 */
 	public PageDataList<CuckooJobExecLog> pagePendingList(QryBase qry);
+
+	/**
+	 * 获得触发任务执行状态
+	 * @param cuckooJobExecLog
+	 * @return
+	 */
+	public CuckooJobExecLog getPreJobLogs(CuckooJobExecLog cuckooJobExecLog);
+
+	/**
+	 * 获得依赖任务执行日志
+	 * @param cuckooJobExecLog
+	 * @return
+	 */
+	public List<CuckooJobExecLog> getDependencyJobs(CuckooJobExecLog cuckooJobExecLog);
+
+	/**
+	 * 获得下级任务日志
+	 * @param cuckooJobExecLog
+	 * @return
+	 */
+	public List<CuckooJobExecLog> getNextJobs(CuckooJobExecLog cuckooJobExecLog);
 }

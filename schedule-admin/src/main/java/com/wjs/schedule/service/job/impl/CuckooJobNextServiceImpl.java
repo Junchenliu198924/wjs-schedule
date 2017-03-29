@@ -57,7 +57,7 @@ public class CuckooJobNextServiceImpl implements CuckooJobNextService {
 		curJobCrt.createCriteria().andJobIdEqualTo(jobId);
 		
 		List<CuckooJobNextJob> nextJobs = cuckooJobNextJobMapper.selectByExample(curJobCrt);
-		return  PropertyUtil.fetchFieldList(nextJobs, "nextJobId");
+		return  PropertyUtil.fetchFieldList(nextJobs, "nextJobId", Long.class);
 	}
 
 	@Override

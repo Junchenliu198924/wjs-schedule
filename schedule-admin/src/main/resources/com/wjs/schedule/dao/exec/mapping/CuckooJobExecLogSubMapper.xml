@@ -18,7 +18,7 @@
 	INNER JOIN cuckoo_job_extend s2
 	on s1.job_id = s2.job_id
 	where s1.exec_job_status in('RUNNING')
-	and s1.job_start_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
+	and s1.job_exec_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
     <if test="limit != 0 " >
        limit ${start} , ${limit}
     </if>
@@ -30,7 +30,7 @@
 	INNER JOIN cuckoo_job_extend s2
 	on s1.job_id = s2.job_id
 	where s1.exec_job_status in('RUNNING')
-	and s1.job_start_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
+	and s1.job_exec_time &lt; UNIX_TIMESTAMP() * 1000 - s2.over_time_long
   </select>
   
   

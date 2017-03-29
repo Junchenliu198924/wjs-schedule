@@ -1,5 +1,6 @@
 package com.wjs.schedule.service.job.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,9 @@ import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
+import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
+import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
@@ -49,6 +52,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Autowired
 	QuartzManage quartzManage;
+	
+	@Autowired
+	CuckooJobDependencyService cuckooJobDependencyService;
+	
+	@Autowired
+	CuckooJobNextService cuckooJobNextService;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -409,5 +418,122 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		
 		return page;
 	}
+
+	@Override
+	public CuckooJobExecLog getPreJobLogs(CuckooJobExecLog cuckooJobExecLog) {
+		
+		Long preJobId = cuckooJobNextService.findJobIdByNextJobId(cuckooJobExecLog.getJobId());
+		
+		
+		if(null != preJobId){
+			
+			CuckooJobExecLogCriteria crt = new CuckooJobExecLogCriteria();
+			crt.setOrderByClause("id desc");
+			crt.setStart(0);
+			crt.setLimit(1);
+			
+			if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				// 日期任务根据txdate判断
+				crt.createCriteria().andJobIdEqualTo(preJobId)
+				.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
+			}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				// 非日切任务根据flow_last_time来判断
+				crt.createCriteria().andJobIdEqualTo(preJobId)
+				.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
+			}
+			List<CuckooJobExecLog> rtn =  cuckooJobExecLogMapper.selectByExample(crt);
+			if(CollectionUtils.isNotEmpty(rtn)){
+				return rtn.get(0);
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public List<CuckooJobExecLog> getNextJobs(CuckooJobExecLog cuckooJobExecLog) {
+
+		List<Long> nextJobIds = cuckooJobNextService.findNextJobIdByJobId(cuckooJobExecLog.getJobId());
+		
+		List<CuckooJobExecLog> result = new ArrayList<>();
+		
+		if(CollectionUtils.isNotEmpty(nextJobIds)){
+			for (Long nextJobId : nextJobIds) {
+				CuckooJobExecLogCriteria crt = new CuckooJobExecLogCriteria();
+				crt.setOrderByClause("id desc");
+				crt.setStart(0);
+				crt.setLimit(1);
+				
+				if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+					// 日期任务根据txdate判断
+					crt.createCriteria().andJobIdEqualTo(nextJobId)
+					.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
+					
+				}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+					// 非日切任务根据flow_last_time来判断
+					crt.createCriteria().andJobIdEqualTo(nextJobId)
+					.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
+				}
+
+				List<CuckooJobExecLog> rtn =  cuckooJobExecLogMapper.selectByExample(crt);
+				if(CollectionUtils.isNotEmpty(rtn)){
+					result.add(rtn.get(0));
+				}else{
+					result.add(nullLog(nextJobId));
+				}
+			}
+			
+			
+		}
+		
+		return result;
+	}
+
+	private CuckooJobExecLog nullLog(Long nextJobId) {
+
+		CuckooJobExecLog log = new CuckooJobExecLog();
+		log.setJobId(nextJobId);
+		return log;
+	}
+	
+	
+
+	@Override
+	public List<CuckooJobExecLog> getDependencyJobs(CuckooJobExecLog cuckooJobExecLog) {
+
+		List<Long> dependencyIds = cuckooJobDependencyService.listDependencyIdsByJobId(cuckooJobExecLog.getJobId());
+		List<CuckooJobExecLog> result = new ArrayList<>();
+		
+		if(CollectionUtils.isNotEmpty(dependencyIds)){
+			for (Long dependencyId : dependencyIds) {
+				CuckooJobExecLogCriteria crt = new CuckooJobExecLogCriteria();
+				crt.setOrderByClause("id desc");
+				crt.setStart(0);
+				crt.setLimit(1);
+				
+				if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+					// 日期任务根据txdate判断
+					crt.createCriteria().andJobIdEqualTo(dependencyId)
+					.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
+					
+				}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+					// 非日切任务根据flow_last_time来判断
+					crt.createCriteria().andJobIdEqualTo(dependencyId)
+					.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
+				}
+
+				List<CuckooJobExecLog> rtn =  cuckooJobExecLogMapper.selectByExample(crt);
+				if(CollectionUtils.isNotEmpty(rtn)){
+					result.add(rtn.get(0));
+				}else{
+					result.add(nullLog(dependencyId));
+				}
+			}
+			
+			
+		}
+		return result;
+	}
+
 
 }

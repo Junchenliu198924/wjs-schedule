@@ -131,7 +131,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 		crt.createCriteria().andJobIdEqualTo(jobId);
 		List<CuckooJobDependency> result = cuckooJobDependencyMapper.selectByExample(crt);
 		if(CollectionUtils.isNotEmpty(result)){
-			rtn = PropertyUtil.fetchFieldList(result, "dependencyJobId");
+			rtn = PropertyUtil.fetchFieldList(result, "dependencyJobId", Long.class);
 		}
 		return rtn;
 	}

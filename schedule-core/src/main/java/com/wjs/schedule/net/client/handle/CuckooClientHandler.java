@@ -1,5 +1,8 @@
 package com.wjs.schedule.net.client.handle;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -19,6 +22,9 @@ public class CuckooClientHandler extends IoHandlerAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooClientHandler.class);
 	private static final Gson gson = new GsonBuilder().create();
+	
+	ExecutorService es = Executors.newFixedThreadPool(4);
+	
     public void messageReceived(IoSession session, Object message) throws Exception {
         String content = message.toString();
         
@@ -38,13 +44,20 @@ public class CuckooClientHandler extends IoHandlerAdapter {
 		}
 		if(CuckooMessageType.JOBDOING.equals(msgInfo.getMessageType())){
 			
-			JobInfoBean jobInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), JobInfoBean.class);
-			CuckooTaskBean task = CuckooTaskCache.get(jobInfo.getJobName());
+			final JobInfoBean jobInfo = gson.fromJson(gson.toJson(msgInfo.getMessage()), JobInfoBean.class);
+			final CuckooTaskBean task = CuckooTaskCache.get(jobInfo.getJobName());
 			if(null == task){
-				LOGGER.error("can not find job by job name:{}, jobInfo:{}", jobInfo.getJobName(), jobInfo);
+				LOGGER.warn("can not find job by job name:{}, jobInfo:{}", jobInfo.getJobName(), jobInfo);
 				throw new BaseException("can not find job by job name:{}, jobInfo:{}", jobInfo.getJobName(), jobInfo);
 			}
-			CuckooExecutor.exec(task, jobInfo);
+			es.submit(new Runnable() {
+				
+				@Override
+				public void run() {
+
+					CuckooExecutor.exec(task, jobInfo);
+				}
+			});
 		}else{
 			LOGGER.error("unknow message type:{}", message);
 			throw new BaseException("unknow message type:{}", message);
