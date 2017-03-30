@@ -1,5 +1,4 @@
 /**
- * Created by xuxueli on 16/8/12.
  *
  * dependency, jquery + bootstrap
  */

@@ -108,7 +108,7 @@
                                         
 					                  	<th name="cronExpression" >cron任务表达式</th>
 					                  	<th name="execJobStatus" >执行状态</th>
-					                  	<th name="jobStartTime" >任务开始时间</th>
+					                  	<th name="jobStartTime" >等待开始时间</th>
 					                  	<th name="jobExecTimeDesc" >执行开始时间</th>
 					                  	
 					                  	<th name="jobEndTime" >任务结束时间</th>
@@ -170,6 +170,103 @@
 						</div>
 					</div>
 				</form>
+         	</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+ 
+<!-- 重做参数.模态框 -->
+<div class="modal fade" id="dependencyModal" tabindex="-1" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+            	<h4 class="modal-title" id="triggerHeader" >任务依赖关系，业务时间：</h4>
+         	</div>
+         	<div class="modal-body">
+         		<form id="modalContainer" class="form-horizontal" role="form" >
+                   <div class="form-group modal-header" >
+	               		<div class="col-sm-4 form-group ">
+	               			<div>
+								触发
+							</div>
+	               			<div>
+								分组名称-任务名称
+							</div>
+	               			<div>
+								成功<br/>2016-01-01:12:00:00~2016-01-01:13:00:00
+							</div>
+	               			
+						</div>
+								
+		                <div class="col-sm-4 form-group ">
+	               			<div>
+								依赖
+							</div>
+	               			<div>
+								分组名称-任务名称
+							</div>
+	               			<div>
+								成功<br/>2016-01-01:12:00:00~2016-01-01:13:00:00
+							</div>
+	               			
+						</div>
+				   </div>
+				   
+				   <div class="form-group  modal-header" >
+                        <div class="col-sm-4 form-group ">
+	               			<div>
+								当前任务
+							</div>
+	               			<div>
+								分组名称-任务名称
+							</div>
+	               			<div>
+								成功<br/>2016-01-01:12:00:00~2016-01-01:13:00:00
+							</div>
+	               			
+						</div>
+				   </div>
+				   
+				    <div class="form-group  modal-header" >
+                       <div class="col-sm-4 form-group ">
+	               			<div>
+								后续
+							</div>
+	               			<div>
+								分组名称-任务名称
+							</div>
+	               			<div>
+								成功<br/>2016-01-01:12:00:00~2016-01-01:13:00:00
+							</div>
+	               			
+						</div>
+						
+						
+						<div class="col-sm-4 form-group ">
+	               			<div>
+								后续
+							</div>
+	               			<div>
+								分组名称-任务名称
+							</div>
+	               			<div>
+								成功<br/>2016-01-01:12:00:00~2016-01-01:13:00:00
+							</div>
+	               			
+						</div>
+				   </div>
+					
+                </form>   
+                
+					<div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-6">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						</div>
+					</div>
          	</div>
 		</div>
 	</div>

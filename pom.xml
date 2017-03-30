@@ -6,9 +6,9 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>xxl-job</name>
+	<name>wjs-schedule</name>
 	<description>A lightweight distributed task scheduling framework.</description>
-	<url>http://www.xuxueli.com/</url>
+	<url>http://www.hellosr.com/</url>
 
 	<modules>
 		<module>schedule-core</module>
@@ -56,16 +56,15 @@
 	</licenses>
 	<scm>
 		<tag>master</tag>
-		<url>https://github.com/xuxueli/xxl-job.git</url>
-		<connection>scm:git:https://github.com/xuxueli/xxl-job.git</connection>
-		<developerConnection>scm:git:git@github.com:xuxueli/xxl-job.git</developerConnection>
+		<url>https://github.com/suyin58/wjs-schedule.git</url>
+		<connection>scm:git:https://github.com/suyin58/wjs-schedule.git</connection>
 	</scm>
 	<developers>
 		<developer>
-			<id>XXL</id>
-			<name>xuxueli</name>
-			<email>931591021@qq.com</email>
-			<url>https://github.com/xuxueli</url>
+			<id>cuckoo</id>
+			<name>suyin58</name>
+			<email>609061217@qq.com</email>
+			<url>https://github.com/suyin58/wjs-schedule</url>
 		</developer>
 	</developers>
 

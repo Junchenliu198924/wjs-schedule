@@ -48,7 +48,7 @@
 	<script src="${request.contextPath}/static/plugins/jquery/jquery.cookie.js"></script>
 
 	<#-- common -->
-    <script src="${request.contextPath}/static/js/xxl.alert.1.js"></script>
+    <script src="${request.contextPath}/static/js/cuckoo.alert.1.js"></script>
     <script src="${request.contextPath}/static/js/common.1.js"></script>
     <script>var base_url = '${request.contextPath}';</script>
 
@@ -178,8 +178,7 @@
 			<b>Version</b> 1.5
 		</div>
 		<strong>Copyright &copy; 2015-${.now?string('yyyy')} &nbsp;
-			<a href="https://github.com/xuxueli/xxl-job" target="_blank" >github</a>&nbsp;
-			<a href="http://my.oschina.net/xuxueli/blog/690978" target="_blank" >oschina</a>
+			<a href="https://github.com/suyin58/wjs-schedule" target="_blank" >github</a>&nbsp;
 		</strong><!-- All rights reserved. -->
 	</footer>
 </#macro>
