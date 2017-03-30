@@ -408,15 +408,13 @@ $(function() {
 	
 	function createJob(jobTitle, jobInfo){
 		
-		var html = '<div class="col-sm-4 form-group "> '+
-			   			'<div> '+
-			   			jobTitle +
-						'</div> '+
-			   			'<div> '+
+		var html = '<div class="col-sm-5 form-group "> '+
+			   			'<div> '+ jobTitle +  '【' + jobInfo.groupId + ' ~ ' + jobInfo.id+ '】' +  '</div> '+
+			   			'<div> 【'+
 			   			jobInfo.groupName + '-'+jobInfo.jobName+
-						'</div> ';
-		html +='<div> '+
-			jobInfo.execJobStatusDesc
+						'】</div> ';
+		html +='<div> ['+
+			jobInfo.execJobStatusDesc + ']' 
 			+ jobInfo.jobStartTimeDesc +'<br/>'
 			+ jobInfo.jobExecTimeDesc+'~'+jobInfo.jobEndTimeDesc+
 				'</div> ';

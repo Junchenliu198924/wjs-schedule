@@ -89,7 +89,7 @@
                 <li class="nav-click" ><a href="${request.contextPath}/jobclient"><i class="fa fa-circle-o text-green"></i> <span>注册任务</span></a></li>
 				<li class="nav-click" ><a href="${request.contextPath}/joblog"><i class="fa fa-circle-o text-aqua"></i><span>调度日志</span></a></li>
 				<li class="nav-click" ><a href="${request.contextPath}/crontab"><i class="fa fa-circle-o text-blue"></i><span>CronTab设置</span></a></li>
-				<li class="nav-click" ><a href="#"><i class="fa fa-circle-o text-purple"></i><span></span></a></li>
+				<li class="nav-click" ><a href="#"><i class="fa fa-circle-o text-purple"></i><span>系统管理</span></a></li>
 			</ul>
 		</section>
 		<!-- /.sidebar -->

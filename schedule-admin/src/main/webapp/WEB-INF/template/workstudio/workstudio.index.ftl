@@ -51,6 +51,7 @@
 					                  	<th name="cronExpression" >cron任务表达式</th>
 					                  	<th name="execJobStatus" >执行状态</th>
 					                  	<th name="jobStartTime" >任务开始时间</th>
+					                  	<th name="jobExecTimeDesc" >任务执行时间</th>
 					                  	<th name="jobEndTime" >任务结束时间</th>
 					                  	<th name="needTriggleNext" >触发下级</th>
 					                  	<th name="forceTriggle" >强制触发</th>
@@ -87,6 +88,7 @@
 					                  	<th name="cronExpression" >cron任务表达式</th>
 					                  	<th name="execJobStatus" >执行状态</th>
 					                  	<th name="jobStartTime" >任务开始时间</th>
+					                  	<th name="jobExecTimeDesc" >任务执行时间</th>
 					                  	<th name="jobEndTime" >任务结束时间</th>
 					                  	<th name="needTriggleNext" >触发下级</th>
 					                  	<th name="forceTriggle" >强制触发</th>
@@ -124,6 +126,7 @@
 					                  	<th name="cronExpression" >cron任务表达式</th>
 					                  	<th name="execJobStatus" >执行状态</th>
 					                  	<th name="jobStartTime" >任务开始时间</th>
+					                  	<th name="jobExecTimeDesc" >任务执行时间</th>
 					                  	<th name="jobEndTime" >任务结束时间</th>
 					                  	<th name="needTriggleNext" >触发下级</th>
 					                  	<th name="forceTriggle" >强制触发</th>

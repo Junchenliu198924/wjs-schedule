@@ -555,18 +555,15 @@ $(function() {
 
 	function createJob(jobTitle, jobInfo){
 		
-		var html = '<div class="col-sm-4 form-group "> '+
-			   			'<div> '+
-			   			jobTitle +
-						'</div> '+
-			   			'<div> '+
-			   			jobInfo.groupName + '-'+jobInfo.jobName+
-						'</div> ';
-//		html +='<div> '+
-//			jobInfo.execJobStatusDesc
-//			+ jobInfo.jobStartTimeDesc +'<br/>'
-//			+ jobInfo.jobExecTimeDesc+'~'+jobInfo.jobEndTimeDesc+
-//				'</div> ';
+		var html = '<div class="col-sm-5 form-group "> '+
+			   			'<div> '+ jobTitle + '【' + jobInfo.groupId + ' ~ ' + jobInfo.id+ '】' +  '</div> '+
+			   			'<div> 【'+
+			   				jobInfo.groupName + '-'+jobInfo.jobName+
+						'】</div> ';
+		html +=	'<div> 触发类型:'+
+					jobInfo.triggerType +(jobInfo.triggerType == 'CRON' ? '['+jobInfo.cronExpression +']': '') +'<br/>'
+					+ (jobInfo.typeDaily == 'YES' ? '日切任务':'非日切任务' ) + ',状态:' + jobInfo.jobStatus +
+				'</div> ';
 //		html +=	 '</div> ';
 		
 		
