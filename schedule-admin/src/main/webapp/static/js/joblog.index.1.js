@@ -253,7 +253,7 @@ $(function() {
 					setTimeout(function () {
 						ComAlert.show(1, "已加入重新执行队列 ,新日志ID:"+ data.data, function(){
 							//window.location.reload();
-							jobTable.fnDraw();
+//							jobTable.fnDraw();
 						});
 					}, 315);
     			} else {
@@ -409,14 +409,14 @@ $(function() {
 	function createJob(jobTitle, jobInfo){
 		
 		var html = '<div class="col-sm-5 form-group "> '+
-			   			'<div> '+ jobTitle +  '【' + jobInfo.groupId + ' ~ ' + jobInfo.id+ '】' +  '</div> '+
+			   			'<div> '+ jobTitle +  '【' + jobInfo.groupId + ' ~ ' + jobInfo.jobId+ '~' + jobInfo.id +'】' +  '</div> '+
 			   			'<div> 【'+
 			   			jobInfo.groupName + '-'+jobInfo.jobName+
 						'】</div> ';
 		html +='<div> ['+
-			jobInfo.execJobStatusDesc + ']' 
-			+ jobInfo.jobStartTimeDesc +'<br/>'
-			+ jobInfo.jobExecTimeDesc+'~'+jobInfo.jobEndTimeDesc+
+			(jobInfo.execJobStatusDesc == '' ? '未开始' : jobInfo.execJobStatusDesc) + ']' + jobInfo.remark  + '<br/>'
+			+ '等待:'+jobInfo.jobStartTimeDesc  + ',执行:'
+			+ jobInfo.jobExecTimeDesc+',结束:'+jobInfo.jobEndTimeDesc+
 				'</div> ';
 		html +=	 '</div> ';
 		

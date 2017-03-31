@@ -266,7 +266,8 @@ public class CuckooJobExecLogVo {
     public void setTriggerType(String triggerType) {
         this.triggerType = triggerType == null ? null : triggerType.trim();
         try {
-			triggerTypeDesc = CuckooJobTriggerType.fromName(this.triggerType).getDescription();
+        	CuckooJobTriggerType type =  CuckooJobTriggerType.fromName(this.triggerType);
+			triggerTypeDesc = type == null ? "" : type.getDescription();
 		} catch (Exception e) {
 			triggerTypeDesc = "";
 		}
@@ -511,7 +512,9 @@ public class CuckooJobExecLogVo {
      * 
      */
     public void setNeedTriggleNext(Boolean needTriggleNext) {
+    	 needTriggleNext = needTriggleNext == null ? false: true;
         this.needTriggleNext = needTriggleNext;
+       
 		needTriggleNextDesc = needTriggleNext ? "是":"否";
     }
 

@@ -42,10 +42,10 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 			LOGGER.error("thread error,{}", e.getMessage());
 		}
 		LOGGER.info("Client exec done ,testCronUnDailyFailed:{}",  jobInfo);
-		if(new Random().nextInt(10) == 1){
-			// 偶尔报错
-			throw new BaseException("client throw a exception ");
-		}
+//		if(new Random().nextInt(10) == 1){
+//			// 偶尔报错
+//			throw new BaseException("client throw a exception ");
+//		}
 	}
 
 	@Override
@@ -71,10 +71,10 @@ public class CuckooTestUnDailyJobImpl implements CuckooTestUnDailyJob {
 			LOGGER.error("thread error,{}", e.getMessage());
 		}
 		LOGGER.info("Client exec done ,testFlowUnDailyFailed:{}",  jobInfo);
-		if(new Random().nextInt(10) == 1){
-			// 偶尔报错
-			throw new BaseException("client throw a exception ");
-		}
+//		if(new Random().nextInt(10) == 1){
+//			// 偶尔报错
+//			throw new BaseException("client throw a exception ");
+//		}
 	}
 
 }

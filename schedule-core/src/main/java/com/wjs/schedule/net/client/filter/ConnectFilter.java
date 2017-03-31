@@ -38,7 +38,6 @@ public class ConnectFilter extends IoFilterAdapter {
 		bean.setIp(clientAddr.getAddress().getHostAddress());
 		bean.setPort(clientAddr.getPort());
 		IoServerCollection.add(bean);
-		LOGGER.error("客户端异常:{}", clientAddr.toString());
 		super.exceptionCaught(nextFilter, session, cause);
 
 	}
@@ -88,6 +87,7 @@ public class ConnectFilter extends IoFilterAdapter {
 	public void sessionClosed(NextFilter nextFilter, IoSession session) throws Exception {
 
 		InetSocketAddress clientAddr = (InetSocketAddress) session.getRemoteAddress();
+		LOGGER.error("服务端异常:{}", clientAddr.toString());
 		// 删除 链接
 		IoServerCollection.remove(clientAddr);
 
@@ -96,7 +96,6 @@ public class ConnectFilter extends IoFilterAdapter {
 		bean.setIp(clientAddr.getAddress().getHostAddress());
 		bean.setPort(clientAddr.getPort());
 		IoServerCollection.add(bean);
-		LOGGER.error("客户端异常:{}", clientAddr.toString());
 		super.sessionClosed(nextFilter, session);
 	}
 

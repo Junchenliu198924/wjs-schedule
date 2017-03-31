@@ -41,10 +41,10 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 			LOGGER.error("thread error,{}", e.getMessage());
 		}
 		LOGGER.info("Client exec done ,testCronDailySucced:{}",  jobInfo);
-		if(new Random().nextInt(10) == 1){
-			// 偶尔报错
-			throw new BaseException("client throw a exception ");
-		}
+//		if(new Random().nextInt(10) == 1){
+//			// 偶尔报错
+//			throw new BaseException("client throw a exception ");
+//		}
 	}
 
 	@Override
@@ -79,10 +79,10 @@ public class CuckooTestDailyJobImpl implements CuckooTestDailyJob {
 			LOGGER.error("thread error,{}", e.getMessage());
 		}
 		LOGGER.info("Client exec done ,testFlowDailyFailed:{}",  jobInfo);
-		if(new Random().nextInt(10) == 1){
-			// 偶尔报错
-			throw new BaseException("client throw a exception ");
-		}
+//		if(new Random().nextInt(10) == 1){
+//			// 偶尔报错
+//			throw new BaseException("client throw a exception ");
+//		}
 		
 	}
 

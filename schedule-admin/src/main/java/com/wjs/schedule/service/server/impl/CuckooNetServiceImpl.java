@@ -93,7 +93,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 			result.setRemark("succed");
 			return result;
 		} catch (Exception e) {
-			result.setRemark("job exec error:" + e.getMessage());
+			result.setRemark("error:" + e.getMessage());
 			LOGGER.error("job exec error:{}",e.getMessage() ,e);
 			throw new JobRunningErrorException("job exec error:{}",e.getMessage());
 		}
