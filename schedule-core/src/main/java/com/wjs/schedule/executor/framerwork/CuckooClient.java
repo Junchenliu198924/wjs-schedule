@@ -20,8 +20,8 @@ import com.wjs.schedule.executor.aspectj.CuckooTaskAspect;
 import com.wjs.schedule.executor.framerwork.bean.ClientInfoBean;
 import com.wjs.schedule.executor.framerwork.bean.CuckooTaskBean;
 import com.wjs.schedule.executor.framerwork.cache.CuckooTaskCache;
-import com.wjs.schedule.net.client.ClientUtil;
 import com.wjs.schedule.net.server.cache.IoServerCollection;
+import com.wjs.schedule.net.server.cache.MessageSendQueue;
 import com.wjs.schedule.net.vo.IoServerBean;
 
 public class CuckooClient implements ApplicationContextAware, BeanPostProcessor, ApplicationListener<ContextRefreshedEvent> {
@@ -153,8 +153,9 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 			IoServerCollection.add(bean);
 		}
 		
-		ClientUtil.retryConnect();
+		IoServerCollection.retryConnect();
 		
+		MessageSendQueue.trySendMessage();
 		
 		
 	}

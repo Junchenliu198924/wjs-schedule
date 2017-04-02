@@ -1,13 +1,23 @@
 package com.wjs.schedule.net.server.cache;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.wjs.schedule.net.client.ClientUtil;
 import com.wjs.schedule.net.vo.IoServerBean;
 
 public class IoServerCollection {
+	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(IoServerCollection.class);
 	
 	private static Set<IoServerBean> set = new HashSet<>();
 	private IoServerCollection(){
@@ -38,6 +48,43 @@ public class IoServerCollection {
 			}
 		}
 		
+	}
+	
+
+	
+	/*
+	 * retry connect to server,in case of server resart
+	 */
+	public static void retryConnect() {
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				Set<IoServerBean> servers = IoServerCollection.getSet();
+				if (CollectionUtils.isNotEmpty(servers)) {
+					for (;;) {
+						LOGGER.debug("try to connect servers");
+						List<IoServerBean> unConnect = new ArrayList<>();
+						for (IoServerBean ioServerBean : servers) {
+							if (null == ioServerBean.getSession()) {
+								if (!ClientUtil.connect(ioServerBean)) {
+									unConnect.add(ioServerBean);
+								}
+							}
+						}
+
+						LOGGER.error("cuckoo unconnection to server:{}", unConnect);
+						try {
+							Thread.sleep(60000);
+						} catch (InterruptedException e) {
+							// ignore
+						}
+					}
+				}
+			}
+		}).start();
+
 	}
 	
 }
