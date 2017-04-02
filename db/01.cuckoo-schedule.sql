@@ -152,7 +152,7 @@ CREATE UNIQUE INDEX uk_cuckoo_next_job ON cuckoo_job_next_job(next_job_id ASC );
 CREATE INDEX idx_jobnext_jobid ON cuckoo_job_next_job(job_id ASC );
 
 
---- 网络通信管理表
+-- 网络通信管理表
 
 
 CREATE TABLE cuckoo_net_client_info
