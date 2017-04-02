@@ -16,7 +16,8 @@ public class CuckooExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooExecutor.class);
 	
 	public static void exec(CuckooTaskBean task, JobInfoBean taskParam) {
-
+		
+		
 		ApplicationContext applicationContext = CuckooClient.getApplicationContext();
 		Object obj = applicationContext.getBean(task.getBeanName());
 

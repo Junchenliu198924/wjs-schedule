@@ -115,7 +115,9 @@
 					            		<th name="id" >id</th>
 					                	<th name="groupId" >分组ID</th>
 					                	<th name="groupName" >分组名称</th>
-					                  	<th name="jobName" >任务名称</th> 
+					                  	<th name="jobName" >任务名称</th>
+					                	<th name="execJobType" >任务类型</th> 
+					                	<th name="execJobTypeDesc" >任务类型</th> 
 					                  	<th name="jobClassApplication" >执行应用</th>
 					                  	<th name="jobDesc" >描述</th> 
 					                  	<th name="triggerType" >触发类型</th>
@@ -171,32 +173,60 @@
 	                			</#list>
 		                  	</select>
 						</div>
-                        <label for="lastname" class="col-sm-2 control-label">执行应用<font color="red">*</font></label>
+						
+						<label for="lastname" class="col-sm-2 control-label">任务类型<font color="red">*</font></label>
                         <div class="col-sm-4">
-	                        <select class="form-control" name="jobClassApplication" >
+	                        <select class="form-control" name="execJobType" >
 								<option value="" ></option>
-	                			<#list jobAppList?keys as app>
-	                				<option value="${app}" >${jobAppList[app]}</option>
+	                			<#list execJobTypes as type>
+	                				<option value="${type.value}" >${type.description}</option>
 	                			</#list>
 		                  	</select>
 	                  	</div>
-					
+		                  	
+						<div id="cuckooType">
+	                        
+						</div>
 					</div>
+					
+					
 					<div class="form-group">
 						<!--
-						.任务名称和任务执行应用名称唯一
+						.任务执行应用名称
             			.并发参数设置  
 						-->
-                        <label for="firstname" class="col-sm-2 control-label">任务名称<font color="red">*</font></label>
-                        <div class="col-sm-4">
-                          <input type="text" class="form-control" name="jobName" placeholder="与@CuckooTask(‘任务名称’)对应" maxlength="100" > 
-						</div>
+                        <textarea type="text" name="cuckooTypeContainer" class="col-sm-6 form-control hide" readonly="readonly"> 
+                        </textarea>
+					</div>
+					
+					<div class="form-group">
+						<!--
+						.任务名称
+						-->
+						<label for="lastname" class="col-sm-2 control-label">执行应用<font color="red">*</font></label>
+	                    <div class="col-sm-4">
+	                      	<input type="text" class="form-control" name="jobClassApplication" placeholder="与CuckooClient中的appName对应" maxlength="100" > 
+							<!--
+		                    <select class="form-control" name="jobClassApplication" >
+								<option value="" ></option>
+		                		<#list jobAppList?keys as app>
+		                			<option value="${app}" >${jobAppList[app]}</option>
+		                		</#list>
+			               	</select>
+			               	-->
+		                </div>
 						
 						<label for="firstname" class="col-sm-2 control-label">执行参数<font color="black">*</font></label>
                         <div class="col-sm-4">
                         	<input type="text" class="form-control" name="cuckooParallelJobArgs" placeholder="请输入“执行参数”" maxlength="100" >
                         </div>
+                        <label for="firstname" class="col-sm-2 control-label">任务名称<font color="red">*</font></label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="jobName" placeholder="与@CuckooTask(‘任务名称’)对应" maxlength="100" > 
+						</div>
 					</div>
+					
+					
 					
 					
                     <div class="form-group">
@@ -259,7 +289,7 @@
 		            	-->
                        	<label for="lastname" class="col-sm-2 control-label">依赖任务<font color="black">*</font></label>
                         <div class="col-sm-4"><input type="text" class="form-control" name="dependencyIds" placeholder="依赖任务ID，以逗号分隔，例如【1,2】" maxlength="100" ></div>
-                       	<label for="lastname" class="col-sm-2 control-label">任务描述<font color="black">*</font></label>
+                       	<label for="lastname" class="col-sm-2 control-label">任务描述<font color="red">*</font></label>
                         <div class="col-sm-4"><input type="text" class="form-control" name="jobDesc" placeholder="任务描述说明" maxlength="100" ></div>
 					</div>
                     

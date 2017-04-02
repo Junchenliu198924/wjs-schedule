@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 
 public class JobInfoBean implements Serializable{
@@ -20,9 +21,18 @@ public class JobInfoBean implements Serializable{
 	 */
 	private Long jobId;
 	
+	/**
+	 * 任务类型:CUCKOO,SCRIPT
+	 */
+	private CuckooJobExecType execType;
 	
 	/**
-	 * 任务名称，用于与客户端寻找可执行器
+	 * 是否为日切任务
+	 */
+	private boolean typeDaily;
+	
+	/**
+	 * 任务/脚本名称，用于与客户端寻找可执行器
 	 */
 	private String jobName;
 	
@@ -80,6 +90,26 @@ public class JobInfoBean implements Serializable{
 
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
+	}
+	
+	
+
+	public CuckooJobExecType getExecType() {
+		return execType;
+	}
+
+	public void setExecType(CuckooJobExecType execType) {
+		this.execType = execType;
+	}
+	
+	
+
+	public boolean isTypeDaily() {
+		return typeDaily;
+	}
+
+	public void setTypeDaily(boolean typeDaily) {
+		this.typeDaily = typeDaily;
 	}
 
 	public String getJobName() {

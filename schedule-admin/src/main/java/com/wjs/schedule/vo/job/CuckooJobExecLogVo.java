@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.util.DateUtil;
 
@@ -28,6 +29,14 @@ public class CuckooJobExecLogVo {
     private Long groupId;
     
     private String groupName;
+    
+    /**
+     * 任务类型 -- cuckoo_job_detail.exec_job_type
+     * 
+     */
+    private String execJobType;
+    
+    private String execJobTypeDesc;
 
     /**
      * 作业执行应用名 -- cuckoo_job_exec_log.job_class_application
@@ -559,6 +568,23 @@ public class CuckooJobExecLogVo {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+	
+
+
+    public String getExecJobType() {
+		return execJobType;
+	}
+
+	public void setExecJobType(String execJobType) {
+
+		this.execJobType = execJobType == null ? null : execJobType.trim();
+		CuckooJobExecType type = CuckooJobExecType.fromName(execJobType); 
+		this.execJobTypeDesc = type == null ? "未设定" : type.getDescription() ;
+	}
+
+	public String getExecJobTypeDesc() {
+		return execJobTypeDesc;
 	}
 
 	public String getTriggerTypeDesc() {

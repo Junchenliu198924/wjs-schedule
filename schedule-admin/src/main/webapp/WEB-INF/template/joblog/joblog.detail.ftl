@@ -118,9 +118,9 @@
 									<input type="text" class="form-control"  readonly="readonly"  value="${log.execJobStatusDesc}" maxlength="100" > 
 								</div>
 								
-		                        <label   class="col-sm-2 control-label">执行备注<font color="red">*</font></label>
-		                        <div class="col-sm-4">
-			                  		<input type="text" class="form-control"  readonly="readonly"  value="${log.remark}" maxlength="100" > 
+								<label   class="col-sm-2 control-label">客户机IP<font color="red">*</font></label>
+								<div class="col-sm-4">
+									<input type="text" class="form-control"  readonly="readonly"  value="${log.cuckooClientIp}" maxlength="100" > 
 								</div>
 							</div>
 							
@@ -178,14 +178,19 @@
 		                    
 		                    
 							<div class="form-group">
-								<label   class="col-sm-2 control-label">客户机IP<font color="red">*</font></label>
-								<div class="col-sm-4">
-									<input type="text" class="form-control"  readonly="readonly"  value="${log.cuckooClientIp}" maxlength="100" > 
-								</div>
 								
+								<!--
 		                        <label   class="col-sm-2 control-label">客户机标识<font color="red">*</font></label>
 		                        <div class="col-sm-4">
 			                  		<input type="text" class="form-control"  readonly="readonly"  value="${log.cuckooClientTag}" maxlength="100" > 
+								</div>
+								-->
+								
+		                        <label   class="col-sm-2 control-label">执行备注<font color="red">*</font></label>
+		                        <div class="col-sm-8 row" >
+			                  		<textarea type="text" class="form-control"  readonly="readonly"  maxlength="100" >
+			                  		${log.remark}
+			                  		</textarea> 
 								</div>
 							</div>
 		                    

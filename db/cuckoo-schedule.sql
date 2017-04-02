@@ -45,6 +45,7 @@ CREATE TABLE cuckoo_job_detail
 (
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
+	exec_job_type                  varchar(10)     DEFAULT ''         NOT NULL	COMMENT '任务类型',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
 	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
 	job_desc                       varchar(500)    DEFAULT ''         NOT NULL	COMMENT '任务描述',
@@ -72,6 +73,7 @@ CREATE TABLE cuckoo_job_exec_log
 	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
 	job_id                         bigint          DEFAULT 0          NOT NULL	COMMENT '任务ID',
 	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
+	exec_job_type                  varchar(10)     DEFAULT ''         NOT NULL	COMMENT '任务类型',
 	job_class_application          varchar(50)     DEFAULT ''         NOT NULL	COMMENT '作业执行应用名',
 	job_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '任务名称',
 	trigger_type                   varchar(10)     DEFAULT ''         NOT NULL	COMMENT '触发类型',

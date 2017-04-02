@@ -9,9 +9,13 @@ import com.wjs.schedule.constant.CuckooNetConstant;
 
 public class CodecFilter extends ProtocolCodecFilter{
 	
-	public CodecFilter(){
-		
-		super(new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING)));
+	public CodecFilter(){ 
+		super(new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING)){
+			{
+				setDecoderMaxLineLength(1024 * 1024);//1M  
+				setEncoderMaxLineLength(1024 * 1024);//1M  
+			}
+		});
 	}
 	
 

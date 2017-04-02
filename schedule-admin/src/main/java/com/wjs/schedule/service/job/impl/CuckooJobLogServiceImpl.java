@@ -84,7 +84,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		log.setId(id);
 		log.setExecJobStatus(jobStatus.getValue());
 		log.setJobEndTime(System.currentTimeMillis());
-		log.setRemark(message);
+		log.setRemark(message.length() < 2000? message : message.substring(0,1999));
 		cuckooJobExecLogMapper.updateByPrimaryKeySelective(log);
 		
 		if(CuckooJobExecStatus.FAILED.getValue().equals(jobStatus.getValue()) || CuckooJobExecStatus.BREAK.getValue().equals(jobStatus.getValue())){

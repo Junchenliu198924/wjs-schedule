@@ -3,6 +3,7 @@ package com.wjs.schedule.vo.job;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooJobExecType;
 
 /**
  * 任务信息
@@ -32,6 +33,16 @@ public class CuckooJobDetailVo {
      * 
      */
     private String jobName;
+    
+    /**
+     * 任务类型 -- cuckoo_job_detail.exec_job_type
+     * 
+     */
+    private String execJobType;
+    
+
+    
+    private String execJobTypeDesc;
 
     /**
      * 作业执行应用名 -- cuckoo_job_details.job_class_application
@@ -160,8 +171,29 @@ public class CuckooJobDetailVo {
     public void setJobName(String jobName) {
         this.jobName = jobName == null ? null : jobName.trim();
     }
+    
+    
 
-    /**
+    public String getExecJobType() {
+		return execJobType;
+	}
+
+	public void setExecJobType(String execJobType) {
+
+		this.execJobType = execJobType == null ? null : execJobType.trim();
+		CuckooJobExecType type = CuckooJobExecType.fromName(execJobType); 
+		this.execJobTypeDesc = type == null ? "未设定" : type.getDescription() ;
+	}
+
+	public String getExecJobTypeDesc() {
+		return execJobTypeDesc;
+	}
+
+	public void setExecJobTypeDesc(String execJobTypeDesc) {
+		this.execJobTypeDesc = execJobTypeDesc;
+	}
+
+	/**
      * 数据字段 cuckoo_job_details.job_class_application的get方法 
      * 
      */

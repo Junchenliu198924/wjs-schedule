@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
-import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooIsTypeDaily;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
@@ -78,7 +78,7 @@ public class JobInfoController extends BaseController{
 		// 默认邮件接收人
 		request.setAttribute("defaltMailTo", ConfigUtil.get("mail.receive.defalt.email"));
 		
-		// 任务类型
+		// 任务分组
 		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
 		request.setAttribute("jobGroupList", jobGroupList);
 		
@@ -88,6 +88,12 @@ public class JobInfoController extends BaseController{
 		jobGroupsWithNull.add(0, groupNull);
 		jobGroupsWithNull.addAll(jobGroupList);
 		request.setAttribute("jobGroupsWithNull", jobGroupsWithNull);
+		
+		// 任务类型
+
+		CuckooJobExecType[] jobExecTypes = CuckooJobExecType.valuesNoNull();
+		request.setAttribute("execJobTypes", jobExecTypes);
+		
 		
 		// APP应用
 		Map<String,String> jobAppList = cuckooJobService.findAllApps();
@@ -297,6 +303,13 @@ public class JobInfoController extends BaseController{
 	@RequestMapping(value="/add")
 	@ResponseBody
 	public Object add(HttpServletRequest request, CuckooJobDetailVo jobDetail){
+		
+		// 增加执行类型必要条件判断
+		if(CuckooJobExecType.CUCKOO.getValue().equals(jobDetail.getExecJobType())){
+			if(StringUtils.isEmpty(jobDetail.getJobClassApplication())){
+				throw new BaseException("CuckooJob's appName can not be null");
+			}
+		}
 		
 		if(CuckooJobTriggerType.JOB.getValue().equals(jobDetail.getTriggerType())){
 			// 任务触发的任务，需要配置触发任务和依赖任务

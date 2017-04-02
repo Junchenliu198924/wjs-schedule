@@ -40,7 +40,7 @@ public class CuckooJobCallBack  {
 		CuckooJobExecLog jobLog = cuckooJobLogService.getJobLogByLogId(jobInfo.getJobLogId());
 		
 		// 更新日志
-		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED, "succed");
+		cuckooJobLogService.updateJobLogStatusById(jobLog.getId(), CuckooJobExecStatus.SUCCED, jobInfo.getErrMessage());
 		
 		// 触发下级任务
 		if(jobInfo.getNeedTrigglerNext()){

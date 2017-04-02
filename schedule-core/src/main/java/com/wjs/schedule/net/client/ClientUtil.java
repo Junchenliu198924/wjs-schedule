@@ -47,8 +47,11 @@ public class ClientUtil {
 		try {
 			NioSocketConnector connector = new NioSocketConnector();
 			connector.getFilterChain().addLast("logger", new LoggingFilter());
-			connector.getFilterChain().addLast("codec",
-					new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING))));
+			
+			TextLineCodecFactory lineCodec=new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING)); 
+			lineCodec.setDecoderMaxLineLength(1024*1024); //1M  
+			lineCodec.setEncoderMaxLineLength(1024*1024); //1M  
+			connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(lineCodec));
 			connector.getFilterChain().addLast("regist", new ConnectFilter());
 			
 			// // 设置连接超时检查时间

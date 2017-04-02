@@ -39,6 +39,8 @@ $(function() {
 	            		}
             		},
 					{ "data": 'jobName', "visible" : true},
+					{ "data": 'execJobType', "visible" : false},
+					{ "data": 'execJobTypeDesc', "visible" : true},
 	                { "data": 'jobClassApplication', "visible" : true},
 	                { "data": 'jobDesc', "visible" : false},
 	                { "data": 'triggerType', "visible" : true},
@@ -111,6 +113,7 @@ $(function() {
 								' groupName="'+ groupName +'" '+
 								' groupId="'+ row.groupId +'" '+
 								' jobName="'+ row.jobName +'" '+
+								' execJobType="'+ row.execJobType +'" '+
 								' jobClassApplication="'+ row.jobClassApplication +'" '+
 								' jobDesc="'+ row.jobDesc +'" '+
 								' triggerType="'+ row.triggerType +'" '+
@@ -292,7 +295,7 @@ $(function() {
         	groupId : {
 				required : true 
 			},
-			jobClassApplication : {
+			execJobType : {
             	required : true
             },
             jobName : {
@@ -319,11 +322,11 @@ $(function() {
         	groupId : {
             	required :"请选择“任务分组”."
             },
-            jobClassApplication : {
-            	required :"请选择“执行应用”."
+            execJobType : {
+            	required :"请选择“任务类型”."
             },
             jobName : {
-				required : '请输入“CuckooTask("任务名称")”.'
+				required : '请输入“执行详细信息”.'
 			},
 			triggerType : {
 				required : "请选择触发方式"
@@ -376,6 +379,30 @@ $(function() {
 
 	
 	
+	$("#editModal .form select[name='execJobType']").change(function(){
+		var execJobType = $("#editModal .form select[name='execJobType']").val();
+		if("CUCKOO" == execJobType){
+			// 显示app信息  ，参数信息
+			$("#editModal .form textarea[name='cuckooTypeContainer']").removeClass("hide");
+			$("#editModal .form textarea[name='cuckooTypeContainer']").val("Cuckoo任务需要注解支持，可以通过方法获得对应的参数\n" +
+					"执行参数：JobInfoBean.getCuckooParallelJobArgs()\n" +
+					"日切任务参数：JobInfoBean.getTxDate()\n" +
+					"非日期任务参数：JobInfoBean.getFlowLastTime();	JobInfoBean.getFlowCurrTime();");
+			//修改placeHolder
+			$("#editModal .form input[name='jobName']").attr("placeholder","与@CuckooTask(‘任务名称’)对应");
+			
+			
+		}else if("SCRIPT" == execJobType){
+			// 隐藏app信息  ，参数信息
+			$("#editModal .form textarea[name='cuckooTypeContainer']").removeClass("hide");
+			$("#editModal .form textarea[name='cuckooTypeContainer']").val("客户端脚本执行自动追加参数：script 执行参数  配置参数(日切:txDate【yyyyMMdd】 / 非日切:flowLastTime【时间戳Long】 flowCurTime【时间戳Long】) \n" +
+					"例如：日切任务--&lt; sh /home/job/execdaily.sh 执行参数  20150101 \n" +
+					"非日切任务-->&lt; sh /home/job/execundaily.sh 执行参数  1490926800000 1490926800000  ");
+			
+			// 修改placeHolder
+			$("#editModal .form input[name='jobName']").attr("placeholder","脚本(script)执行的完整命令,(请确保脚本已经同步指定APP客户端服务器)");
+		}
+	});
 
 	// 编辑框触发类型监听
 	$("#editModal .form select[name='triggerType']").change(function(){
@@ -432,7 +459,11 @@ $(function() {
 		$("#editModal .form input[name='id']").val($(this).parent('p').attr("id"));
 		// base data
 		$("#editModal .form select[name='groupId']").val($(this).parent('p').attr("groupId"));
-		$("#editModal .form select[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
+
+		$("#editModal .form select[name='execJobType']").val($(this).parent('p').attr("execJobType"));
+		// TODO 手工触发selectchange时间
+		
+		$("#editModal .form input[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
 		
 		$("#editModal .form input[name='jobName']").val($(this).parent('p').attr("jobName"));
 		$("#editModal .form input[name='cuckooParallelJobArgs']").val($(this).parent('p').attr("cuckooParallelJobArgs"));
