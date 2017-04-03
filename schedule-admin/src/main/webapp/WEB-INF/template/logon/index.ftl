@@ -9,17 +9,17 @@
 <body class="hold-transition login-page">
 	<div class="login-box">
 		<div class="login-logo">
-			<a><b>XXL</b>JOB</a>
+			<a><b>Cuckoo</b>JOB</a>
 		</div>
 		<form id="loginForm" method="post" >
 			<div class="login-box-body">
 				<p class="login-box-msg">任务调度中心</p>
 				<div class="form-group has-feedback">
-	            	<input type="text" name="userName" class="form-control" placeholder="请输入登陆账号" value="admin" >
+	            	<input type="text" name="user" class="form-control" placeholder="请输入登陆账号" value="guest" >
 	            	<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
 				</div>
 	          	<div class="form-group has-feedback">
-	            	<input type="password" name="password" class="form-control" placeholder="请输入登陆密码" value="123456" >
+	            	<input type="password" name="pwd" class="form-control" placeholder="请输入登陆密码" value="guest" >
 	            	<span class="glyphicon glyphicon-lock form-control-feedback"></span>
 	          	</div>
 				<div class="row">

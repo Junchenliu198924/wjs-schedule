@@ -133,17 +133,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException {
+	public CuckooJobExecLog initSysCronJobLog(CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException {
 
-		CuckooJobExecLog cuckooJobExecLog = null;
-		if(null != cuckooJobId){
-			cuckooJobExecLog = cuckooJobExecLogMapper.selectByPrimaryKey(cuckooJobId);
-		}
-		if(null != cuckooJobExecLog){
-			return cuckooJobExecLog;
-		}
-
-		cuckooJobExecLog = new CuckooJobExecLog();
+		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
 		 
 		Long runTime =  System.currentTimeMillis();
 
@@ -176,7 +168,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 				cuckooJobExecLog.setFlowLastTime(0L);
 			}else{
 				if(curTime.equals(latestJobLog.get(0).getFlowCurTime())){
-					throw new JobUndailyLogBreakException("undaily job timeline same error, cuckooJobId:{},latestJobLog:{},curTime:{}", cuckooJobId, latestJobLog.get(0).getFlowCurTime(),curTime );
+					throw new JobUndailyLogBreakException("undaily job timeline same error, cuckooJobId:{},latestJobLog:{},curTime:{}", cuckooJobDetail.getId(), latestJobLog.get(0).getFlowCurTime(),curTime );
 				}
 				cuckooJobExecLog.setFlowLastTime(latestJobLog.get(0).getFlowCurTime());
 			}

@@ -40,7 +40,7 @@ public class ClientUtil {
 		}
 		try {
 			NioSocketConnector connector = new NioSocketConnector();
-			connector.getFilterChain().addLast("logger", new LoggingFilter());
+//			connector.getFilterChain().addLast("logger", new LoggingFilter());
 
 			TextLineCodecFactory lineCodec = new TextLineCodecFactory(Charset.forName(CuckooNetConstant.ENCODING));
 			lineCodec.setDecoderMaxLineLength(1024 * 1024); // 1M

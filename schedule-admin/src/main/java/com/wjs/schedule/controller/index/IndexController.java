@@ -32,12 +32,6 @@ public class IndexController extends BaseController{
 		return redict(CuckooAdminPages.INDEX.getValue());
 	}
 	
-	@RequestMapping("/toLogin")
-	public String toLogin(Model model, HttpServletRequest request) {
-		
-		return CuckooAdminPages.LOGIN.getValue();
-	}
-	
 	@RequestMapping("/crontab")
 	public String crontab(HttpServletRequest request){
 		

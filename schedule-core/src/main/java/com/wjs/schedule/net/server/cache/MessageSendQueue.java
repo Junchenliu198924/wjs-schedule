@@ -1,7 +1,7 @@
 package com.wjs.schedule.net.server.cache;
 
 import java.util.Queue;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class MessageSendQueue {
 		return instance;
 	}
 
-	private volatile Queue<MessageInfo> queue = new PriorityBlockingQueue<MessageInfo>(100000);
+	private volatile Queue<MessageInfo> queue = new ConcurrentLinkedQueue<MessageInfo>();
 
 	public Queue<MessageInfo> getQueue() {
 		return queue;
@@ -42,9 +42,11 @@ public class MessageSendQueue {
 			public void run() {
 				while (true) {
 					try {
+						LOGGER.info("messagesendqueue size:{}",  MessageSendQueue.instance().getQueue().size());
 						if (0 == MessageSendQueue.instance().getQueue().size()) {
-							return;
+							break;
 						}
+						
 						for (int i = 0; i < MessageSendQueue.instance().getQueue().size(); i++) {
 							// ** poll 移除并返问队列头部的元素 如果队列为空，则返回null
 							final MessageInfo message = MessageSendQueue.instance().getQueue().poll();
@@ -63,7 +65,7 @@ public class MessageSendQueue {
 
 			}
 		}).start();
-
+		LOGGER.info("retry Send Message thread start");
 	}
 
 }

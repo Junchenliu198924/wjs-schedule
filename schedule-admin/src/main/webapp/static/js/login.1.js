@@ -46,13 +46,13 @@ $(function(){
             element.parent('div').append(error);  
         },
         submitHandler : function(form) {
-			$.post(base_url + "/login", $("#loginForm").serialize(), function(data, status) {
-				if (data.code == "200") {
-					ComAlert.show(1, "登陆成功", function(){
-						window.location.href = base_url;
-					});
+			$.post(base_url + "/logon/in", $("#loginForm").serialize(), function(data, status) {
+				if (data.resultCode == "success") {
+//					ComAlert.show(1, "登陆成功", function(){
+						window.location.href = base_url + redirectURL;
+//					});
 				} else {
-					ComAlert.show(2, data.msg);
+					ComAlert.show(2, data.resultMsg);
 				}
 			});
 		}

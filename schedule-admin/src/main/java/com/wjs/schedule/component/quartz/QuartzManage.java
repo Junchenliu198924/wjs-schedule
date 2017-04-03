@@ -236,8 +236,8 @@ public class QuartzManage {
 			
 			Class<? extends Job> jobClass_ = QuartzJobExecutor.class; // Class.forName(jobInfo.getJobClass());
 			JobDetail jobDetail = JobBuilder.newJob(jobClass_).withIdentity(jobKey).build();
-			// 放入此次执行的日志参数
-			jobDetail.getJobDataMap().put(CuckooJobConstant.JOB_EXEC_ID, jobLog.getId());
+//			// 放入此次执行的日志参数
+//			jobDetail.getJobDataMap().put(CuckooJobConstant.JOB_EXEC_ID, jobLog.getId());
 			
 			SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder
 					.repeatMinutelyForTotalCount(1) // 只触发一次

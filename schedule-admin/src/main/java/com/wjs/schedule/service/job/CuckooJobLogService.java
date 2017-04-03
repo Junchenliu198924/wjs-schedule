@@ -48,7 +48,7 @@ public interface CuckooJobLogService {
 	 * @param scheduledFireTime 
 	 * @return
 	 */
-	public CuckooJobExecLog initSysCronJobLog(Long cuckooJobId ,CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException;
+	public CuckooJobExecLog initSysCronJobLog(CuckooJobDetail cuckooJobDetail, Date scheduledFireTime) throws JobUndailyLogBreakException;
 
 	/**
 	 * 控制台执行非日切任务，初始化日志

@@ -1,10 +1,12 @@
 package com.wjs.schedule.bean;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.enums.CuckooMessageType;
 
-public class MessageInfo {
+public class MessageInfo implements Serializable {
 	
 	private CuckooMessageType messageType;
 	

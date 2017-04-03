@@ -34,7 +34,7 @@ public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {
 //		LOGGER.info("getRequest" + session.getServiceAddress()); // 服务端 ：0.0.0.0:10115
 //		LOGGER.info("getRequest" + session.getLocalAddress()); // 服务端:10.138.254.10:10115
 
-		LOGGER.info("request heart beat set: " + CuckooMessageType.HEARTBEATSERVER.getValue());
+		LOGGER.info("request heart beat set: " + CuckooMessageType.HEARTBEATSERVER.getValue() + session.getRemoteAddress());
 		InetSocketAddress serverAddr = (InetSocketAddress)session.getLocalAddress();
 		InetSocketAddress clientAddr = (InetSocketAddress)session.getRemoteAddress();
 		

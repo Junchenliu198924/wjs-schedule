@@ -18,13 +18,13 @@ $(function(){
 	// logout
 	$("#logoutBtn").click(function(){
 		ComConfirm.show("确认注销登录?", function(){
-			$.post(base_url + "/logout", function(data, status) {
-				if (data.code == "200") {
+			$.post(base_url + "/logon/out", function(data, status) {
+				if (data.resultCode == "success") {
 					ComAlert.show(1, "注销成功", function(){
 						window.location.href = base_url + "/";
 					});
 				} else {
-					ComAlert.show(1, data.msg);
+					ComAlert.show(1, data.resultMsg);
 				}
 			});
 		});

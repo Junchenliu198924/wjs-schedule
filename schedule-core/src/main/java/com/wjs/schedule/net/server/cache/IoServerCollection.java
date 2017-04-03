@@ -64,27 +64,26 @@ public class IoServerCollection {
 				Set<IoServerBean> servers = IoServerCollection.getSet();
 				if (CollectionUtils.isNotEmpty(servers)) {
 					for (;;) {
-						LOGGER.debug("try to connect servers");
-						List<IoServerBean> unConnect = new ArrayList<>();
-						for (IoServerBean ioServerBean : servers) {
-							if (null == ioServerBean.getSession()) {
-								if (!ClientUtil.connect(ioServerBean)) {
-									unConnect.add(ioServerBean);
+						try {
+							List<IoServerBean> unConnect = new ArrayList<>();
+							for (IoServerBean ioServerBean : servers) {
+								if (null == ioServerBean.getSession()) {
+									if (!ClientUtil.connect(ioServerBean)) {
+										unConnect.add(ioServerBean);
+									}
 								}
 							}
-						}
 
-						LOGGER.error("cuckoo unconnection to server:{}", unConnect);
-						try {
-							Thread.sleep(60000);
+							LOGGER.warn("cuckoo unconnection to server:{}", unConnect);
+								Thread.sleep(60000);
 						} catch (InterruptedException e) {
-							// ignore
+							LOGGER.error("unknow error:{}", e.getMessage(), e);
 						}
 					}
 				}
 			}
 		}).start();
-
+		LOGGER.info("retry connect thread start");
 	}
 	
 }

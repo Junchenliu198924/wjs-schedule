@@ -541,7 +541,7 @@ public class CuckooJobExecLogVo {
      */
     public void setForceTriggle(Boolean forceTriggle) {
         this.forceTriggle = forceTriggle;
-		forceTriggleDesc = forceTriggle ? "是" : "否";
+		forceTriggleDesc = forceTriggle == null? "否" : forceTriggle ? "是" : "否";
     }
 
     /**

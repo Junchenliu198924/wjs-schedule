@@ -5,7 +5,7 @@ public enum CuckooAdminPages {
  
 	
 	INDEX("/jobinfo/index", "首页"), 
-	LOGIN("/login", "登录页"),
+	LOGIN("/logon/index", "登录页"),
 	ERROR("/common/common.exception", "报错页面"); 
 	
 	private final String value;

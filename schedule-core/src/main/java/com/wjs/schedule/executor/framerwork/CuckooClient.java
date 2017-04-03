@@ -154,9 +154,7 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 		}
 		
 		IoServerCollection.retryConnect();
-		
 		MessageSendQueue.trySendMessage();
-		
 		
 	}
 	

@@ -36,8 +36,9 @@
 	<bean id="filterChainBuilder" class="org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder">
 	  <property name="filters">
 	    <map>
+	    <!-- 
 	      <entry key="logger" value-ref="loggingFilter"/>
-	      
+	       -->
 	      <entry key="regist" value-ref="registFilter"/>
 	      
 	      <entry key="codec" value-ref="codecFilter"/>
