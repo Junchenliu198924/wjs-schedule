@@ -47,7 +47,7 @@ public class CuckooTaskAspect {
 			rtn = pjp.proceed();
 			
 			// 发送服务端，任务执行完成
-			
+			jobinfo.setErrMessage("succed!");
 			ClientUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
 
 			LOGGER.info("task exec succed taskName:{}, jobInfo:{}", task.value(), jobinfo);

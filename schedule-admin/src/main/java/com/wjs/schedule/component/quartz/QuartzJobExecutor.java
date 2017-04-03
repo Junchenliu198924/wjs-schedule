@@ -69,7 +69,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 		
 		if(null == execIdObj){
 			// 如果日志ID为空，表示当前任务为CRON触发，新增执行日志(一般情况为任务调度节点的第一个任务)
-			LOGGER.debug("quartz trigger cron job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
+			LOGGER.info("quartz trigger cron job, jobGroup:{},jobName:{},triggerType:{}", jobKey.getGroup(), jobKey.getName(),trigger.getClass());
 			
 			String quartzJobGroup = jobKey.getGroup();
 			String[] quartzJobNameArr = jobKey.getName().split(CuckooJobConstant.QUARTZ_JOBNAME_JOINT);
@@ -91,7 +91,7 @@ public class QuartzJobExecutor extends QuartzJobBean {
 				cuckooJobExecLog = cuckooJobLogService.initSysCronJobLog(cuckooJobId ,cuckooJobDetail, scheduledFireTime);
 			} catch (JobUndailyLogBreakException e) {
 
-				LOGGER.error("");
+				LOGGER.error("init log error:{}", e.getMessage());
 				return ;
 			}
 			

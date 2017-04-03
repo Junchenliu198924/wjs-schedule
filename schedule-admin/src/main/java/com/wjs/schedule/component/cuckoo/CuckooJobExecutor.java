@@ -204,6 +204,8 @@ public class CuckooJobExecutor {
 		if(CollectionUtils.isNotEmpty(jobInfoNexts)){
 			
 			for (CuckooJobDetail cuckooJobDetail : jobInfoNexts) {
+				
+				LOGGER.info("trigger next job:{}, father joblog:{}", cuckooJobDetail , jobLog );
 				//  判断任务类型，修改任务状态为PENDING，放入到PENDING任务队列中
 				cuckooJobService.pendingJob(cuckooJobDetail, jobLog);
 				

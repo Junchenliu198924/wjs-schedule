@@ -445,7 +445,6 @@ public class CuckooJobServiceImpl implements CuckooJobService {
 	@Transactional
 	public Long pendingJob(CuckooJobDetail jobDetail, CuckooJobExecLog fatherJobLog) {
 
-		LOGGER.debug("add pending job ,jobDetail:{} , fatherJobLog:{}", jobDetail, fatherJobLog);
 		CuckooJobExecLog jobLog = new CuckooJobExecLog();
 		Long curTime = System.currentTimeMillis();
 		// 初始化任务日志信息
