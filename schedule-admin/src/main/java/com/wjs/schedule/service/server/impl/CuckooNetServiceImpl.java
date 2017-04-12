@@ -3,6 +3,7 @@ package com.wjs.schedule.service.server.impl;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +92,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 					cuckooNetClientInfo.getPort(), jobBean);
 			ServerUtil.send(socket, CuckooMessageType.JOBDOING, jobBean);
 			result.setSuccess(true);
-			result.setRemark("succed");
+			result.setRemark("running");
 			return result;
 		} catch (Exception e) {
 			result.setRemark("error:" + e.getMessage());

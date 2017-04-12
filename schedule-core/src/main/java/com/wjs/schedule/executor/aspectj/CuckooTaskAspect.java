@@ -49,14 +49,13 @@ public class CuckooTaskAspect {
 			// 发送服务端，任务执行完成
 			jobinfo.setErrMessage("succed!");
 			ClientUtil.send(CuckooMessageType.JOBSUCCED, jobinfo);
-
 			LOGGER.info("task exec succed taskName:{}, jobInfo:{}", task.value(), jobinfo);
-			
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.error("task exec error taskName:{}", task.value(), e);
 			// 发送服务端，任务执行失败
 			jobinfo.setErrMessage(e.getMessage());
 			ClientUtil.send(CuckooMessageType.JOBFAILED, jobinfo);
+			throw e;
 		}
 		return rtn;
 	}

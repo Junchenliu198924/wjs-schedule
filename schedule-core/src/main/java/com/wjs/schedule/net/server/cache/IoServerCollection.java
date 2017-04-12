@@ -15,16 +15,16 @@ import com.wjs.schedule.net.client.ClientUtil;
 import com.wjs.schedule.net.vo.IoServerBean;
 
 public class IoServerCollection {
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IoServerCollection.class);
-	
+
 	private static Set<IoServerBean> set = new HashSet<>();
-	private IoServerCollection(){
+
+	private IoServerCollection() {
 		super();
 	}
-	
-	public static boolean add(IoServerBean bean){
+
+	public static boolean add(IoServerBean bean) {
 		return set.add(bean);
 	}
 
@@ -41,17 +41,15 @@ public class IoServerCollection {
 
 	private static void remove(String ip, Integer port) {
 
-		for (Iterator<IoServerBean> it = set.iterator(); it.hasNext() ;) {
-			IoServerBean bean =  it.next();
-			if(bean.getIp().equals(ip) && bean.getPort().equals(port)){
+		for (Iterator<IoServerBean> it = set.iterator(); it.hasNext();) {
+			IoServerBean bean = it.next();
+			if (bean.getIp().equals(ip) && bean.getPort().equals(port)) {
 				it.remove();
 			}
 		}
-		
-	}
-	
 
-	
+	}
+
 	/*
 	 * retry connect to server,in case of server resart
 	 */
@@ -61,10 +59,11 @@ public class IoServerCollection {
 
 			@Override
 			public void run() {
-				Set<IoServerBean> servers = IoServerCollection.getSet();
-				if (CollectionUtils.isNotEmpty(servers)) {
-					for (;;) {
-						try {
+				for (;;) {
+					try {
+						Set<IoServerBean> servers = IoServerCollection.getSet();
+						if (CollectionUtils.isNotEmpty(servers)) {
+
 							List<IoServerBean> unConnect = new ArrayList<>();
 							for (IoServerBean ioServerBean : servers) {
 								if (null == ioServerBean.getSession()) {
@@ -75,15 +74,17 @@ public class IoServerCollection {
 							}
 
 							LOGGER.warn("cuckoo unconnection to server:{}", unConnect);
-								Thread.sleep(60000);
-						} catch (InterruptedException e) {
-							LOGGER.error("unknow error:{}", e.getMessage(), e);
+
 						}
+
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+						LOGGER.error("unknow error:{}", e.getMessage(), e);
 					}
 				}
 			}
 		}).start();
 		LOGGER.info("retry connect thread start");
 	}
-	
+
 }

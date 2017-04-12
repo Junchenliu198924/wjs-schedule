@@ -146,7 +146,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setJobId(cuckooJobDetail.getId());
 		cuckooJobExecLog.setJobStartTime(runTime);
 		cuckooJobExecLog.setExecJobStatus(CuckooJobExecStatus.PENDING.getValue());
-		cuckooJobExecLog.setLatestCheckTime(runTime);
+		cuckooJobExecLog.setLatestCheckTime(curTime);
 		cuckooJobExecLog.setNeedTriggleNext(true);
 		cuckooJobExecLog.setForceTriggle(false);
 		

@@ -46,13 +46,15 @@ public class MessageSendQueue {
 						if (0 == MessageSendQueue.instance().getQueue().size()) {
 							break;
 						}
-						
+						LOGGER.info("messagesendqueue queue:{}",  MessageSendQueue.instance().getQueue());
 						for (int i = 0; i < MessageSendQueue.instance().getQueue().size(); i++) {
 							// ** poll 移除并返问队列头部的元素 如果队列为空，则返回null
 							final MessageInfo message = MessageSendQueue.instance().getQueue().poll();
 							if (null == message) {
 								break;
 							}
+
+							LOGGER.info("messagesendqueue resend:{}",  message);
 							ClientUtil.sendMessageInfo(message);
 						}
 

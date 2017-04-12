@@ -34,6 +34,7 @@ public class ScriptExecutor {
 		Process p;
 		StringBuffer sbResult = new StringBuffer();
 		try {
+			LOGGER.info("script ready to exec:{}", cmd.toString());
 			// 执行命令
 			p = Runtime.getRuntime().exec(cmd.toString());
 			// 取得命令结果的输出流
@@ -48,12 +49,24 @@ public class ScriptExecutor {
 				sbResult.append(line);
 				sbResult.append("\n");
 			}
-			if(0 == p.exitValue()){
+			if(0 == p.waitFor()){
 				// 发送服务端，任务执行完成
 				LOGGER.info("script exec succed,script:{},jobInfo:{}", jobInfo.getJobName(), jobInfo);
 				jobInfo.setErrMessage(sbResult.toString());
 				ClientUtil.send(CuckooMessageType.JOBSUCCED, jobInfo);
 			}else{
+
+				InputStream errFis = p.getErrorStream();
+				// 用一个读输出流类去读
+				InputStreamReader errIsr = new InputStreamReader(errFis);
+				// 用缓冲器读行
+				BufferedReader errBr = new BufferedReader(errIsr);
+				String errLline = null;
+				// 直到读完为止
+				while ((errLline = errBr.readLine()) != null) {
+					sbResult.append(errLline);
+					sbResult.append("\n");
+				}
 				// 发送服务端，任务执行失败
 				LOGGER.error("script exec error taskName:{},error:{}", jobInfo.getJobName(), sbResult.toString());
 				// 发送服务端，任务执行失败
@@ -62,7 +75,7 @@ public class ScriptExecutor {
 			}
 			
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error("script exec unknown error taskName:{}", jobInfo.getJobName(), e);
 			// 发送服务端，任务执行异常
 			jobInfo.setErrMessage(e.getMessage());

@@ -71,7 +71,7 @@ public class ClientUtil {
 					taskInfo.setBeanName(taskBean.getBeanName());
 					taskInfo.setMethodName(taskBean.getMethodName());
 					taskInfo.setTaskName(taskBean.getTaskName());
-					ClientUtil.send(CuckooMessageType.REGIST, taskInfo);
+					ClientUtil.send(CuckooMessageType.REGIST, session, taskInfo);
 				}
 
 			}
@@ -107,6 +107,8 @@ public class ClientUtil {
 			MessageSendQueue.instance().getQueue().offer(msgInfo);
 		}
 	}
+	
+	
 
 	// 给所有服务器发消息
 	public static boolean sendMessageInfo(MessageInfo msgInfo) {

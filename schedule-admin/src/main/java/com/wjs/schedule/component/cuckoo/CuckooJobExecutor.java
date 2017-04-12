@@ -128,7 +128,7 @@ public class CuckooJobExecutor {
 			CuckooClientJobExecResult remoteExecutor = cuckooServerService.execRemoteJob(cuckooNetClientInfo, jobBean);
 
 			remark = remoteExecutor.getRemark();
-			LOGGER.info("job exec result,remark:{},jobInfo:{}", remark, jobLog);
+			LOGGER.info("job start running,remark:{},logInfo:{}", remark, jobLog);
 			// 插入执行日志
 			jobLog.setRemark(remark.length() > 490 ? remark.substring(0, 490) : remark);
 			jobLog.setExecJobStatus(CuckooJobExecStatus.RUNNING.getValue());
@@ -206,6 +206,8 @@ public class CuckooJobExecutor {
 			for (CuckooJobDetail cuckooJobDetail : jobInfoNexts) {
 				
 				LOGGER.info("trigger next job:{}, father joblog:{}", cuckooJobDetail , jobLog );
+				// 强制执行属性，不继承
+				jobLog.setForceTriggle(false);
 				//  判断任务类型，修改任务状态为PENDING，放入到PENDING任务队列中
 				cuckooJobService.pendingJob(cuckooJobDetail, jobLog);
 				
