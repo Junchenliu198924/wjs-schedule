@@ -43,20 +43,20 @@ public class CuckooContainerManager implements ApplicationListener<ContextRefres
 			// donothing
 			LOGGER.info("项目启动完成");
 
-			try {
-				CuckooNetServerInfoCriteria crt = new CuckooNetServerInfoCriteria();
-				crt.createCriteria().andIpEqualTo(InetAddress.getLocalHost().getHostAddress())
-				.andPortEqualTo(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
-				if(CollectionUtils.isEmpty(cuckooNetServerInfoMapper.selectByExample(crt))){
-					CuckooNetServerInfo cuckooNetServerInfo = new CuckooNetServerInfo();
-					cuckooNetServerInfo.setIp(InetAddress.getLocalHost().getHostAddress());
-					cuckooNetServerInfo.setPort(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
-					cuckooNetServerInfo.setModifyDate(System.currentTimeMillis());
-					cuckooNetServerInfoMapper.insertSelective(cuckooNetServerInfo);
-				}
-			} catch (UnknownHostException e) {
-				LOGGER.error("get local Ip error:{}", e.getMessage(), e);
-			}
+//			try {
+//				CuckooNetServerInfoCriteria crt = new CuckooNetServerInfoCriteria();
+//				crt.createCriteria().andIpEqualTo(InetAddress.getLocalHost().getHostAddress())
+//				.andPortEqualTo(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
+//				if(CollectionUtils.isEmpty(cuckooNetServerInfoMapper.selectByExample(crt))){
+//					CuckooNetServerInfo cuckooNetServerInfo = new CuckooNetServerInfo();
+//					cuckooNetServerInfo.setIp(InetAddress.getLocalHost().getHostAddress());
+//					cuckooNetServerInfo.setPort(ConfigUtil.getInteger(CuckooNetConstant.CUCKOO_SERVER_TCPPORT));
+//					cuckooNetServerInfo.setModifyDate(System.currentTimeMillis());
+//					cuckooNetServerInfoMapper.insertSelective(cuckooNetServerInfo);
+//				}
+//			} catch (UnknownHostException e) {
+//				LOGGER.error("get local Ip error:{}", e.getMessage(), e);
+//			}
 
 			quartzManage.addAutoJob();
 		}

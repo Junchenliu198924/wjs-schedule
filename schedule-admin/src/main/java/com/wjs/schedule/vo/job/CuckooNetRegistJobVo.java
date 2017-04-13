@@ -1,6 +1,6 @@
 package com.wjs.schedule.vo.job;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -47,9 +47,9 @@ public class CuckooNetRegistJobVo {
      */
     private Long modifyDate;
     
-    private List<String> clients;
+    private Set<String> clients;
     
-    private List<String> servers;
+    private Set<String> servers;
 
     /**
      * cuckoo_net_regist_job表的操作属性:serialVersionUID
@@ -172,19 +172,19 @@ public class CuckooNetRegistJobVo {
     
     
 
-    public List<String> getClients() {
+    public Set<String> getClients() {
 		return clients;
 	}
 
-	public void setClients(List<String> clients) {
+	public void setClients(Set<String> clients) {
 		this.clients = clients;
 	}
 
-	public List<String> getServers() {
+	public Set<String> getServers() {
 		return servers;
 	}
 
-	public void setServers(List<String> servers) {
+	public void setServers(Set<String> servers) {
 		this.servers = servers;
 	}
 

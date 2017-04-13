@@ -18,4 +18,10 @@ public class CuckooJobConstant {
 	public static final String CUCKOO_PENDING_JOB_RETRY_LONG = "cuckoo.pending.job.retry.long";
 	
 	
+	/**
+	 * 当前服务器ID（数据库ID）
+	 */
+	public static Long curServerId = null;
+	
+	
 }

@@ -16,14 +16,24 @@ public class IoClientInfo {
 	private Integer port;
 	
 	/**
+	 * serverId
+	 */
+	private Long serverId;
+	
+	/**
 	 * 连接 -- 每一个APP和Tag只有一个连接和当前服务器连接
 	 */
 	private  IoSession session;
 
 
-	
 
+	public Long getServerId() {
+		return serverId;
+	}
 
+	public void setServerId(Long serverId) {
+		this.serverId = serverId;
+	}
 
 	public String getIp() {
 		return ip;
@@ -52,12 +62,14 @@ public class IoClientInfo {
 	
 	
 	 
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		result = prime * result + ((port == null) ? 0 : port.hashCode());
+		result = prime * result + ((serverId == null) ? 0 : serverId.hashCode());
 		return result;
 	}
 
@@ -79,6 +91,11 @@ public class IoClientInfo {
 			if (other.port != null)
 				return false;
 		} else if (!port.equals(other.port))
+			return false;
+		if (serverId == null) {
+			if (other.serverId != null)
+				return false;
+		} else if (!serverId.equals(other.serverId))
 			return false;
 		return true;
 	}

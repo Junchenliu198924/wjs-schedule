@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wjs.schedule.bean.ClientTaskInfoBean;
 import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.component.cache.JobClientSessionCache;
+import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
 import com.wjs.schedule.dao.exec.CuckooNetClientJobMapMapper;
@@ -123,7 +124,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 				if (CollectionUtils.isNotEmpty(clientMaps)) {
 					List<Long> clientIds = PropertyUtil.fetchFieldList(clientMaps, "clientId");
 					CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
-					clientCrt.createCriteria().andIdIn(clientIds);
+					clientCrt.createCriteria().andIdIn(clientIds).andServerIdEqualTo(CuckooJobConstant.curServerId);
 					List<CuckooNetClientInfo> clientInfos = cuckooNetClientInfoMapper.selectByExample(clientCrt);
 					if (CollectionUtils.isNotEmpty(clientInfos)) {
 
@@ -147,7 +148,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 				if (CollectionUtils.isNotEmpty(clientMaps)) {
 					List<Long> clientIds = PropertyUtil.fetchFieldList(clientMaps, "clientId");
 					CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
-					clientCrt.createCriteria().andIdIn(clientIds);
+					clientCrt.createCriteria().andIdIn(clientIds).andServerIdEqualTo(CuckooJobConstant.curServerId);
 					List<CuckooNetClientInfo> clientInfos = cuckooNetClientInfoMapper.selectByExample(clientCrt);
 					if (CollectionUtils.isNotEmpty(clientInfos)) {
 
@@ -245,6 +246,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 
 		CuckooNetClientInfoCriteria clientCrt = new CuckooNetClientInfoCriteria();
 		clientCrt.createCriteria().andIpEqualTo(clientSocket.getAddress().getHostAddress())
+				.andServerIdEqualTo(cuckooNetServerInfo.getId())
 				.andPortEqualTo(clientSocket.getPort());
 		CuckooNetClientInfo cuckooNetClientInfo = cuckooNetClientInfoMapper.lockByExample(clientCrt);
 		if (null == cuckooNetClientInfo) {
@@ -253,6 +255,7 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 			cuckooNetClientInfo.setIp(clientSocket.getAddress().getHostAddress());
 			cuckooNetClientInfo.setPort(clientSocket.getPort());
 			cuckooNetClientInfo.setModifyDate(System.currentTimeMillis());
+			cuckooNetClientInfo.setServerId(cuckooNetServerInfo.getId());
 			try {
 				cuckooNetClientInfoMapper.insertSelective(cuckooNetClientInfo);
 				cuckooNetClientInfo.setId(cuckooNetClientInfoMapper.lastInsertId());
@@ -277,11 +280,14 @@ public class CuckooNetServiceImpl implements CuckooNetService {
 			LOGGER.error("mapping clientInfo-registjob error,registJobId:{},clientInfoId:{} ",
 					cuckooNetRegistJob.getId(), cuckooNetClientInfo.getId());
 		}
+		
 
 		// 链接缓存中增加缓存
 		IoClientInfo socket = new IoClientInfo();
 		socket.setIp(cuckooNetClientInfo.getIp());
 		socket.setPort(cuckooNetClientInfo.getPort());
+		socket.setServerId(cuckooNetClientInfo.getServerId());
+		CuckooJobConstant.curServerId = cuckooNetClientInfo.getServerId();
 		socket.setSession(session);
 
 		JobClientSessionCache.put(cuckooNetClientInfo.getId(), socket);

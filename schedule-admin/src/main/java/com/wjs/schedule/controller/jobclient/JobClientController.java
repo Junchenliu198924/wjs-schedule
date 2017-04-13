@@ -2,8 +2,10 @@ package com.wjs.schedule.controller.jobclient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -85,28 +87,28 @@ public class JobClientController  extends BaseController{
 		return dataTable(pages);
 	}
 	
-	private List<String> getCuckooServers(CuckooNetRegistJob job) {
+	private Set<String> getCuckooServers(CuckooNetRegistJob job) {
 
-		List<String> serverAddrs = new ArrayList<>();
+		Set<String> serverAddrs = new HashSet<>();
 		List<CuckooNetServerInfo> servers = cuckooNetService.getCuckooServersByRegistJob(job);
 		if(CollectionUtils.isNotEmpty(servers)){
 
 			for (CuckooNetServerInfo cuckooNetServerInfo : servers) {
-				serverAddrs.add(cuckooNetServerInfo.getIp() + ":" + cuckooNetServerInfo.getPort());
+				serverAddrs.add(cuckooNetServerInfo.getId() + ":" + cuckooNetServerInfo.getIp() + "-" + cuckooNetServerInfo.getPort());
 			}
 		}
 		return serverAddrs;
 	}
 
 
-	private List<String> getCuckooClients(CuckooNetRegistJob job) {
+	private Set<String> getCuckooClients(CuckooNetRegistJob job) {
 
-		List<String> clientAddrs = new ArrayList<>();
+		Set<String> clientAddrs = new HashSet<>();
 		List<CuckooNetClientInfo> clients = cuckooNetService.getCuckooClientsByRegistJob(job);
 		if(CollectionUtils.isNotEmpty(clients)){
 
 			for (CuckooNetClientInfo cuckooNetClientInfo : clients) {
-				clientAddrs.add(cuckooNetClientInfo.getIp() + ":" + cuckooNetClientInfo.getPort());
+				clientAddrs.add(cuckooNetClientInfo.getServerId() +":" + cuckooNetClientInfo.getIp());
 			}
 		}
 		return clientAddrs;
