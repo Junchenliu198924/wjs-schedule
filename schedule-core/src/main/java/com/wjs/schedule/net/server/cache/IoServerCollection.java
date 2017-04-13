@@ -72,8 +72,9 @@ public class IoServerCollection {
 									}
 								}
 							}
-
-							LOGGER.warn("cuckoo unconnection to server:{}", unConnect);
+							if(CollectionUtils.isNotEmpty(unConnect)){
+								LOGGER.warn("cuckoo unconnection to server:{}", unConnect);
+							}
 
 						}
 
