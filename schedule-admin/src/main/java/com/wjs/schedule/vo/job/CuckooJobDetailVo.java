@@ -122,7 +122,8 @@ public class CuckooJobDetailVo {
      * cuckoo_job_details表的操作属性:serialVersionUID
      * 
      */
-    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+	private static final long serialVersionUID = 1L;
 
     /**
      * 数据字段 cuckoo_job_details.id的get方法 

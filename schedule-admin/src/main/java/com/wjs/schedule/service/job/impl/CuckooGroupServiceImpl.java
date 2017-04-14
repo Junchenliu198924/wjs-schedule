@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
-import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.domain.exec.CuckooJobGroupCriteria;

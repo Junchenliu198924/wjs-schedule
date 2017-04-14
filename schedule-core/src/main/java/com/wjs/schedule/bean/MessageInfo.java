@@ -8,6 +8,12 @@ import com.wjs.schedule.enums.CuckooMessageType;
 
 public class MessageInfo implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	private CuckooMessageType messageType;
 	
 	

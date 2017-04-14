@@ -8,7 +8,6 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wjs.schedule.net.server.MinaHeartBeatMessageFactory;
 import com.wjs.schedule.net.vo.IoClientInfo;
 
 public class JobClientSessionCache {

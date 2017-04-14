@@ -10,6 +10,7 @@ import com.wjs.schedule.vo.job.JobNext;
 
 public class CuckBeanUtil {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckBeanUtil.class);
 
 	public static CuckooJobNextJob parseJobNext(JobNext jobNext) {

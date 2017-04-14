@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.wjs.schedule.bean.JobInfoBean;
-import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.executor.annotation.CuckooTask;
 import com.wjs.schedule.service.CuckooTestUnDailyJob;
 

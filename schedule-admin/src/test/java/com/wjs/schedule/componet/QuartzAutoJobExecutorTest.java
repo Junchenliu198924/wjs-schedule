@@ -29,7 +29,6 @@ import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.vo.qry.JobLogQry;
-import com.wjs.util.config.ConfigUtil;
 import com.wjs.util.dao.PageDataList;
 
 public class QuartzAutoJobExecutorTest extends ServiceUnitBaseTest{

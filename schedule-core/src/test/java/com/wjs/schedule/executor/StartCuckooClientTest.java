@@ -16,6 +16,7 @@ public class StartCuckooClientTest extends ServiceUnitBaseTest {
 	@Autowired
 	CuckooTestTask cuckooTestTask;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void start() {
 

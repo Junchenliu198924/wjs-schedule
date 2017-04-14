@@ -178,7 +178,8 @@ public class CuckooJobExecLogVo {
      * cuckoo_job_exec_log表的操作属性:serialVersionUID
      * 
      */
-    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+	private static final long serialVersionUID = 1L;
 
     /**
      * 数据字段 cuckoo_job_exec_log.id的get方法 

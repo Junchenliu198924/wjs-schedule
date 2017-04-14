@@ -1,7 +1,6 @@
 package com.wjs.schedule.net.client.filter;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.filterchain.IoFilterChain;

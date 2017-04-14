@@ -21,6 +21,7 @@ import com.wjs.schedule.service.job.CuckooJobService;
 public class CuckooJobCallBack  {
 
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooJobCallBack.class);
 	@Autowired
 	CuckooJobService cuckooJobService;

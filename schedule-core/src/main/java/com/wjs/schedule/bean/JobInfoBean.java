@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.wjs.schedule.enums.CuckooJobExecType;
-import com.wjs.schedule.enums.CuckooJobTriggerType;
 
 public class JobInfoBean implements Serializable{
 

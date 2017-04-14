@@ -15,13 +15,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.wjs.schedule.exception.BaseException;
 import com.wjs.util.DateUtil;
 import com.wjs.util.config.ConfigUtil;
 
 @Component
 public class MailSendSpring {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailSendSpring.class);
 
 	// 定义spring邮件发送

@@ -19,7 +19,6 @@ import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import com.wjs.schedule.ServiceUnitBaseTest;
 import com.wjs.schedule.component.quartz.QuartzJobExecutor;

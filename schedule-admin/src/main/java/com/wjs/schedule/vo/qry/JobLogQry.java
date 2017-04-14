@@ -8,6 +8,10 @@ import com.wjs.schedule.vo.QryBase;
 
 public class JobLogQry  extends QryBase{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long logId;
 	private Long groupId;
 	private Long jobId;

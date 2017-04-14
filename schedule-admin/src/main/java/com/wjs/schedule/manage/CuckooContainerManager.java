@@ -3,7 +3,6 @@ package com.wjs.schedule.manage;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +11,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
 import com.wjs.schedule.component.quartz.QuartzManage;
-import com.wjs.schedule.constant.CuckooNetConstant;
 import com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper;
-import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
-import com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria;
-import com.wjs.util.config.ConfigUtil;
 
 public class CuckooContainerManager implements ApplicationListener<ContextRefreshedEvent> {
 

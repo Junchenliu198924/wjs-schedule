@@ -7,6 +7,11 @@ import com.wjs.schedule.vo.QryBase;
 public class JobNetQry extends QryBase{
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String jobClassApplication;
 	
 	private String jobName;

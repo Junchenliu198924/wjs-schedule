@@ -3,7 +3,6 @@ package com.wjs.schedule.service.server.impl;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

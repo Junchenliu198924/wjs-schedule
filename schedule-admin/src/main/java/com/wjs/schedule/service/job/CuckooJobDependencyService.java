@@ -3,7 +3,6 @@ package com.wjs.schedule.service.job;
 import java.util.List;
 
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.exception.JobCanNotRunningException;
 import com.wjs.schedule.vo.job.JobDependency;
 
 public interface CuckooJobDependencyService {

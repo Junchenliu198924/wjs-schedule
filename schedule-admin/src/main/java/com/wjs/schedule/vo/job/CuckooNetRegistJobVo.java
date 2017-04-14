@@ -55,7 +55,8 @@ public class CuckooNetRegistJobVo {
      * cuckoo_net_regist_job表的操作属性:serialVersionUID
      * 
      */
-    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+	private static final long serialVersionUID = 1L;
 
     /**
      * 数据字段 cuckoo_net_regist_job.id的get方法 

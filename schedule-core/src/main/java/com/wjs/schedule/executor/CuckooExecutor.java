@@ -15,6 +15,7 @@ public class CuckooExecutor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CuckooExecutor.class);
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void exec(CuckooTaskBean task, JobInfoBean taskParam) {
 		
 		

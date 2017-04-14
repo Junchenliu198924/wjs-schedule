@@ -6,6 +6,11 @@ import com.wjs.schedule.vo.QryBase;
 
 public class JobInfoQry  extends QryBase{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Long groupId;
 	
 	private String jobClassApplication ;
