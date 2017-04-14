@@ -97,6 +97,8 @@ public class JobClientController  extends BaseController{
 				serverAddrs.add(cuckooNetServerInfo.getId() + ":" + cuckooNetServerInfo.getIp() + "-" + cuckooNetServerInfo.getPort());
 			}
 		}
+		
+		
 		return serverAddrs;
 	}
 
