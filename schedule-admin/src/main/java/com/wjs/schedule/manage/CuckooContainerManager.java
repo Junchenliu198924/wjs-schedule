@@ -11,7 +11,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
 import com.wjs.schedule.component.quartz.QuartzManage;
-import com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper;
+import com.wjs.schedule.dao.net.CuckooNetServerInfoMapper;
 
 public class CuckooContainerManager implements ApplicationListener<ContextRefreshedEvent> {
 

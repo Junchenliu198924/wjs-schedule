@@ -57,20 +57,9 @@ public class PagePlugin implements Interceptor {
 			// 获取起始行和结束行
 			Object parameterObject = parameterHandler.getParameterObject();
 			Class parameterClaz = (Class) parameterObject.getClass();
-			Field startField = parameterClaz.getDeclaredField("start");
-			Field limitField = parameterClaz.getDeclaredField("limit");
-			if(null != startField){
-				startField.setAccessible(true);
-				start = startField.getInt(parameterObject);
-			}else{
-				throw new RuntimeException("please set field-start in a pageQry");
-			}
-			if(null != limitField){
-				limitField.setAccessible(true);
-				limit = limitField.getInt(parameterObject);
-			}else{
-				throw new RuntimeException("please set field-limit in a pageQry");
-			}
+			start = getField(parameterObject, parameterClaz, "start");
+			
+			limit = getField(parameterObject, parameterClaz, "limit");
 			  
 			String countSql = getCountSql(boundSql.getSql());
 			count = getTotalRecord(connection, countSql, parameterHandler);
@@ -89,6 +78,27 @@ public class PagePlugin implements Interceptor {
 		}
 
 		return invocation.proceed();
+	}
+
+	@SuppressWarnings("rawtypes")
+	private int getField(Object parameterObject, Class clazz, String fieldName)
+			throws NoSuchFieldException, IllegalAccessException {
+		Field startField = null;
+		for(; clazz != Object.class ; clazz = clazz.getSuperclass()) {  
+	            try {  
+	            	startField = clazz.getDeclaredField(fieldName) ;  
+	            	break;
+	            } catch (Exception e) {  
+	                // ingnore              
+	            }   
+	        }  
+		
+		if(null != startField){
+			startField.setAccessible(true);
+			return (Integer)startField.get(parameterObject);
+		}else{
+			throw new RuntimeException("please set field-start in a pageQry");
+		}
 	}
 
 	private Integer getTotalRecord(Connection connection, String countSql, ParameterHandler parameterHandler) {

@@ -2,7 +2,7 @@ package com.wjs.schedule.vo.job;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecType;
 
 /**
@@ -72,7 +72,7 @@ public class CuckooJobDetailVo {
     /**
      * 是否未日切任务
      */
-    private String typeDaily = CuckooIsTypeDaily.NO.getValue();
+    private String typeDaily = CuckooBooleanFlag.NO.getValue();
 
     /**
      * 偏移量 -- cuckoo_job_details.offset

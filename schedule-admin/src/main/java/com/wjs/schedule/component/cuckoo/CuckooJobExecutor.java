@@ -15,18 +15,18 @@ import com.wjs.schedule.dao.exec.CuckooJobDetailMapper;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.domain.net.CuckooNetClientInfo;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobStatus;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.exception.JobCanNotRunningException;
 import com.wjs.schedule.exception.JobRunningErrorException;
 import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.service.job.CuckooJobService;
-import com.wjs.schedule.service.server.CuckooNetService;
+import com.wjs.schedule.service.net.CuckooNetService;
 import com.wjs.schedule.vo.job.CuckooClientJobExecResult;
 
 @Component("cuckooJobExecutor")
@@ -118,7 +118,7 @@ public class CuckooJobExecutor {
 			jobBean.setFlowLastTime(jobLog.getFlowLastTime());
 			jobBean.setJobId(jobLog.getJobId());
 			jobBean.setExecType(CuckooJobExecType.fromName(jobLog.getExecJobType()));
-			jobBean.setTypeDaily(CuckooIsTypeDaily.YES.getValue().equals(jobLog.getTypeDaily()));
+			jobBean.setTypeDaily(CuckooBooleanFlag.YES.getValue().equals(jobLog.getTypeDaily()));
 			jobBean.setJobName(jobLog.getJobName());
 			jobBean.setTxDate(jobLog.getTxDate());
 			jobBean.setJobLogId(jobLog.getId());

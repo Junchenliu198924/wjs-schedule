@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wjs.schedule.ServiceUnitBaseTest;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.service.job.CuckooJobService;
@@ -26,7 +26,7 @@ public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 		jobInfo.setJobDesc("描述：测试cron任务");
 		jobInfo.setJobName("testJob");
 		jobInfo.setJobStatus(CuckooJobStatus.RUNNING.getValue());
-		jobInfo.setTypeDaily(CuckooIsTypeDaily.NO.getValue());
+		jobInfo.setTypeDaily(CuckooBooleanFlag.NO.getValue());
 		jobInfo.setOffset(-1);
 		jobInfo.setTriggerType(CuckooJobTriggerType.CRON.getValue());
 		
@@ -46,7 +46,7 @@ public class CuckooJobServiceTest  extends ServiceUnitBaseTest{
 		jobInfo.setJobDesc("描述：测试flow任务");
 		jobInfo.setJobName("testJob2");
 		jobInfo.setCronExpression("0 0 1 * * ?");
-		jobInfo.setTypeDaily(CuckooIsTypeDaily.YES.getValue());
+		jobInfo.setTypeDaily(CuckooBooleanFlag.YES.getValue());
 		jobInfo.setJobStatus(CuckooJobStatus.RUNNING.getValue());
 		jobInfo.setTriggerType(CuckooJobTriggerType.JOB.getValue());
 		

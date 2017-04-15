@@ -22,12 +22,13 @@ import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.qry.QryBase;
+import com.wjs.schedule.qry.job.JobLogQry;
+import com.wjs.schedule.service.auth.CuckooAuthService;
 import com.wjs.schedule.service.job.CuckooGroupService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobService;
-import com.wjs.schedule.vo.QryBase;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
-import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
@@ -45,6 +46,9 @@ public class JobLogController extends BaseController {
 	@Autowired
 	CuckooJobLogService cuckooJobLogService;
 	
+	@Autowired
+	CuckooAuthService cuckooAuthService;
+	
 
 	@RequestMapping
 	public String index0(HttpServletRequest request,Long groupId, Long jobId) {
@@ -59,7 +63,7 @@ public class JobLogController extends BaseController {
 		request.setAttribute("groupId", groupId);
 		request.setAttribute("jobId", jobId);
 		// 任务类型
-		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
+		List<CuckooJobGroup> jobGroupList = cuckooGroupService.listAllGroup();
 		request.setAttribute("jobGroupList", jobGroupList);
 		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();
 		CuckooJobGroup groupNull = new CuckooJobGroup();
@@ -173,6 +177,8 @@ public class JobLogController extends BaseController {
 			throw new BaseException("logid can not be null");
 		}
 		
+
+		
 		cuckooJobLogService.resetLogStatus(logId, CuckooJobExecStatus.SUCCED);
 		
 		return success();
@@ -192,6 +198,11 @@ public class JobLogController extends BaseController {
 		if(null == cuckooJobExecLog){
 			 throw new BaseException("can not get jobLog by logid:{}", logId);
 		}
+
+		if(!cuckooAuthService.getLogonInfo().getWritableGroupIds().contains(cuckooJobExecLog.getGroupId())){
+			throw new BaseException("no writable right");
+		}
+		
 		cuckooJobExecLog.setJobStartTime(System.currentTimeMillis());
 		cuckooJobExecLog.setForceTriggle(true);
 		cuckooJobExecLog.setNeedTriggleNext(needTriggleNext == null ? false : needTriggleNext);

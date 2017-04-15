@@ -1,5 +1,7 @@
 package com.wjs.schedule.controller;
 
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -130,9 +132,18 @@ public class BaseController {
 	 */
 	public <T> JqueryDataTable<T>  dataTable(PageDataList<T> page) {
 		JqueryDataTable<T> t = new JqueryDataTable<>();
-		t.setData(page.getRows());
-		t.setRecordsFiltered(page.getTotal());
-		t.setRecordsTotal(page.getTotal());
+		if(null != page){
+
+			t.setData(page.getRows());
+			t.setRecordsFiltered(page.getTotal());
+			t.setRecordsTotal(page.getTotal());
+		}else{
+		
+	
+			t.setData(new ArrayList<T>());
+			t.setRecordsFiltered(0);
+			t.setRecordsTotal(0);
+		}
 		return t;
 	}
 

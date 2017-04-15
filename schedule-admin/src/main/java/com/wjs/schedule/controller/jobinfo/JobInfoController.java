@@ -20,18 +20,18 @@ import com.wjs.schedule.dao.exec.CuckooJobExtendMapper;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.qry.job.JobInfoQry;
 import com.wjs.schedule.service.job.CuckooGroupService;
 import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.service.job.CuckooJobService;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
-import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.config.ConfigUtil;
@@ -79,7 +79,7 @@ public class JobInfoController extends BaseController{
 		request.setAttribute("defaltMailTo", ConfigUtil.get("mail.receive.defalt.email"));
 		
 		// 任务分组
-		List<CuckooJobGroup> jobGroupList = cuckooGroupService.selectAllGroup();
+		List<CuckooJobGroup> jobGroupList = cuckooGroupService.listAllGroup();
 		request.setAttribute("jobGroupList", jobGroupList);
 		
 		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();
@@ -124,7 +124,7 @@ public class JobInfoController extends BaseController{
 		request.setAttribute("jobTriggerTypeNoNull", jobTriggerType);
 		
 		// 是否为日切任务
-		CuckooIsTypeDaily[] jobIsTypeDaily = CuckooIsTypeDaily.valuesNoNull();
+		CuckooBooleanFlag[] jobIsTypeDaily = CuckooBooleanFlag.valuesNoNull();
 		request.setAttribute("jobIsTypeDailyNoNull", jobIsTypeDaily);
 		
 		
@@ -173,6 +173,8 @@ public class JobInfoController extends BaseController{
 					vo.setOverTime(cuckooJobExtend.getOverTimeLong());
 					vo.setMailTo(cuckooJobExtend.getEmailList());
 				}
+				CuckooJobGroup jobGroup =  cuckooGroupService.getGroupById(vo.getGroupId());
+				vo.setGroupName(jobGroup == null ? "" : jobGroup.getGroupName());
 				
 				rows.add(vo);
 			}
@@ -243,10 +245,10 @@ public class JobInfoController extends BaseController{
 	public Object trigger(Long id, String typeDaily, Boolean needTriggleNext, Integer txDate, String flowLastTime, String flowCurTime){
 		 
 		
-		if(CuckooIsTypeDaily.NO.getValue().equals(typeDaily)){
+		if(CuckooBooleanFlag.NO.getValue().equals(typeDaily)){
 			
 			cuckooJobService.triggerUnDailyJob(id, needTriggleNext, DateUtil.getLongTime(flowLastTime, "yyyy-MM-dd HH:mm:ss:SSS"), DateUtil.getLongTime(flowCurTime, "yyyy-MM-dd HH:mm:ss:SSS"), false);
-		}else if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily)){
+		}else if(CuckooBooleanFlag.YES.getValue().equals(typeDaily)){
 
 			cuckooJobService.triggerDailyJob(id, needTriggleNext, txDate, false);
 		}else{
@@ -322,7 +324,7 @@ public class JobInfoController extends BaseController{
 		}
 		
 
-		if(CuckooIsTypeDaily.NO.getValue().equals(jobDetail.getTypeDaily())){
+		if(CuckooBooleanFlag.NO.getValue().equals(jobDetail.getTypeDaily())){
 			// 非日切任务，不建议有太多的依赖
 			if(StringUtils.isNotEmpty(jobDetail.getDependencyIds()) && jobDetail.getDependencyIds().contains(",")){
 
@@ -391,7 +393,10 @@ public class JobInfoController extends BaseController{
 
 		if(CollectionUtils.isNotEmpty(dependencyIds)){
 			for (Long jobId : dependencyIds) {
-				result.add(convertJobVo(jobId));
+				CuckooJobDetailVo vo = convertJobVo(jobId);
+				if(null != vo){
+					result.add(vo);
+				}
 			}
 		}
 		

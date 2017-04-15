@@ -2,7 +2,7 @@ package com.wjs.schedule.vo.job;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobExecType;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
@@ -299,7 +299,7 @@ public class CuckooJobExecLogVo {
         this.typeDaily = typeDaily == null ? null : typeDaily.trim();
 
 		try {
-			typeDailyDesc = CuckooIsTypeDaily.fromName(this.typeDaily).getDescription();
+			typeDailyDesc = CuckooBooleanFlag.fromName(this.typeDaily).getDescription();
 		} catch (Exception e) {
 			typeDailyDesc = "";
 		}

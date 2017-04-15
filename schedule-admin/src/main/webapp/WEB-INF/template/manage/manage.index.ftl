@@ -26,17 +26,7 @@
 		<!-- Main content -->
 	    <section class="content">
 			
-			 在这里管理用户啦，哈哈哈。在分组管理里面管理权限啦，哈哈哈
-			 <br/>
-			 设置admin用户，可以查看管理所有权限
-			 <br/>
-			 其他用户权限放在groupId里面，通过拦截器中增加groupIds的方式处理。
-			 <br/>
-			 通过统一的URL规则来进行操作级别的权限管理，例如：
-			 <br/>
-			 查询：pageList,新增 add,修改：modify，addOrModify，delete。对操作管理（可读、可写管理）
-			 <br/>
-			 最后，分组下拉框，也需要进行权限管理
+			用户列表管理
 	    </section>
 	</div>
 

@@ -3,7 +3,7 @@ package com.wjs.schedule.dao.exec;
 import java.util.List;
 
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.vo.QryBase;
+import com.wjs.schedule.qry.QryBase;
 
 public interface CuckooJobExecLogSubMapper {
 

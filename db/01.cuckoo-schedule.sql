@@ -239,5 +239,44 @@ CREATE INDEX idx_serverjob_serverid_registid ON cuckoo_net_server_job_map(server
 CREATE INDEX idx_serverjob_registid ON cuckoo_net_server_job_map(regist_id ASC );
 
 
+-- 权限认证表
+CREATE TABLE cuckoo_auth_user
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	user_name                      varchar(64)     DEFAULT ''         NOT NULL	COMMENT '用户姓名',
+	user_pwd                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '用户密码',
+	user_auth_type                 varchar(8)      DEFAULT ''         NOT NULL	COMMENT '用户权限类型',
+	phone                          varchar(20)     DEFAULT ''         NOT NULL	COMMENT '电话',
+	email                          varchar(32)     DEFAULT ''         NOT NULL	COMMENT '邮件',
+	org_name                       varchar(100)    DEFAULT ''         NOT NULL	COMMENT '机构名称',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='用户表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE UNIQUE INDEX uk_authuser_name ON cuckoo_auth_user(user_name ASC );
+
+
+CREATE TABLE cuckoo_auth_jobgrp
+(
+	id                             bigint          NOT NULL AUTO_INCREMENT	COMMENT '标准ID',
+	group_id                       bigint          DEFAULT 0          NOT NULL	COMMENT '分组ID',
+	user_id                        bigint          DEFAULT 0          NOT NULL	COMMENT '用户ID',
+	writable                       varchar(3)      DEFAULT ''         NOT NULL	COMMENT '可写',
+	readable                       varchar(3)      DEFAULT ''         NOT NULL	COMMENT '可读',
+	grantable                      varchar(3)      DEFAULT ''         NOT NULL	COMMENT '可分配',
+PRIMARY KEY(id)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
+COMMENT='分组权限控制表'
+AUTO_INCREMENT=1
+ROW_FORMAT=COMPACT;
+CREATE INDEX idx_authjobgrp_groupid ON cuckoo_auth_jobgrp(group_id ASC );
+CREATE INDEX idx_authjobgrp_userid ON cuckoo_auth_jobgrp(user_id ASC );
+
+
 
 

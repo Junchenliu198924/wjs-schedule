@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.wjs.schedule.constant.CuckooJobConstant;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.exception.BaseException;
 
@@ -73,7 +73,7 @@ public class QuartzManage {
 
 
 
-	public void addCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus, CuckooIsTypeDaily typeDaily){
+	public void addCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus, CuckooBooleanFlag typeDaily){
 		String quartzJobName = jobId;
 		// TriggerKey : name + group
 		TriggerKey triggerKey = TriggerKey.triggerKey(quartzJobName, quartzCronGroup);
@@ -97,7 +97,7 @@ public class QuartzManage {
 //				withMisfireHandlingInstructionFireAndProceed
 //				——以当前时间为触发频率立刻触发一次执行
 //				——然后按照Cron频率依次执行
-		if(CuckooIsTypeDaily.YES.getValue().equals(typeDaily.getValue())){
+		if(CuckooBooleanFlag.YES.getValue().equals(typeDaily.getValue())){
 			// 日切任务遗漏任务自动触发
 			cronScheduleBuilder.withMisfireHandlingInstructionIgnoreMisfires();
 		}else{
@@ -137,7 +137,7 @@ public class QuartzManage {
 
 	}
 
-	public void modfyCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus , CuckooIsTypeDaily typeDaily) {
+	public void modfyCronJob(String jobId, String cronExpression, CuckooJobStatus jobStatus , CuckooBooleanFlag typeDaily) {
 
 		String quartzJobName = jobId;
 		JobKey jobKey = new JobKey(quartzJobName, quartzCronGroup);

@@ -25,19 +25,7 @@ $(function() {
 	    "columns": [
 	                { "data": 'id', "bSortable": false, "visible" : true}, 
 	                { "data": 'groupId', "bSortable": false, "visible" : false},
-	                { 
-	                	"data": 'groupId'
-	                	, "visible" : true 
-	                	,"render": function ( data, type, row ) {
-	            			var groupMenu = $("#groupId").find("option");
-	            			for ( var index in $("#groupId").find("option")) {
-	            				if ($(groupMenu[index]).attr('value') == data) {
-									return $(groupMenu[index]).html();
-								}
-							}
-	            			return data;
-	            		}
-            		},
+	                { "data": 'groupName' , "visible" : true },
 					{ "data": 'jobName', "visible" : true},
 					{ "data": 'execJobType', "visible" : false},
 					{ "data": 'execJobTypeDesc', "visible" : true},
@@ -100,17 +88,10 @@ $(function() {
 									codeBtn = '<button class="btn btn-warning btn-xs" type="button" onclick="javascript:window.open(\'' + codeUrl + '\')" >GLUE</button>  '
 								}
 	                			
-	                			var groupName = "";
-	                			var groupMenu = $("#groupId").find("option");
-		            			for ( var index in $("#groupId").find("option")) {
-		            				if ($(groupMenu[index]).attr('value') == row.groupId) {
-		            					groupName = $(groupMenu[index]).html();
-		            					break;
-									}
-								}
+	                			 
 								// html
 								var html = '<p id="'+ row.id +'" '+
-								' groupName="'+ groupName +'" '+
+								' groupName="'+ row.groupName +'" '+
 								' groupId="'+ row.groupId +'" '+
 								' jobName="'+ row.jobName +'" '+
 								' execJobType="'+ row.execJobType +'" '+
@@ -461,7 +442,6 @@ $(function() {
 		$("#editModal .form select[name='groupId']").val($(this).parent('p').attr("groupId"));
 
 		$("#editModal .form select[name='execJobType']").val($(this).parent('p').attr("execJobType"));
-		// TODO 手工触发selectchange时间
 		
 		$("#editModal .form input[name='jobClassApplication']").val($(this).parent('p').attr("jobClassApplication"));
 		

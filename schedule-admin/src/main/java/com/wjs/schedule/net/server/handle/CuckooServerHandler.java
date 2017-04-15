@@ -13,7 +13,7 @@ import com.wjs.schedule.bean.JobInfoBean;
 import com.wjs.schedule.bean.MessageInfo;
 import com.wjs.schedule.component.cuckoo.CuckooJobCallBack;
 import com.wjs.schedule.enums.CuckooMessageType;
-import com.wjs.schedule.service.server.CuckooNetService;
+import com.wjs.schedule.service.net.CuckooNetService;
 
 /**
  * 服务器端业务逻辑，封装TimeServerHander，需要针对客户端的session进行缓存操作，并记录数据库

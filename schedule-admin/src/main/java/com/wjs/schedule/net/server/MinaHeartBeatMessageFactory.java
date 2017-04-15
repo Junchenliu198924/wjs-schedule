@@ -8,12 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
-import com.wjs.schedule.dao.exec.CuckooNetServerInfoMapper;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
-import com.wjs.schedule.domain.exec.CuckooNetServerInfo;
-import com.wjs.schedule.domain.exec.CuckooNetServerInfoCriteria;
+import com.wjs.schedule.dao.net.CuckooNetClientInfoMapper;
+import com.wjs.schedule.dao.net.CuckooNetServerInfoMapper;
+import com.wjs.schedule.domain.net.CuckooNetClientInfo;
+import com.wjs.schedule.domain.net.CuckooNetClientInfoCriteria;
+import com.wjs.schedule.domain.net.CuckooNetServerInfo;
+import com.wjs.schedule.domain.net.CuckooNetServerInfoCriteria;
 import com.wjs.schedule.enums.CuckooMessageType;
 
 public class MinaHeartBeatMessageFactory implements KeepAliveMessageFactory {

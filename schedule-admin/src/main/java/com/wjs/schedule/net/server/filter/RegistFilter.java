@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wjs.schedule.component.cache.JobClientSessionCache;
 import com.wjs.schedule.dao.exec.CuckooJobExecLogMapper;
-import com.wjs.schedule.dao.exec.CuckooNetClientInfoMapper;
+import com.wjs.schedule.dao.net.CuckooNetClientInfoMapper;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfo;
-import com.wjs.schedule.domain.exec.CuckooNetClientInfoCriteria;
+import com.wjs.schedule.domain.net.CuckooNetClientInfo;
+import com.wjs.schedule.domain.net.CuckooNetClientInfoCriteria;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.service.job.CuckooJobLogService;
-import com.wjs.schedule.service.server.CuckooNetService;
+import com.wjs.schedule.service.net.CuckooNetService;
 
 /**
  * 监听客户端连接，断开，异常操作。相关操作需要修改数据库，并修改缓存

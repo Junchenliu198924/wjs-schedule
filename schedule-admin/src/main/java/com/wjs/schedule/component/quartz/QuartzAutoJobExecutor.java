@@ -27,15 +27,15 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobDetailCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.enums.CuckooJobStatus;
 import com.wjs.schedule.enums.CuckooJobTriggerType;
+import com.wjs.schedule.qry.QryBase;
+import com.wjs.schedule.qry.job.JobLogQry;
 import com.wjs.schedule.service.job.CuckooJobLogService;
-import com.wjs.schedule.service.server.CuckooNetService;
-import com.wjs.schedule.vo.QryBase;
+import com.wjs.schedule.service.net.CuckooNetService;
 import com.wjs.schedule.vo.job.CuckooJobExecLogVo;
-import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.config.ConfigUtil;
@@ -215,7 +215,7 @@ public class QuartzAutoJobExecutor extends QuartzJobBean {
 		for (CuckooJobDetail jobDetail : jobs) {
 			if(!quartzManage.checkCronExists(String.valueOf(jobDetail.getId()))){
 				// CRON任务在Cuckoo中有，但是在quartz中没有
-				quartzManage.addCronJob(String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()),  CuckooIsTypeDaily.fromName(jobDetail.getTypeDaily()));
+				quartzManage.addCronJob(String.valueOf(jobDetail.getId()), jobDetail.getCronExpression(), CuckooJobStatus.fromName(jobDetail.getJobStatus()),  CuckooBooleanFlag.fromName(jobDetail.getTypeDaily()));
 			}
 		}
 		

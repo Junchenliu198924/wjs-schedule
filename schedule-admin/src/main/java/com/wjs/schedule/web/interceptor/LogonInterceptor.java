@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.wjs.schedule.constant.CuckooWebConstant;
 import com.wjs.schedule.enums.CuckooAdminPages;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.service.auth.CuckooAuthService;
+import com.wjs.schedule.vo.auth.CuckooLogonInfo;
 
 public class LogonInterceptor extends HandlerInterceptorAdapter {
 
@@ -19,6 +22,9 @@ public class LogonInterceptor extends HandlerInterceptorAdapter {
 	 * 不需要拦截的资源
 	 */
 	private List<String> excludeUrls;
+	
+	@Autowired
+	CuckooAuthService cuckooAuthService;
 
 	public List<String> getExcludeUrls() {
 		return excludeUrls;
@@ -45,10 +51,10 @@ public class LogonInterceptor extends HandlerInterceptorAdapter {
 		}
 
 
-		Object sessionInfo = request.getSession().getAttribute(CuckooWebConstant.ADMIN_WEB_SESSION_USER_KEY);
-
+		Object logonInfo = request.getSession().getAttribute(CuckooWebConstant.ADMIN_WEB_SESSION_USER_KEY);
+		
 		// 如果没有登录或登录超时
-		if (null == sessionInfo) {
+		if (null == logonInfo) {
 			String requestType = request.getHeader("X-Requested-With");
 			// 判断用户请求方式是否为异步请求
 			if (StringUtils.isNotBlank(requestType) && requestType.equals("XMLHttpRequest")) {
@@ -67,20 +73,26 @@ public class LogonInterceptor extends HandlerInterceptorAdapter {
 				response.sendRedirect(allUrl);
 			}
 			return false;
-		} 
-//		else {
-//			// 转到首页
-//			response.sendRedirect(CuckooAdminPages.INDEX.getValue());
-//		}
+		} else{
+			// 设置threadLocal
+			CuckooLogonInfo cuckooLogonInfo = (CuckooLogonInfo)logonInfo;
+			cuckooAuthService.setLogonInfo(cuckooLogonInfo);
+//			System.out.println(cuckooLogonInfo);
+			request.setAttribute("logonInfo", cuckooLogonInfo);
+		}
 
 		return true;
 	}
-	public static void main(String[] args) {
-		String uri = "/logon*";
-		String url = "/logon";
-		System.out.println(uri.substring(0, uri.lastIndexOf("*")));
-		System.out.println(url.startsWith(uri.substring(0, uri.lastIndexOf("*"))));
+	
+	
+	
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		super.afterCompletion(request, response, handler, ex);
+		cuckooAuthService.clearLogon();
 	}
+
 
 	private boolean isExcludeUrl(String ContextPath, String requestUri, String url) {
 		if (StringUtils.isNotEmpty(ContextPath) && requestUri.length() > ContextPath.length()) {

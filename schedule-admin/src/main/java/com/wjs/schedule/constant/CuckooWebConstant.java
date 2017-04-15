@@ -12,4 +12,5 @@ public class CuckooWebConstant {
 	 */
 	public static final String ADMIN_WEB_ENCODING = "UTF-8";
 	
+	
 }

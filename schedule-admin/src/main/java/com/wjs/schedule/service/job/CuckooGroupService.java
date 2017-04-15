@@ -12,13 +12,13 @@ public interface CuckooGroupService {
 	 * @param group
 	 * @return primarykey
 	 */
-	public Long addGroup(JobGroup group);
+	public Long addGroup(CuckooJobGroup cuckooJobGroup);
 
 	/**
 	 * 查询所有分组信息
 	 * @return
 	 */
-	public List<CuckooJobGroup> selectAllGroup();
+	public List<CuckooJobGroup> listAllGroup();
 
 	/**
 	 * 根据分组ID查询分组
@@ -32,5 +32,11 @@ public interface CuckooGroupService {
 	 * @param id
 	 */
 	public void deleteById(Long id);
+
+	/**
+	 * 
+	 * @param cuckooJobGroup
+	 */
+	public void updateByPk(CuckooJobGroup cuckooJobGroup);
 	
 }

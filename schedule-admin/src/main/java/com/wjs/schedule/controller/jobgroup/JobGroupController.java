@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.wjs.schedule.controller.BaseController;
 import com.wjs.schedule.dao.exec.CuckooJobGroupMapper;
 import com.wjs.schedule.domain.exec.CuckooJobGroup;
-import com.wjs.schedule.domain.exec.CuckooJobGroupCriteria;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.qry.job.GroupAuthQry;
+import com.wjs.schedule.service.auth.CuckooAuthService;
 import com.wjs.schedule.service.job.CuckooGroupService;
+import com.wjs.schedule.vo.auth.CuckooGroupAuthVo;
 import com.wjs.schedule.vo.job.JobGroup;
 import com.wjs.util.bean.PropertyUtil;
+import com.wjs.util.dao.PageDataList;
 
 @Controller
 @RequestMapping("/jobgroup")
@@ -30,6 +33,9 @@ public class JobGroupController  extends BaseController{
 	@Autowired
 	CuckooJobGroupMapper cuckooJobGroupMapper;
 	
+	@Autowired
+	CuckooAuthService cuckooAuthService;
+	
 	@RequestMapping
 	public String index0(HttpServletRequest request) {
 		
@@ -40,8 +46,7 @@ public class JobGroupController  extends BaseController{
 	@RequestMapping(value = "/index")
 	public String index(HttpServletRequest request) {
 		
-		List<CuckooJobGroup> jobGroups = cuckooJobGroupMapper.selectByExample(new CuckooJobGroupCriteria());
-		
+		List<CuckooJobGroup> jobGroups = cuckooGroupService.listAllGroup();
 		request.setAttribute("jobGroups", jobGroups);
 		
 		return "jobgroup/jobgroup.index";
@@ -62,10 +67,10 @@ public class JobGroupController  extends BaseController{
 		if(jobGroup.getId() != null){
 			
 			// 更新
-			cuckooJobGroupMapper.updateByPrimaryKeySelective(cuckooJobGroup);
+			cuckooGroupService.updateByPk(cuckooJobGroup);
 		}else{
 			// 新增
-			cuckooJobGroupMapper.insertSelective(cuckooJobGroup);
+			cuckooGroupService.addGroup(cuckooJobGroup);
 		}
 		
 		return success();
@@ -85,4 +90,38 @@ public class JobGroupController  extends BaseController{
 		
 		return success();
 	}
+	
+
+	@RequestMapping(value = "/groupauthlist")
+	@ResponseBody
+	public Object authlist(HttpServletRequest request, GroupAuthQry qry){
+		
+		if(null == qry.getGroupId()){
+			return dataTable(null);
+		}
+		
+		PageDataList<CuckooGroupAuthVo> pageData = cuckooAuthService.pageGroupAuth(qry);
+		
+		
+		return dataTable(pageData);
+	}
+	
+	@RequestMapping(value = "/changeAuth")
+	@ResponseBody
+	public Object changeAuth(HttpServletRequest request, String type, Long authId, Long userId, Long groupId){
+
+		if(StringUtils.isEmpty(type)){
+			throw new BaseException("param error,type can not be null");
+		}
+		if(null != authId &&(null == userId ||  null == groupId)){
+			throw new BaseException("param error,authId:{},userId:{},groupId:{}", authId , userId , groupId);
+		}
+		
+		cuckooAuthService.changeAuth(type, authId, userId, groupId);
+		
+		
+		return success();
+	}
+	
+	
 }

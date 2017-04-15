@@ -20,7 +20,7 @@ import com.wjs.schedule.domain.exec.CuckooJobDependencyCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.service.job.CuckooJobDependencyService;
@@ -78,7 +78,7 @@ public class CuckooJobDependencyServiceImpl implements CuckooJobDependencyServic
 
 		// 依赖执行任务完成条件： 1.依赖的任务状态都为成功；2.日切任务的txdate需要一致、非日切任务的latestTime一致
 		List<CuckooJobExecLog> readyDepJobs = null;
-		if (CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())) {
+		if (CuckooBooleanFlag.NO.getValue().equals(jobLog.getTypeDaily())) {
 
 			CuckooJobExecLogCriteria depJobCrt = new CuckooJobExecLogCriteria();
 //			depJobCrt.setDistinct(true);

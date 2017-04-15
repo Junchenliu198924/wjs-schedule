@@ -7,8 +7,8 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
-import com.wjs.schedule.vo.QryBase;
-import com.wjs.schedule.vo.qry.JobLogQry;
+import com.wjs.schedule.qry.QryBase;
+import com.wjs.schedule.qry.job.JobLogQry;
 import com.wjs.util.dao.PageDataList;
 
 public interface CuckooJobLogService {

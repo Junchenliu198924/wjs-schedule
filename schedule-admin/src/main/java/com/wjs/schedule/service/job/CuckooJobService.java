@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
+import com.wjs.schedule.qry.job.JobInfoQry;
 import com.wjs.schedule.vo.job.CuckooJobDetailVo;
-import com.wjs.schedule.vo.qry.JobInfoQry;
 import com.wjs.util.dao.PageDataList;
 
 /**

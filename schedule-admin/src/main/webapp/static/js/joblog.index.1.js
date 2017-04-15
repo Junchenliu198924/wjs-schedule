@@ -285,7 +285,7 @@ $(function() {
 				data : {"logId":_id},
 				dataType : "json",
 				success : function(data){
-					if (data.resultCode = "success") {
+					if (data.resultCode == "success") {
 						ComAlert.show(1, '操作成功');
 						logTable.fnDraw();
 					} else {
@@ -305,26 +305,6 @@ $(function() {
 		
 		
 	});
-	
-//	$('#joblog_list').on('click', '.logKill', function(){
-//		var _id = $(this).attr('_id');
-//		ComConfirm.show("确认主动终止任务?", function(){
-//			$.ajax({
-//				type : 'POST',
-//				url : base_url + '/joblog/logKill',
-//				data : {"id":_id},
-//				dataType : "json",
-//				success : function(data){
-//					if (data.code == 200) {
-//						ComAlert.show(1, '操作成功');
-//						logTable.fnDraw();
-//					} else {
-//						ComAlert.show(2, data.msg);
-//					}
-//				},
-//			});
-//		});
-//	});
 	
 	
 	

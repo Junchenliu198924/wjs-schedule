@@ -22,15 +22,17 @@ import com.wjs.schedule.domain.exec.CuckooJobDetail;
 import com.wjs.schedule.domain.exec.CuckooJobExecLog;
 import com.wjs.schedule.domain.exec.CuckooJobExecLogCriteria;
 import com.wjs.schedule.domain.exec.CuckooJobExtend;
-import com.wjs.schedule.enums.CuckooIsTypeDaily;
+import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooJobExecStatus;
+import com.wjs.schedule.exception.BaseException;
 import com.wjs.schedule.exception.JobUndailyLogBreakException;
+import com.wjs.schedule.qry.QryBase;
+import com.wjs.schedule.qry.job.JobLogQry;
+import com.wjs.schedule.service.auth.CuckooAuthService;
 import com.wjs.schedule.service.job.CuckooJobDependencyService;
 import com.wjs.schedule.service.job.CuckooJobLogService;
 import com.wjs.schedule.service.job.CuckooJobNextService;
 import com.wjs.schedule.service.job.CuckooJobService;
-import com.wjs.schedule.vo.QryBase;
-import com.wjs.schedule.vo.qry.JobLogQry;
 import com.wjs.util.DateUtil;
 import com.wjs.util.bean.PropertyUtil;
 import com.wjs.util.dao.PageDataList;
@@ -62,6 +64,9 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 	
 	@Autowired
 	CuckooJobService cuckooJobService;
+	
+	@Autowired
+	CuckooAuthService cuckooAuthService;
 	
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -150,7 +155,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		cuckooJobExecLog.setNeedTriggleNext(true);
 		cuckooJobExecLog.setForceTriggle(false);
 		
-		if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobDetail.getTypeDaily())){
+		if(CuckooBooleanFlag.YES.getValue().equals(cuckooJobDetail.getTypeDaily())){
 			// 如果是日切任务，那么计算出TxDate
 			cuckooJobExecLog.setTxDate(DateUtil.addIntDate(DateUtil.getIntDay(scheduledFireTime), cuckooJobDetail.getOffset()));
 		}else{
@@ -248,6 +253,10 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		
 		if(null != qry.getGroupId()){
 			crt.andGroupIdEqualTo(qry.getGroupId());
+		}else{
+			if(CollectionUtils.isNotEmpty(cuckooAuthService.getLogonInfo().getReadableGroupIds())){
+				crt.andGroupIdIn(cuckooAuthService.getLogonInfo().getReadableGroupIds());
+			}
 		}
 		if(null != qry.getJobId()){
 			crt.andJobIdEqualTo(qry.getJobId());
@@ -273,12 +282,17 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		CuckooJobExecLog cuckooJobExecLog = new CuckooJobExecLog();
 		cuckooJobExecLog.setId(logId);
 		cuckooJobExecLog.setExecJobStatus(status.getValue());
-		cuckooJobExecLogMapper.updateByPrimaryKeySelective(cuckooJobExecLog);
+
+		CuckooJobExecLog jobLog = cuckooJobExecLogMapper.selectByPrimaryKey(logId);
+		if(!cuckooAuthService.getLogonInfo().getWritableGroupIds().contains(jobLog.getGroupId())){
+			throw new BaseException("no writable right");
+		}
 		
+
+		cuckooJobExecLogMapper.updateByPrimaryKeySelective(cuckooJobExecLog);
 		if(CuckooJobExecStatus.SUCCED.getValue().equals(status.getValue())){
 			// 任务重置为成功，需要删除cron中的数据
-			CuckooJobExecLog jobLog = cuckooJobExecLogMapper.selectByPrimaryKey(logId);
-			if(CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())){
+			if(CuckooBooleanFlag.NO.getValue().equals(jobLog.getTypeDaily())){
 				// 非日切任务，要把cron中的simpleTrigger删除
 				quartzManage.deleteSimpleJob(jobLog);
 			}
@@ -291,6 +305,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		PageDataList<CuckooJobExecLog> page = new PageDataList<>();
 		page.setPage(qry.getStart() / qry.getLimit()  + 1);
 		page.setPageSize(qry.getLimit());
+
+		if(CollectionUtils.isNotEmpty(cuckooAuthService.getLogonInfo().getReadableGroupIds())){
+			qry.setGroupIds(cuckooAuthService.getLogonInfo().getReadableGroupIds());
+		}
+		
+		
 		page.setRows(cuckooJobExecLogSubMapper.pageOverTimeJobs(qry));
 		page.setTotal(cuckooJobExecLogSubMapper.countOverTimeJobs(qry));
 		
@@ -303,7 +323,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		
 		
 		
-		if(CuckooIsTypeDaily.YES.getValue().equals(jobLog.getTypeDaily())){
+		if(CuckooBooleanFlag.YES.getValue().equals(jobLog.getTypeDaily())){
 			
 			
 			// 第一次执行的情况，返回true
@@ -352,7 +372,7 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 				}
 			}
 			
-		}else if(CuckooIsTypeDaily.NO.getValue().equals(jobLog.getTypeDaily())){
+		}else if(CuckooBooleanFlag.NO.getValue().equals(jobLog.getTypeDaily())){
 
 			
 
@@ -409,6 +429,11 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 		PageDataList<CuckooJobExecLog> page = new PageDataList<>();
 		page.setPage(qry.getStart() / qry.getLimit()  + 1);
 		page.setPageSize(qry.getLimit());
+		
+		if(CollectionUtils.isNotEmpty(cuckooAuthService.getLogonInfo().getReadableGroupIds())){
+			qry.setGroupIds(cuckooAuthService.getLogonInfo().getReadableGroupIds());
+		}
+		
 		page.setRows(cuckooJobExecLogSubMapper.pagePendingJobs(qry));
 		page.setTotal(cuckooJobExecLogSubMapper.countPendingJobs(qry));
 		
@@ -428,11 +453,11 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 			crt.setStart(0);
 			crt.setLimit(1);
 			
-			if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+			if(CuckooBooleanFlag.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 				// 日期任务根据txdate判断
 				crt.createCriteria().andJobIdEqualTo(preJobId)
 				.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
-			}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+			}else if(CuckooBooleanFlag.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 				// 非日切任务根据flow_last_time来判断
 				crt.createCriteria().andJobIdEqualTo(preJobId)
 				.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
@@ -460,12 +485,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 				crt.setStart(0);
 				crt.setLimit(1);
 				
-				if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				if(CuckooBooleanFlag.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 					// 日期任务根据txdate判断
 					crt.createCriteria().andJobIdEqualTo(nextJobId)
 					.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
 					
-				}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				}else if(CuckooBooleanFlag.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 					// 非日切任务根据flow_last_time来判断
 					crt.createCriteria().andJobIdEqualTo(nextJobId)
 					.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
@@ -509,12 +534,12 @@ public class CuckooJobLogServiceImpl implements CuckooJobLogService {
 				crt.setStart(0);
 				crt.setLimit(1);
 				
-				if(CuckooIsTypeDaily.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				if(CuckooBooleanFlag.YES.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 					// 日期任务根据txdate判断
 					crt.createCriteria().andJobIdEqualTo(dependencyId)
 					.andTxDateEqualTo(cuckooJobExecLog.getTxDate());
 					
-				}else if(CuckooIsTypeDaily.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
+				}else if(CuckooBooleanFlag.NO.getValue().equals(cuckooJobExecLog.getTypeDaily())){
 					// 非日切任务根据flow_last_time来判断
 					crt.createCriteria().andJobIdEqualTo(dependencyId)
 					.andFlowLastTimeEqualTo(cuckooJobExecLog.getFlowLastTime());
