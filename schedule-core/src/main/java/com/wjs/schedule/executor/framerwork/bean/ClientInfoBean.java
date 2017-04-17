@@ -12,6 +12,8 @@ public class ClientInfoBean {
 
 	private static String appName;
 	
+	private static String clientTag;
+	
 	private ClientInfoBean(){
 		
 	}
@@ -24,6 +26,18 @@ public class ClientInfoBean {
 	public static void setAppName(String appName) {
 		ClientInfoBean.appName = appName;
 	}
+	
+	
+
+	public static String getClientTag() {
+		return clientTag;
+	}
+
+
+	public static void setClientTag(String clientTag) {
+		ClientInfoBean.clientTag = clientTag;
+	}
+
 
 	@Override
 	public String toString() {

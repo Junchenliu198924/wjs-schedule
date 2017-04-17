@@ -1,6 +1,7 @@
 package com.wjs.schedule.service.auth;
 
 import com.wjs.schedule.domain.auth.CuckooAuthUser;
+import com.wjs.schedule.qry.auth.AuthUserQry;
 import com.wjs.schedule.qry.job.GroupAuthQry;
 import com.wjs.schedule.vo.auth.CuckooGroupAuthVo;
 import com.wjs.schedule.vo.auth.CuckooLogonInfo;
@@ -90,6 +91,21 @@ public interface CuckooAuthService {
 	 * @return
 	 */
 	public CuckooAuthUser getUserInfoById(Long id);
+
+
+	/**
+	 * 修改用户
+	 * @param cuckooAuthUser
+	 */
+	public void update(CuckooAuthUser cuckooAuthUser);
+
+
+	/**
+	 * 查询条件
+	 * @param qry
+	 * @return
+	 */
+	public PageDataList<CuckooAuthUser> pageAuthUser(AuthUserQry qry);
 
 
 }

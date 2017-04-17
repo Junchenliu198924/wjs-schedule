@@ -66,7 +66,7 @@ public class ClientUtil {
 					CuckooTaskBean taskBean = it.next();
 					ClientTaskInfoBean taskInfo = new ClientTaskInfoBean();
 					taskInfo.setAppName(ClientInfoBean.getAppName());
-					// taskInfo.setClientTag(ClientInfoBean.getClientTag());
+					taskInfo.setClientTag(ClientInfoBean.getClientTag());
 					taskInfo.setBeanName(taskBean.getBeanName());
 					taskInfo.setMethodName(taskBean.getMethodName());
 					taskInfo.setTaskName(taskBean.getTaskName());

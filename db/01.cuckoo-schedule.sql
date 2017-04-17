@@ -161,6 +161,7 @@ CREATE TABLE cuckoo_net_client_info
 	ip                             varchar(30)     DEFAULT ''         NOT NULL	COMMENT 'IP地址',
 	port                           int             DEFAULT 0          NOT NULL	COMMENT '端口号',
 	modify_date                    bigint          DEFAULT 0          NOT NULL	COMMENT '修改时间',
+	client_tag                     varchar(64)     DEFAULT ''         NOT NULL	COMMENT '客户端标识',
 PRIMARY KEY(id)
 )
 ENGINE=InnoDB
@@ -168,8 +169,9 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_bin
 COMMENT='客户端信息表'
 AUTO_INCREMENT=1
 ROW_FORMAT=COMPACT;
-CREATE INDEX uk_netclient_ip_port ON cuckoo_net_client_info(ip ASC ,port ASC );
 CREATE INDEX idx_netclient_serverid ON cuckoo_net_client_info(server_id ASC );
+
+
 
 
 CREATE TABLE cuckoo_net_client_job_map

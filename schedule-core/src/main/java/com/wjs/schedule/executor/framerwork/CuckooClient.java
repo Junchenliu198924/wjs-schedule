@@ -34,6 +34,8 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 	
 	private String appName ;
 	
+	private String clientTag;
+	
 	private String server;
 
 	@Override
@@ -57,8 +59,18 @@ public class CuckooClient implements ApplicationContextAware, BeanPostProcessor,
 		this.appName = appName;
 	}
 
+	
+
+	public String getClientTag() {
+		return clientTag;
+	}
 
 
+
+	public void setClientTag(String clientTag) {
+		ClientInfoBean.setClientTag(clientTag);
+		this.clientTag = clientTag;
+	}
 
 
 

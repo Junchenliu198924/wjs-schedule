@@ -11,6 +11,8 @@ public class ClientTaskInfoBean {
 	private String methodName;
 	
 	private String taskName;
+	
+	private String clientTag;
 
 	public String getAppName() {
 		return appName;
@@ -44,6 +46,16 @@ public class ClientTaskInfoBean {
 		this.taskName = taskName;
 	}
 	
+	
+	
+	public String getClientTag() {
+		return clientTag;
+	}
+
+	public void setClientTag(String clientTag) {
+		this.clientTag = clientTag;
+	}
+
 	@Override
 	public String toString() {
 		

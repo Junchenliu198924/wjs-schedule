@@ -110,7 +110,7 @@ public class JobClientController  extends BaseController{
 		if(CollectionUtils.isNotEmpty(clients)){
 
 			for (CuckooNetClientInfo cuckooNetClientInfo : clients) {
-				clientAddrs.add(cuckooNetClientInfo.getServerId() +":" + cuckooNetClientInfo.getIp());
+				clientAddrs.add(cuckooNetClientInfo.getIp() + ":" + cuckooNetClientInfo.getClientTag());
 			}
 		}
 		return clientAddrs;

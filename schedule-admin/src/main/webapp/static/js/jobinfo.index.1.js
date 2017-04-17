@@ -81,12 +81,6 @@ $(function() {
 	                			// log url
 	                			var logUrl = base_url +'/joblog?groupId='+row.groupId+'&jobId='+ row.id;
 	                			
-	                			// log url
-	                			var codeBtn = "";
-	                			if(row.glueSwitch > 0){
-									var codeUrl = base_url +'/jobcode?jobGroup='+ row.jobGroup +'&jobName='+ row.jobName;
-									codeBtn = '<button class="btn btn-warning btn-xs" type="button" onclick="javascript:window.open(\'' + codeUrl + '\')" >GLUE</button>  '
-								}
 	                			
 	                			 
 								// html
@@ -115,7 +109,6 @@ $(function() {
 								pause_resume +
 								'<button class="btn btn-primary btn-xs" type="job_del" type="button" onclick="javascript:window.open(\'' + logUrl + '\')" >日志</button><br>  '+
 								'<button class="btn btn-warning btn-xs update" type="button">编辑</button>  '+
-								codeBtn +
 								'<button class="btn btn-danger btn-xs job_operate" type="job_del" type="button">删除</button>  '+
 								'</p>';
 
@@ -185,7 +178,7 @@ $(function() {
 							jobTable.fnDraw();
 						});
 					} else {
-						ComAlert.show(1, typeName + "失败," + data.resultMsg);
+						ComAlert.show(2, typeName + "失败," + data.resultMsg);
 					}
 				},
 			});
@@ -245,7 +238,7 @@ $(function() {
 							}
 						});
 					} else {
-						ComAlert.show(1, typeName + "失败," + data.resultMsg);
+						ComAlert.show(2, typeName + "失败," + data.resultMsg);
 					}
 				},
 			});

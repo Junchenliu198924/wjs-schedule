@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import com.wjs.schedule.domain.exec.CuckooJobGroup;
 import com.wjs.schedule.enums.CuckooBooleanFlag;
 import com.wjs.schedule.enums.CuckooUserAuthType;
 import com.wjs.schedule.exception.BaseException;
+import com.wjs.schedule.qry.auth.AuthUserQry;
 import com.wjs.schedule.qry.job.GroupAuthQry;
 import com.wjs.schedule.service.auth.CuckooAuthService;
 import com.wjs.schedule.service.job.CuckooGroupService;
@@ -257,6 +259,26 @@ public class CuckooAuthServiceImpl implements CuckooAuthService {
 		CuckooAuthUser auth = cuckooAuthUserMapper.selectByPrimaryKey(id);
 		auth.setUserPwd("");
 		return auth;
+	}
+
+	@Override
+	public void update(CuckooAuthUser cuckooAuthUser) {
+
+		cuckooAuthUserMapper.updateByPrimaryKeySelective(cuckooAuthUser);
+	}
+
+	@Override
+	public PageDataList<CuckooAuthUser> pageAuthUser(AuthUserQry qry) {
+
+		CuckooAuthUserCriteria crt = new CuckooAuthUserCriteria();
+		if(StringUtils.isNotEmpty(qry.getUserAuthType())){
+
+			crt.createCriteria().andUserAuthTypeEqualTo(qry.getUserAuthType());
+		}
+		crt.setStart(qry.getStart());
+		crt.setLimit(qry.getLimit());
+		
+		return cuckooAuthUserMapper.pageByExample(crt);
 	}
 
 	
