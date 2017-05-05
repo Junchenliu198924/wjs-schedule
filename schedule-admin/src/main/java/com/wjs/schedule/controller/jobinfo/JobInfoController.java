@@ -80,6 +80,11 @@ public class JobInfoController extends BaseController{
 		
 		// 任务分组
 		List<CuckooJobGroup> jobGroupList = cuckooGroupService.listAllGroup();
+		if(CollectionUtils.isNotEmpty(jobGroupList)){
+			for (CuckooJobGroup cuckooJobGroup : jobGroupList) {
+				cuckooJobGroup.setGroupName(cuckooJobGroup.getId() + "-" + cuckooJobGroup.getGroupName());
+			}
+		}
 		request.setAttribute("jobGroupList", jobGroupList);
 		
 		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();

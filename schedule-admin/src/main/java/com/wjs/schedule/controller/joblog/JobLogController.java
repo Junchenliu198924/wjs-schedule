@@ -64,6 +64,11 @@ public class JobLogController extends BaseController {
 		request.setAttribute("jobId", jobId);
 		// 任务类型
 		List<CuckooJobGroup> jobGroupList = cuckooGroupService.listAllGroup();
+		if(CollectionUtils.isNotEmpty(jobGroupList)){
+			for (CuckooJobGroup cuckooJobGroup : jobGroupList) {
+				cuckooJobGroup.setGroupName(cuckooJobGroup.getId() + "-" + cuckooJobGroup.getGroupName());
+			}
+		}
 		request.setAttribute("jobGroupList", jobGroupList);
 		List<CuckooJobGroup> jobGroupsWithNull = new ArrayList<CuckooJobGroup>();
 		CuckooJobGroup groupNull = new CuckooJobGroup();
